@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b1cc6c8c161c72bb689cfba0d4e1fd86",
+    "hash": "59a0121ccab067f410a533861c452320",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -318,6 +318,45 @@
                 "html"
             ],
             "time": "2013-11-30 08:25:19"
+        },
+        {
+            "name": "omnilight/yii2-sypexgeo",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/omnilight/yii2-sypexgeo.git",
+                "reference": "5c9cf575cf02f1a0c01235ae5242a5b0e9aaa004"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/omnilight/yii2-sypexgeo/zipball/5c9cf575cf02f1a0c01235ae5242a5b0e9aaa004",
+                "reference": "5c9cf575cf02f1a0c01235ae5242a5b0e9aaa004",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "omnilight\\sypexgeo\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Pavel Agalecky",
+                    "email": "pavel.agalecky@gmail.com"
+                }
+            ],
+            "description": "Yii2 extension for Sypex Geo API (http://sypexgeo.net)",
+            "keywords": [
+                "geo",
+                "sypexgeo",
+                "yii2"
+            ],
+            "time": "2014-12-02 13:55:50"
         },
         {
             "name": "swiftmailer/swiftmailer",

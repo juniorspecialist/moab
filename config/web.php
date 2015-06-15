@@ -5,18 +5,55 @@ $params = require(__DIR__ . '/params.php');
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log','debug'],
+
+    'name'=>' MOAB LK',//личный кабинет для проекта MOAB
+
+
+
+    'timeZone'=>'Europe/Moscow',
+
+    'language' => 'ru',
+
+    'sourceLanguage' => 'ru',
+
+
+
+    'modules' => [
+        'debug' => 'yii\debug\Module',
+
+        'user' => [
+            'class' => 'app\modules\user\Module',
+        ],
+    ],
+
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '_LdzbzLns4JMiQYQtoHWEDTA0-Td1Jjq',
         ],
+        'sypexGeo' => [
+            'class' => 'omnilight\sypexgeo\SypexGeo',
+            'database' => '@app/data/SxGeoCity.dat',
+        ],
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
+            'showScriptName' => false,
+            'rules' => //[
+                require(__DIR__ . '/urls.php'),
+                //['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+            //],
+        ],
+
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'app\modules\user\models\User',
             'enableAutoLogin' => true,
+            'loginUrl' => ['user/default/login'],
+            //'admins'=>['admin'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
