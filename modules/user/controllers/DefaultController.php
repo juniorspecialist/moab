@@ -27,7 +27,7 @@ class DefaultController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup','admin','profil'],
+                'only' => ['logout', 'signup','admin','profile'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -35,21 +35,21 @@ class DefaultController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout','profil'],
+                        'actions' => ['logout','profile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                    [
-                        'actions' => ['admin'],
-                        'allow' => true,
-                        //'roles' => ['@'],
-                        'matchCallback' => function() {
-                            if(Yii::$app->user->identity && Yii::$app->user->identity->isAdmin()){
-                                return true;
-                            }
-                            return false;
-                        }
-                    ],
+//                    [
+//                        'actions' => ['admin'],
+//                        'allow' => true,
+//                        //'roles' => ['@'],
+//                        'matchCallback' => function() {
+//                            if(Yii::$app->user->identity && Yii::$app->user->identity->isAdmin()){
+//                                return true;
+//                            }
+//                            return false;
+//                        }
+//                    ],
                 ],
             ],
             'verbs' => [
@@ -78,8 +78,11 @@ class DefaultController extends Controller
         }
 
         $model = new LoginForm();
+
+        //валидация параметров формы и авторизация
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            //return $this->goBack();
+            return $this->redirect(['profile']);
         } else {
             return $this->render('login', [
                 'model' => $model,
@@ -166,11 +169,11 @@ class DefaultController extends Controller
     /*
      * информация о профиле пользователя
      */
-    public function actionProfil(){
+    public function actionProfile(){
 
         $model = User::findOne(['id'=>Yii::$app->user->id]);
 
-        return $this->render('profil', [
+        return $this->render('profile', [
             'model' => $model,
         ]);
     }

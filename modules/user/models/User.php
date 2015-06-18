@@ -2,8 +2,10 @@
 
 namespace app\modules\user\models;
 
-use app\models\Financy;
-use app\models\Tasks;
+use app\models\Access;
+use app\models\AuthLog;
+use app\models\AuthLogQuery;
+use app\models\UserAccess;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -31,7 +33,12 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_ACTIVE = 1;
     const STATUS_WAIT = 2;
 
+    const EVENT_AFTER_LOGIN  = 'afterLogin';
+
     public $admin;
+    public $access;
+
+
 
     public function getStatusName()
     {
@@ -39,18 +46,6 @@ class User extends ActiveRecord implements IdentityInterface
         return isset($statuses[$this->status]) ? $statuses[$this->status] : '';
     }
 
-    public function getOrders()
-    {
-        return $this->hasMany(Tasks::className(), ['user_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getFinancy()
-    {
-        return $this->hasMany(Financy::className(), ['id' => 'user_id']);
-    }
 
     public static function getStatusesArray()
     {
@@ -69,28 +64,102 @@ class User extends ActiveRecord implements IdentityInterface
         return '{{%user}}';
     }
 
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * подписки юзера по выбранным базам и выбранным периодам
+     */
+    public function getSubscription()
+    {
+        //return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+    /*
+        * @return \yii\db\ActiveQuery
+        * получаем список подвязанных RDP доступов по юзеру, котор. мон может использовать для подключения к серваку
+        */
+    public function getAccess()
+    {
+        return $this->hasOne(Access::className(), ['id' => 'access_id'])->viaTable(UserAccess::tableName(), ['user_id'=>'id']);
+    }
+
+    public function getAccessServer(){
+        return $this->access ? $this->access->server : 'Нет';
+    }
+
+    public function getAccessLogin(){
+        return $this->access ? $this->access->login: 'Нет';
+    }
+
+    public function getAccessPass(){
+        return $this->access ? $this->access->pass : 'Нет';
+    }
+
+
+    /*
+     * получаем данные по авторизация по юзеру
+     */
+    public function getAuthLogLast()
+    {
+        return $this->hasMany(AuthLog::className(), ['user_id'=>'id'])->orderBy('create_at DESC')->one();
+    }
+
+
+    /*
+     * обновим дату визита юзера
+     * укажем IP и страну пользователя
+     */
+    public static function afterLogin()
+    {
+
+        //получаем последнее значение в таблице лога, а потом лишь записываем новые данные(юзер уже авторизирован)
+        $user = User::findOne(Yii::$app->user->id);
+
+        $info  = $user->authLogLast;
+
+        //есть данные для обновления профиля пользователя - обновим
+        if($info){
+            Yii::$app
+                ->db
+                ->createCommand('UPDATE `user` SET last_visit_ip=:last_vizit_ip,last_vizit_time=:last_vizit_time WHERE id=:user_id')
+                ->bindValues([':user_id'=>Yii::$app->user->id, ':last_vizit_time'=>$info->create_at, ':last_vizit_ip'=>$info->ip])
+                ->execute();
+        }
+
+        //запишим данные по тек. входу пользователя
+        $log = new AuthLog();
+
+        //определяем страну пользователя
+        $country = Yii::$app->sypexGeo->getCityFull(Yii::$app->request->userIP);//Yii::$app->getRequest()->getUserIP()
+
+        $log->country = $country['country']['name_ru'];
+
+        if($log->validate()){
+            $log->save();
+        }else{
+            Yii::$app->log(print_r($log->errors), true);
+        }
+
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            ['username', 'required'],
-            ['username', 'match', 'pattern' => '#^[\w_-]+$#i'],
-            ['username', 'unique', 'targetClass' => self::className(), 'message' => 'Это имя пользователя уже занято.'],
-            ['username', 'string', 'min' => 2, 'max' => 255],
-
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'unique', 'targetClass' => self::className(), 'message' => 'Этот адрес почты уже занят.'],
             ['email', 'string', 'max' => 255],
 
-            [['status','balance'], 'integer'],
+            [['status','balance','last_vizit_time'], 'integer'],
+            ['status', 'in', 'range' => array_keys(self::getStatusesArray())],
 
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
+
             ['api_key', 'default', 'value'=>$this->getApiKey()],
 
-            ['status', 'in', 'range' => array_keys(self::getStatusesArray())],
+            ['created_at', 'default', 'value'=>time()],//дата регистрации пользователя
         ];
     }
     /**
@@ -100,7 +169,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'created_at' => 'Создан',
+            'created_at' => 'Дата регистрации',
             'updated_at' => 'Обновлён',
             'username' => 'Имя пользователя',
             'email' => 'Email',
@@ -108,7 +177,9 @@ class User extends ActiveRecord implements IdentityInterface
             'balance'=>'Баланс',
             'statusname'=>'Статус',
             'last_vizit_ip'=>'IP-адрес последнего входа',
+            'last_vizit_time'=>'',
             'api_key'=>'API-ключ',
+            'access'=>'Доступ',
         ];
     }
 
@@ -120,10 +191,10 @@ class User extends ActiveRecord implements IdentityInterface
 
         $list = [
             strtoupper(substr(uniqid(), 0, 4)),
-            strtoupper(substr(uniqid(), 0, 4)),
-            strtoupper(substr(uniqid(), 0, 4)),
-            strtoupper(substr(uniqid(), 0, 4)),
-            strtoupper(substr(uniqid(), 0, 4))
+            strtoupper(substr(uniqid(), 4, 4)),
+            strtoupper(substr(uniqid(), 8, 4)),
+            strtoupper(substr(uniqid(), 12, 4)),
+            strtoupper(substr(uniqid(), 16, 4))
         ];
 
         $key = implode('-', $list);
@@ -140,7 +211,8 @@ class User extends ActiveRecord implements IdentityInterface
 
     }
 
-    public function fields(){
+    public function fields()
+    {
         return [
             'email',
 //            'firstName' => 'first_name',
@@ -253,9 +325,9 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $username
      * @return static|null
      */
-    public static function findByUsername($username)
+    public static function findByUsername($email)
     {
-        return static::findOne(['username' => $username]);
+        return static::findOne(['email' => $email]);
     }
 
     /**

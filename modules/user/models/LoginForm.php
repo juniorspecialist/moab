@@ -4,6 +4,7 @@ namespace app\modules\user\models;
 
 use Yii;
 use yii\base\Model;
+use yii\base\Behavior;
 
 /**
  * LoginForm is the model behind the login form.
@@ -16,6 +17,17 @@ class LoginForm extends Model
 
     private $_user = false;
 
+
+    const EVENT_AFTER_LOGIN = 'afterLogin';
+
+
+    public function afterLogin()
+    {
+        $this->trigger(self::EVENT_AFTER_LOGIN);
+
+        var_dump($_SESSION);
+        die('sdfsdfsdfsdf-afterLogin');
+    }
     /**
      * @return array the validation rules.
      */
