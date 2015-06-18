@@ -190,11 +190,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function getApiKey(){
 
         $list = [
-            strtoupper(substr(uniqid(), 0, 4)),
-            strtoupper(substr(uniqid(), 4, 4)),
-            strtoupper(substr(uniqid(), 8, 4)),
-            strtoupper(substr(uniqid(), 12, 4)),
-            strtoupper(substr(uniqid(), 16, 4))
+            strtoupper(substr(md5(time()), 0, 5)),
+            strtoupper(substr(md5(time()), 5, 5)),
+            strtoupper(substr(md5(time()), 10, 5)),
+            strtoupper(substr(md5(time()), 15, 5)),
+            strtoupper(substr(md5(time()), 20, 5))
         ];
 
         $key = implode('-', $list);
@@ -211,18 +211,19 @@ class User extends ActiveRecord implements IdentityInterface
 
     }
 
-    public function fields()
-    {
-        return [
-            'email',
-//            'firstName' => 'first_name',
-//            'lastName' => 'last_name',
-            'statusname'=>'status',
-            'created_at' => function ($model) {
-                return date('Y-m-d H:i:s',$model->created_at);
-            },
-        ];
-    }
+//    public function fields()
+//    {
+//        return [
+//            'email',
+//            //'access'=>'Доступ',
+////            'firstName' => 'first_name',
+////            'lastName' => 'last_name',
+//            'statusname'=>'status',
+//            'created_at' => function ($model) {
+//                return date('Y-m-d H:i:s',$model->created_at);
+//            },
+//        ];
+//    }
 
     /**
      * @inheritdoc

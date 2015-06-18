@@ -43,7 +43,11 @@ use yii\widgets\DetailView;
 //            ],
 
 
-            //'access.login',
+            [
+                'label'=>'Доступы:',
+                'value'=>'',
+            ],
+
             [
                 'label'=>'Сервер',
                 'value'=>$model->accessServer,

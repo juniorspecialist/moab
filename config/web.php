@@ -6,22 +6,12 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log','debug'],
-
     'name'=>' MOAB LK',//личный кабинет для проекта MOAB
-
-
-
     'timeZone'=>'Europe/Moscow',
-
     'language' => 'ru',
-
     'sourceLanguage' => 'ru',
-
-
-
     'modules' => [
         'debug' => 'yii\debug\Module',
-
         'user' => [
             'class' => 'app\modules\user\Module',
         ],
@@ -54,6 +44,10 @@ $config = [
             'enableAutoLogin' => true,
             'loginUrl' => ['user/default/login'],
             //'admins'=>['admin'],
+            'on afterLogin'=>function ($event) {
+                app\modules\user\models\User::afterLogin();
+            }
+
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
