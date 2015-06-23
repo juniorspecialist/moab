@@ -32,8 +32,9 @@ class Financy extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'user_id', 'balance_after', 'amount', 'type_operation', 'create_ad'], 'required'],
-            [['id', 'user_id', 'balance_after', 'amount', 'type_operation', 'create_ad'], 'integer']
+            [['id', 'user_id', 'balance_after', 'amount', 'type_operation'], 'required'],
+            [['id', 'user_id', 'balance_after', 'amount', 'type_operation', 'create_at'], 'integer'],
+            ['create_at', 'default', 'value'=>time()]
         ];
     }
 

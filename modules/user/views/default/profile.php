@@ -10,13 +10,13 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 
-//$this->title = 'Профиль пользователя:'.$model->email;
-//$this->params['breadcrumbs'][] = ['label' => 'Профиль'];
+$this->title = 'Профиль пользователя:'.$model->email;
+$this->params['breadcrumbs'][] = ['label' => 'Профиль'];
 
 ?>
 <div class="profil-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+
 
     <?= DetailView::widget([
         'model' => $model,

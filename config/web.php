@@ -10,6 +10,7 @@ $config = [
     'timeZone'=>'Europe/Moscow',
     'language' => 'ru',
     'sourceLanguage' => 'ru',
+    'defaultRoute' => 'user/default/profile',
     'modules' => [
 
         'debug' => 'yii\debug\Module',
@@ -41,6 +42,21 @@ $config = [
             //],
         ],
 
+//        'view' => [
+//            'theme' => [
+//                'pathMap' => [
+//                    '@app/views' => '@vendor/p2made/yii2-sb-admin-theme/views/sb-admin-2',
+//                ],
+//            ],
+//        ],
+
+//        'view' => [
+//            'theme' => [
+//                'pathMap' => [
+//                    '@app/views' => '@vendor/dmstr/yii2-adminlte-asset/example-views/yiisoft/yii2-app'
+//                ],
+//            ],
+//        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

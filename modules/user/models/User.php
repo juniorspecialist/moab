@@ -78,7 +78,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getSubscription()
     {
-        return $this->hasMany(\app\models\Base::className(), ['id' => 'base_id'])->via('UserSubscription');
+        return $this->hasMany(\app\models\Base::className(), ['id' => 'base_id'])->viaTable(UserSubscription::tableName(), ['user_id' => 'id']);
     }
     /*
         * @return \yii\db\ActiveQuery
@@ -123,7 +123,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getFinancy()
     {
-        return $this->hasMany(Financy::className(), ['user_id'=>'id'])->orderBy('create_at DESC');
+        return $this->hasMany(Financy::className(), ['user_id'=>'id'])->orderBy(['create_at'=>'SORT_DESC']);
     }
 
     /*
@@ -135,6 +135,10 @@ class User extends ActiveRecord implements IdentityInterface
 
         //получаем последнее значение в таблице лога, а потом лишь записываем новые данные(юзер уже авторизирован)
         $user = User::findOne(Yii::$app->user->id);
+
+
+        //запишим в сессию почту юзера
+        \Yii::$app->session->set('user.email',$user->email);
 
         $info  = $user->authLogLast;
 
@@ -273,10 +277,10 @@ class User extends ActiveRecord implements IdentityInterface
         if(!Yii::$app->user->isGuest){
 
             if(empty($username)){
-                $username = Yii::$app->user->identity->username;
+                $username = \Yii::$app->session->get('user.email');
             }
 
-            if(in_array($username, Yii::$app->user->identity->admins)){
+            if(in_array($username, \Yii::$app->user->identity->admins)){
                 return true;
             }
         }

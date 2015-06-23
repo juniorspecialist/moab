@@ -13,19 +13,34 @@ use yii\bootstrap\ActiveForm;
 $this->title = 'Сброс пароля';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-request-password-reset">
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="register-box" id="register-form">
+    <!-- /.login-logo -->
+    <div class="register-box-body">
+<!--        <div class="site-request-password-reset">-->
+            <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Пожалуйста укажите вашу почту. Ссылка на сброс пароля будет выслана вам на почту.</p>
+            <p>Пожалуйста укажите вашу почту. Ссылка на сброс пароля будет выслана вам на почту.</p>
 
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>
-            <?= $form->field($model, 'email') ?>
-            <div class="form-group">
-                <?= Html::submitButton('Отправить', ['class' => 'btn btn-primary']) ?>
+            <div class="row">
+                <div class="col-lg-5">
+                    <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>
+                    <?= $form->field($model, 'email') ?>
+                    <div class="form-group">
+                        <?= Html::submitButton('Отправить', ['class' => 'btn btn-primary']) ?>
+                    </div>
+                    <?php ActiveForm::end(); ?>
+                </div>
             </div>
-            <?php ActiveForm::end(); ?>
-        </div>
+<!--        </div>-->
+
     </div>
-</div>
+    <!-- /.login-box-body -->
+</div><!-- /.login-box -->
+<style>
+    #register-form{
+        width: 500px;
+    }
+    #passwordresetrequestform-email{
+        width: 250px;;
+    }
+</style>

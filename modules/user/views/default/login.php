@@ -13,29 +13,59 @@ use yii\bootstrap\ActiveForm;
 /* @var $model \app\modules\user\models\LoginForm */
 
 $this->title = 'Авторизация';
-$this->params['breadcrumbs'][] = $this->title;
+
+$fieldOptions1 = [
+    'options' => ['class' => 'form-group has-feedback'],
+    'inputTemplate' => "{input}<span class='glyphicon glyphicon-envelope form-control-feedback'></span>"
+];
+
+$fieldOptions2 = [
+    'options' => ['class' => 'form-group has-feedback'],
+    'inputTemplate' => "{input}<span class='glyphicon glyphicon-lock form-control-feedback'></span>"
+];
 ?>
 
-
-
-<div class="form-box" id="login-box">
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>Пожалуйста заполните поля для авторизации:</p>
-
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
-            <?= $form->field($model, 'username') ?>
-            <?= $form->field($model, 'password')->passwordInput() ?>
-            <?= $form->field($model, 'rememberMe')->checkbox() ?>
-            <div style="color:#999;margin:1em 0">
-                Если вы забыли свой пароль то можете <?= Html::a('сбросить его', ['request-password-reset']) ?>.
-            </div>
-            <div class="form-group">
-                <?= Html::submitButton('Авторизация', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            </div>
-            <?php ActiveForm::end(); ?>
-        </div>
+<div class="login-box">
+    <div class="login-logo">
+        <strong>Авторизация</strong>
     </div>
-</div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+<!--        <p class="login-box-msg">Sign in to start your session</p>-->
+
+        <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => false]); ?>
+
+        <?= $form
+            ->field($model, 'username', $fieldOptions1)
+            ->label(false)
+            ->textInput(['placeholder' => $model->getAttributeLabel('username')]) ?>
+
+        <?= $form
+            ->field($model, 'password', $fieldOptions2)
+            ->label(false)
+            ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
+
+        <div class="row">
+<!--            <div class="col-xs-8">-->
+<!--                --><?php //echo $form->field($model, 'rememberMe')->checkbox() ?>
+<!--            </div>-->
+            <!-- /.col -->
+            <div class="col-xs-4">
+                <?= Html::submitButton('Авторизация', ['class' => 'btn btn-primary btn-flat', 'name' => 'login-button']) ?>
+            </div>
+            <!-- /.col -->
+        </div>
+
+
+        <?php ActiveForm::end(); ?>
+
+
+        <!-- /.social-auth-links -->
+
+        <?= Html::a('Сбросить пароль', ['request-password-reset']) ?>
+        <br>
+        <?= Html::a('Регистрация', ['signup']) ?>
+
+    </div>
+    <!-- /.login-box-body -->
+</div><!-- /.login-box -->

@@ -10,6 +10,11 @@ body {
     padding: 0 0 60px;
 }
 
+
+#register-form{
+    border: 1px solid red;
+}
+
 .wrap > .container {
     padding: 70px 15px 20px;
 }

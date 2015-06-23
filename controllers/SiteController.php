@@ -14,15 +14,42 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
+//            'access' => [
+//                'class' => AccessControl::className(),
+//                'only' => ['logout'],
+//                'rules' => [
+//                    [
+//                        'actions' => ['logout'],
+//                        'allow' => true,
+//                        'roles' => ['@'],
+//                    ],
+//                ],
+//            ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                //'only' => ['logout', 'signup','admin','profile'],
                 'rules' => [
+//                    [
+//                        'actions' => ['signup'],
+//                        'allow' => true,
+//                        'roles' => ['?'],
+//                    ],
                     [
-                        'actions' => ['logout'],
+                        //'actions' => ['logout','profile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+//                    [
+//                        'actions' => ['admin'],
+//                        'allow' => true,
+//                        //'roles' => ['@'],
+//                        'matchCallback' => function() {
+//                            if(Yii::$app->user->identity && Yii::$app->user->identity->isAdmin()){
+//                                return true;
+//                            }
+//                            return false;
+//                        }
+//                    ],
                 ],
             ],
             'verbs' => [

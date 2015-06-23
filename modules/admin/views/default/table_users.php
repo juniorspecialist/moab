@@ -46,9 +46,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function ($data) {
                     //есть данные по подпискам, по юзеру - получим список его подписок
-                    if($data->userSubscription){
+                    if($data->subscription){
                         $info = '';
-                        foreach($data->userSubscription as $userSubscription){
+                        foreach($data->subscription as $userSubscription){
                             $info.=$userSubscription->Subscription->title.' до - '.date('d-m-Y',$userSubscription->to);
                         }
                         return $info;
@@ -62,8 +62,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function ($data) {
                     return "Последний вход:".date('Y-m-d H:i:s', $data->authLogLast->create_at).'|'.
-                        Html::a('История IP', ['admin/default/history-ip', 'user_id'=>$data->id]).' | '.
-                        Html::a('Финансы', ['admin/default/financy', 'user_id'=>$data->id]);
+                        Html::a('История IP', ['/admin/default/history-ip', 'user_id'=>$data->id]).' | '.
+                        Html::a('Финансы', ['/admin/default/financy', 'user_id'=>$data->id]);
                 },
             ],
 //            [
