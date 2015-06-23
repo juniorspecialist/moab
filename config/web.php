@@ -11,9 +11,14 @@ $config = [
     'language' => 'ru',
     'sourceLanguage' => 'ru',
     'modules' => [
+
         'debug' => 'yii\debug\Module',
+
         'user' => [
             'class' => 'app\modules\user\Module',
+        ],
+        'admin' => [
+            'class' => 'app\modules\admin\Module',
         ],
     ],
 

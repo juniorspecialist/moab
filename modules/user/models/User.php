@@ -5,10 +5,13 @@ namespace app\modules\user\models;
 use app\models\Access;
 use app\models\AuthLog;
 use app\models\AuthLogQuery;
+use app\models\Financy;
 use app\models\UserAccess;
+use app\models\UserSubscription;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use yii\debug\components\search\matchers\Base;
 use yii\web\IdentityInterface;
 use yii\base\NotSupportedException;
 
@@ -65,13 +68,17 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
 
+    public function getUserSubscription(){
+        return $this->hasMany(UserSubscription::tableName(), ['id' => 'user_id']);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      * подписки юзера по выбранным базам и выбранным периодам
      */
     public function getSubscription()
     {
-        //return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasMany(\app\models\Base::className(), ['id' => 'base_id'])->via('UserSubscription');
     }
     /*
         * @return \yii\db\ActiveQuery
@@ -94,6 +101,13 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->access ? $this->access->pass : 'Нет';
     }
 
+    /*
+     * получаем данные по авторизация по юзеру
+     */
+    public function getAuthLog()
+    {
+        return $this->hasMany(AuthLog::className(), ['user_id'=>'id'])->orderBy('create_at DESC');
+    }
 
     /*
      * получаем данные по авторизация по юзеру
@@ -103,6 +117,14 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(AuthLog::className(), ['user_id'=>'id'])->orderBy('create_at DESC')->one();
     }
 
+
+    /*
+     * получаем данные фин. операциям по юзеру
+     */
+    public function getFinancy()
+    {
+        return $this->hasMany(Financy::className(), ['user_id'=>'id'])->orderBy('create_at DESC');
+    }
 
     /*
      * обновим дату визита юзера

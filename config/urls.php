@@ -14,6 +14,8 @@ return [
 
     '<_a:(login|logout|signup|confirm-email|request-password-reset|reset-password|change-password|profile|captcha)>' => 'user/default/<_a>',
 
+    //'admin/<_a:(users)>' => 'admin/default/<_a>',
+
     'ticket'=>'ticket/default/index',
     [
         'pattern' => 'ticket/<id:\d+>',
@@ -38,11 +40,11 @@ return [
     ],
 
 
-    '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
-    '<controller:\w+>/<action:\w+>/<link:\w+>' => '<controller>/<action>',
-    '<controller:\w+>/<action:\w+>/<file:\w+>' => '<controller>/<action>',
-    '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
-    '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+//    '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+//    '<controller:\w+>/<action:\w+>/<link:\w+>' => '<controller>/<action>',
+//    '<controller:\w+>/<action:\w+>/<file:\w+>' => '<controller>/<action>',
+//    '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+//    '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
 
 
     [

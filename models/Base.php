@@ -28,8 +28,8 @@ class Base extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'title', 'one_month_price','three_month_price','six_month_price','twelfth_month_price'], 'required'],
-            [['id', 'one_month_price','three_month_price','six_month_price','twelfth_month_price'], 'integer'],
+            [['title', 'one_month_price','three_month_price','six_month_price','twelfth_month_price'], 'required'],
+            [['one_month_price','three_month_price','six_month_price','twelfth_month_price'], 'integer'],
             [['title'], 'string', 'max' => 80],
             [['one_month_user_info','three_month_user_info','six_month_user_info','twelfth_month_user_info'], 'string', 'max' => 128]
         ];
