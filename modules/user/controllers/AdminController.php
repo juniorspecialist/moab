@@ -32,10 +32,10 @@ class AdminController extends Controller{
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index'],
+                //'only' => ['index'],
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        //'actions' => ['index'],
                         'allow' => true,
                         //'roles' => ['@'],
                         'matchCallback' => function() {

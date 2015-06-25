@@ -8,36 +8,34 @@
 
 return [
 
-    '' => 'site/index',
-    'about'=>'site/about',
-    'contact'=>'site/contact',
-
+    '' => 'user/default/login',
     '<_a:(login|logout|signup|confirm-email|request-password-reset|reset-password|change-password|profile|captcha)>' => 'user/default/<_a>',
+    'financy' => 'user/financy/index',
 
     //'admin/<_a:(users)>' => 'admin/default/<_a>',
 
-    'ticket'=>'ticket/default/index',
-    [
-        'pattern' => 'ticket/<id:\d+>',
-        'route' => 'ticket/default/view',
-        'suffix' => ''
-    ],
-    'ticket/<_a>' => 'ticket/default/<_a>',
+//    'ticket'=>'ticket/default/index',
+//    [
+//        'pattern' => 'ticket/<id:\d+>',
+//        'route' => 'ticket/default/view',
+//        'suffix' => ''
+//    ],
+//    'ticket/<_a>' => 'ticket/default/<_a>',
 
 
-    'tasks'=>'tasks/index',
-    [
-        'pattern' => 'tasks/<link:\w+>',
-        'route' => 'tasks/view',
-        'suffix' => ''
-    ],
+//    'tasks'=>'tasks/index',
+//    [
+//        'pattern' => 'tasks/<link:\w+>',
+//        'route' => 'tasks/view',
+//        'suffix' => ''
+//    ],
 
-    'financy'=>'financy/index',
-    [
-        'pattern' => 'tasks/<link:\w+>',
-        'route' => 'tasks/view',
-        'suffix' => ''
-    ],
+    //'financy'=>'financy/index',
+//    [
+//        'pattern' => 'tasks/<link:\w+>',
+//        'route' => 'tasks/view',
+//        'suffix' => ''
+//    ],
 
 
 //    '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',

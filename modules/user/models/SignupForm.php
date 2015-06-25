@@ -67,11 +67,11 @@ class SignupForm extends Model
 
             if ($user->save()) {
                 //отрпавка почты пользователю для подтверждения регистрации
-//                Yii::$app->mailer->compose('confirmEmail', ['user' => $user])
-//                    ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
-//                    ->setTo($this->email)
-//                    ->setSubject('Подтверждение адреса почты для  ' . Yii::$app->name)
-//                    ->send();
+                Yii::$app->mailer->compose('confirmEmail', ['user' => $user])
+                    ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
+                    ->setTo($this->email)
+                    ->setSubject('Подтверждение адреса почты для  ' . Yii::$app->name)
+                    ->send();
             }
 
             return $user;

@@ -17,9 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="base-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
@@ -62,13 +59,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function ($data) {
                     return "Последний вход:".date('Y-m-d H:i:s', $data->authLogLast->create_at).'|'.
-                        Html::a('История IP', ['/admin/default/history-ip', 'user_id'=>$data->id]).' | '.
-                        Html::a('Финансы', ['/admin/default/financy', 'user_id'=>$data->id]);
+                        Html::a('История IP', Yii::$app->urlManager->createAbsoluteUrl(['admin/default/history-ip', 'id'=>$data->id])).' | '.
+                        Html::a('Финансы', Yii::$app->urlManager->createAbsoluteUrl(['/admin/default/financy', 'id'=>$data->id]));
                 },
             ],
 //            [
 //                'class' => 'yii\grid\ActionColumn',
-//                'template'=>'{update}'
+//                //'template'=>'{update}'
 //            ],
 
         ],

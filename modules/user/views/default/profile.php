@@ -16,8 +16,6 @@ $this->params['breadcrumbs'][] = ['label' => 'Профиль'];
 ?>
 <div class="profil-view">
 
-
-
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -37,11 +35,6 @@ $this->params['breadcrumbs'][] = ['label' => 'Профиль'];
                 'label'=>'API-ключ',
                 'value'=>$model->api_key,
             ],
-//            [
-//                'label'=>'RDP - аккаунт',
-//                //'value'=>$model->access->,
-//            ],
-
 
             [
                 'label'=>'Доступы:',

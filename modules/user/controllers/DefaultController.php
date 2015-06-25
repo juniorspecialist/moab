@@ -5,7 +5,7 @@ namespace app\modules\user\controllers;
 use app\modules\user\models\PasswordChangeForm;
 use app\modules\user\models\User;
 use app\modules\user\models\UserSearch;
-use yii\web\Controller;
+use app\modules\user\controllers\UserMainController;
 
 use app\modules\user\models\ConfirmEmailForm;
 use app\modules\user\models\LoginForm;
@@ -13,53 +13,14 @@ use app\modules\user\models\PasswordResetRequestForm;
 use app\modules\user\models\ResetPasswordForm;
 use app\modules\user\models\SignupForm;
 use yii\base\InvalidParamException;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
+
 use yii\web\BadRequestHttpException;
-//use yii\base\Controller;
+
 use Yii;
 
 
-class DefaultController extends Controller
+class DefaultController extends UserMainController
 {
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout', 'signup','admin','profile'],
-                'rules' => [
-                    [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout','profile'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-//                    [
-//                        'actions' => ['admin'],
-//                        'allow' => true,
-//                        //'roles' => ['@'],
-//                        'matchCallback' => function() {
-//                            if(Yii::$app->user->identity && Yii::$app->user->identity->isAdmin()){
-//                                return true;
-//                            }
-//                            return false;
-//                        }
-//                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
 
     public function actions()
     {
@@ -74,7 +35,11 @@ class DefaultController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            if(Yii::$app->user->identity->isAdmin()){
+                return \Yii::$app->response->redirect('admin/user/');
+            }else{
+                return \Yii::$app->response->redirect('/profile');
+            }
         }
 
         $model = new LoginForm();
@@ -82,7 +47,13 @@ class DefaultController extends Controller
         //валидация параметров формы и авторизация
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             //return $this->goBack();
-            return $this->redirect(['profile']);
+            //return $this->redirect(['profile']);
+            if(Yii::$app->user->identity->isAdmin()){
+                return \Yii::$app->response->redirect('admin/user/');
+            }else{
+                return \Yii::$app->response->redirect('/profile');
+            }
+
         } else {
             return $this->render('login', [
                 'model' => $model,
@@ -199,6 +170,4 @@ class DefaultController extends Controller
             ]);
         }
     }
-
-
 }

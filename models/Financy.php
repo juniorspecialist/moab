@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\modules\user\models\User;
 use Yii;
 
 /**
@@ -18,6 +19,18 @@ use Yii;
  */
 class Financy extends \yii\db\ActiveRecord
 {
+
+    const TYPE_OPERATION_PLUS = 1;
+    const TYPE_OPERATION_MINUS = 2;
+
+
+    const STATUS_PAID = 1;//статус - оплачено
+    const STATUS_NOT_PAID = 2;//статус - НЕ оплачено
+
+    const PAY_SYSTEM_ROBOKASSA = 1;//пополнение через робокассу
+    const PAY_SYSTEM_WEBMONEY = 2;// пополнение через вэб-мани
+    const PAY_SYSTEM_ADMIN = 3;// пополнение через админку, -админ пополнил баланс юзера
+
     /**
      * @inheritdoc
      */
@@ -26,15 +39,31 @@ class Financy extends \yii\db\ActiveRecord
         return 'financy';
     }
 
+    static function getPaySystemList(){
+        return [
+            self::PAY_SYSTEM_ADMIN =>'Пополнение админа',
+            self::PAY_SYSTEM_ROBOKASSA=>'Robokassa',
+            self::PAY_SYSTEM_WEBMONEY=>'Web money',
+        ];
+    }
+
+    public function getPaySystem(){
+        $list = self::getPaySystemList();
+        return $list[$this->pay_system];
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'user_id', 'balance_after', 'amount', 'type_operation'], 'required'],
-            [['id', 'user_id', 'balance_after', 'amount', 'type_operation', 'create_at'], 'integer'],
-            ['create_at', 'default', 'value'=>time()]
+            [['balance_after', 'amount', 'type_operation', 'desc','pay_system'], 'required'],
+            [['status', 'user_id', 'balance_after', 'amount', 'type_operation', 'create_at','pay_system'], 'integer'],
+            ['create_at', 'default', 'value'=>time()],
+            ['status', 'default', 'value'=>self::STATUS_NOT_PAID],
+            ['user_id', 'default', 'value'=>\Yii::$app->user->id],
+            ['desc', 'string', 'max' => 600],
         ];
     }
 
@@ -48,9 +77,47 @@ class Financy extends \yii\db\ActiveRecord
             'user_id' => 'Пользователь',
             'balance_after' => 'Баланс',
             'amount' => 'Сумма',
-            'type_operation' => 'Дата',
+            'paySystem'=>'Система оплаты',
             'create_ad' => 'Дата операции',
+            'desc'=>'Описание',
+            'status'=>'Статус',
+            'type_operation'=>'Система оплаты',
         ];
+    }
+
+    static function getStatusList(){
+        return [
+            self::STATUS_NOT_PAID=>'Не оплачен',
+            self::STATUS_PAID=>'Оплачен',
+        ];
+    }
+
+    /*
+     * получаем текстовое представление статуса заявки на пополнение
+     */
+    public function getStatusName()
+    {
+        $list = self::getStatusList();
+
+        return $list[$this->status];
+    }
+
+    static function getListOperation()
+    {
+        return [
+            self::TYPE_OPERATION_MINUS => 'Списание',
+            self::TYPE_OPERATION_PLUS => 'Пополнение'
+        ];
+    }
+
+    /*
+     * тип операции
+     */
+    public function getTypeOperation()
+    {
+        $list = Financy::getListOperation();
+
+        return $list[$this->type_operation];
     }
 
     /**

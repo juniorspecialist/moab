@@ -11,15 +11,12 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Авторизации пользователя:'.$model->email;
+$this->title = 'История авторизаций:'.$model->email;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<h2>История авторизаций пользователя:<?=$model->email;?></h2>
+<!--<h2>История авторизаций пользователя:--><?php //echo $model->email;?><!--</h2>-->
 
 <div class="base-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

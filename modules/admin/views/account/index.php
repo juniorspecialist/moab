@@ -2,69 +2,65 @@
 /**
  * Created by PhpStorm.
  * User: user
- * Date: 22.06.15
- * Time: 16:31
+ * Date: 25.06.15
+ * Time: 13:43
  */
+
+
 use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Финансы по пользователю :'.$model->email;
+$this->title = 'Аккаунты (RDP)';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<!--<h2>История авторизаций пользователя:--><?php //echo $model->email;?><!--</h2>-->
-
 <div class="base-index">
+
+    <p>
+        <?= Html::a('Загрузка', ['upload'], ['class' => 'btn btn-success']) ?>
+    </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
             [
                 'class' => 'yii\grid\DataColumn',
-                'label'=>'Дата',
+                'label'=>'SERVER',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return date('d-m-Y H:i:s',$data->create_at);
+                    return $data->server;
                 },
             ],
             [
                 'class' => 'yii\grid\DataColumn',
-                'label'=>'Вид операции',
+                'label'=>'Login',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->typeOperation;
+                    return $data->login;
                 },
             ],
             [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
-                'label'=>'Описание',
+                'class' => 'yii\grid\DataColumn',
+                'label'=>'Password',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->country;
+                    return $data->pass;
                 },
             ],
+
             [
                 'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
-                'label'=>'Сумма',
+                'label'=>'Пользователь',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->amount.' руб.';
-                },
-            ],
-            [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
-                'label'=>'Баланс',
-                'format'=>'raw',
-                'value' => function ($data) {
-                    return $data->balance.' руб.';
+                    return $data->userEmail;
                 },
             ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                //'template'=>'{update}'
-                'visible'=>false,
+                'template'=>'{update}{delete}'
             ],
 
         ],

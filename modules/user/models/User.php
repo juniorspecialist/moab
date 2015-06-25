@@ -39,7 +39,7 @@ class User extends ActiveRecord implements IdentityInterface
     const EVENT_AFTER_LOGIN  = 'afterLogin';
 
     public $admin;
-    public $access;
+    //public $access;
 
 
 
@@ -165,6 +165,7 @@ class User extends ActiveRecord implements IdentityInterface
             Yii::$app->log(print_r($log->errors), true);
         }
 
+
     }
 
     /**
@@ -208,6 +209,7 @@ class User extends ActiveRecord implements IdentityInterface
             'access'=>'Доступ',
         ];
     }
+
 
     /*
      * генерируем уникальный апи-ключ для пользователя

@@ -2,21 +2,22 @@
 /**
  * Created by PhpStorm.
  * User: user
- * Date: 22.06.15
- * Time: 16:31
+ * Date: 25.06.15
+ * Time: 16:17
  */
+
+
 use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Финансы по пользователю :'.$model->email;
+$this->title = 'Счета';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<!--<h2>История авторизаций пользователя:--><?php //echo $model->email;?><!--</h2>-->
-
 <div class="base-index">
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -31,34 +32,35 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'class' => 'yii\grid\DataColumn',
-                'label'=>'Вид операции',
+                'label'=>'№ Счета',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->typeOperation;
+                    return $data->id;
                 },
             ],
             [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
-                'label'=>'Описание',
-                'format'=>'raw',
-                'value' => function ($data) {
-                    return $data->country;
-                },
-            ],
-            [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
+                'class' => 'yii\grid\DataColumn',
                 'label'=>'Сумма',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->amount.' руб.';
+                    return $data->amount;
                 },
             ],
             [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
-                'label'=>'Баланс',
+                'class' => 'yii\grid\DataColumn',
+                'label'=>'Системы оплаты',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->balance.' руб.';
+                    return $data->paySystem;
+                },
+            ],
+
+            [
+                'class' => 'yii\grid\DataColumn',
+                'label'=>'Пользователь',
+                'format'=>'raw',
+                'value' => function ($data) {
+                    return $data->user->email;
                 },
             ],
             [

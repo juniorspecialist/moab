@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\modules\user\models\User;
 use Yii;
 
 /**
@@ -15,6 +16,13 @@ use Yii;
  */
 class Access extends \yii\db\ActiveRecord
 {
+
+    public $upload;
+
+
+    const STATUS_FREE = 1;//свободен
+    const STATUS_BUSY = 2;//занят
+
     /**
      * @inheritdoc
      */
@@ -29,9 +37,11 @@ class Access extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'busy', 'login', 'pass', 'server'], 'required'],
-            [['id', 'busy'], 'integer'],
-            [['login', 'pass', 'server'], 'string', 'max' => 60]
+            [[ 'login', 'pass', 'server'], 'required', 'on'=>'create'],
+            [[ 'busy'], 'integer'],
+            [[ 'busy'], 'default', 'value'=>self::STATUS_FREE],
+            [['login', 'pass', 'server'], 'string', 'max' => 60],
+            [['upload'], 'required', 'on'=>'upload']
         ];
     }
 
@@ -42,10 +52,11 @@ class Access extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'busy' => 'Busy',
-            'login' => 'Login',
-            'pass' => 'Pass',
-            'server' => 'Server',
+            'busy' => 'Используется',
+            'login' => 'Логин',
+            'pass' => 'Пароль',
+            'server' => 'Сервер',
+            'upload'=>'Данные для загрузки',
         ];
     }
 
@@ -58,5 +69,22 @@ class Access extends \yii\db\ActiveRecord
         return new AccessQuery(get_called_class());
     }
 
+
+    /*
+        * @return \yii\db\ActiveQuery
+        * получаем подвязанного юзера к доступу
+        */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id'])->viaTable(UserAccess::tableName(), ['access_id'=>'id']);
+    }
+
+    public function getUserEmail(){
+        if($this->busy==self::STATUS_BUSY){
+            return $this->user ? $this->user->email : '';
+        }else{
+            return '';
+        }
+    }
 
 }

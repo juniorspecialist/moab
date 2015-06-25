@@ -21,9 +21,22 @@ $config = [
         'admin' => [
             'class' => 'app\modules\admin\Module',
         ],
+
+        'pay' => [
+            'class' => 'app\modules\pay\Module',
+        ],
     ],
 
     'components' => [
+
+        'robokassa' => [
+            'class' => 'app\models\Robokassa',
+            'sMerchantLogin' => 'Mykeywordsru',
+            'sMerchantPass1' => 'paroler159753',
+            'sMerchantPass2' => 'paroler123',
+            'testMode'=>true,//используем тестовый режим для отладки
+        ],
+
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '_LdzbzLns4JMiQYQtoHWEDTA0-Td1Jjq',
@@ -42,21 +55,6 @@ $config = [
             //],
         ],
 
-//        'view' => [
-//            'theme' => [
-//                'pathMap' => [
-//                    '@app/views' => '@vendor/p2made/yii2-sb-admin-theme/views/sb-admin-2',
-//                ],
-//            ],
-//        ],
-
-//        'view' => [
-//            'theme' => [
-//                'pathMap' => [
-//                    '@app/views' => '@vendor/dmstr/yii2-adminlte-asset/example-views/yiisoft/yii2-app'
-//                ],
-//            ],
-//        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -93,6 +91,11 @@ $config = [
     ],
     'params' => $params,
 ];
+
+//установка некоторых параметров общего назначения по умолчанию
+\Yii::$container->set('yii\data\Pagination', [
+    'pageSize' => 50,
+]);
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment
