@@ -59,7 +59,7 @@ class Base extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUserSubscriptions()
+    public function getUserSubscription()
     {
         return $this->hasMany(UserSubscription::className(), ['base_id' => 'id']);
     }

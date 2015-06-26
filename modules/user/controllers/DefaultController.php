@@ -36,7 +36,7 @@ class DefaultController extends UserMainController
     {
         if (!Yii::$app->user->isGuest) {
             if(Yii::$app->user->identity->isAdmin()){
-                return \Yii::$app->response->redirect('admin/user/');
+                return \Yii::$app->response->redirect('admin/default/users');
             }else{
                 return \Yii::$app->response->redirect('/profile');
             }
@@ -49,7 +49,7 @@ class DefaultController extends UserMainController
             //return $this->goBack();
             //return $this->redirect(['profile']);
             if(Yii::$app->user->identity->isAdmin()){
-                return \Yii::$app->response->redirect('admin/user/');
+                return \Yii::$app->response->redirect('admin/default/users');
             }else{
                 return \Yii::$app->response->redirect('/profile');
             }

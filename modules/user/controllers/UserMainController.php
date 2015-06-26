@@ -29,7 +29,7 @@ class UserMainController extends Controller{
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout','profile','financy','login', 'index'],
+                        'actions' => ['logout','profile','financy','login', 'index','subscribe'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],

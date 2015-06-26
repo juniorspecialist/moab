@@ -11,6 +11,8 @@ return [
     '' => 'user/default/login',
     '<_a:(login|logout|signup|confirm-email|request-password-reset|reset-password|change-password|profile|captcha)>' => 'user/default/<_a>',
     'financy' => 'user/financy/index',
+    'subscription' => 'user/subscription/index',
+    'subscribe'=>'user/subscription/subscribe',
 
     //'admin/<_a:(users)>' => 'admin/default/<_a>',
 

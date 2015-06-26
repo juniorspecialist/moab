@@ -22,6 +22,15 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'server')->textInput(['maxlength' => true]) ?>
 
+    <?php
+
+    if($model->user){
+        //echo $form->field($model, 'user_id')->textInput(['maxlength' => true]);
+        echo '<strong>Пользователь - '.$model->user->email.'</strong><br>';
+    }
+
+    ?>
+
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Обновить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

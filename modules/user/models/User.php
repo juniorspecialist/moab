@@ -68,8 +68,13 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
 
-    public function getUserSubscription(){
-        return $this->hasMany(UserSubscription::tableName(), ['id' => 'user_id']);
+    public function getSubc(){
+        return $this->hasMany(\app\models\Base::className(), ['id' => 'base_id'])->via('Usersubscription');
+    }
+
+
+    public function getUsersubscription(){
+        return $this->hasMany(UserSubscription::className(), ['user_id' => 'id']);
     }
 
     /**
@@ -239,19 +244,6 @@ class User extends ActiveRecord implements IdentityInterface
 
     }
 
-//    public function fields()
-//    {
-//        return [
-//            'email',
-//            //'access'=>'Доступ',
-////            'firstName' => 'first_name',
-////            'lastName' => 'last_name',
-//            'statusname'=>'status',
-//            'created_at' => function ($model) {
-//                return date('Y-m-d H:i:s',$model->created_at);
-//            },
-//        ];
-//    }
 
     /**
      * @inheritdoc

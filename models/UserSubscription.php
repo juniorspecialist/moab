@@ -60,8 +60,8 @@ class UserSubscription extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'user_id', 'base_id', 'period', 'from', 'to'], 'required'],
-            [['id', 'user_id', 'base_id', 'period', 'from', 'to'], 'integer']
+            [['id', 'user_id', 'base_id',  'from', 'to'], 'required'],
+            [['id', 'user_id', 'base_id',  'from', 'to'], 'integer']
         ];
     }
 
@@ -74,7 +74,6 @@ class UserSubscription extends \yii\db\ActiveRecord
             'id' => 'ID',
             'user_id' => 'Пользователь',
             'base_id' => 'База',
-            'period' => 'Период подписки',
             'from'=>'Начало',
             'to'=>'Конец',
             'desc'=>'Интервал подписки',
@@ -86,8 +85,8 @@ class UserSubscription extends \yii\db\ActiveRecord
      */
     public function getDesc()
     {
-        if($this->period){
-            return 'Начало:'.date('Y-m-d H:i:s', $this->from).PHP_EOL.' Конец:'.date('Y-m-d H:i:s', $this->to);
+        if($this->to){
+            return 'Начало:'.date('Y-m-d H:i:s', $this->from).'<br>'.' Конец:'.date('Y-m-d H:i:s', $this->to);
         }
 
         return '';

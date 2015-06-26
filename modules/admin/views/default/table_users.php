@@ -43,14 +43,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function ($data) {
                     //есть данные по подпискам, по юзеру - получим список его подписок
-                    if($data->subscription){
-                        $info = '';
-                        foreach($data->subscription as $userSubscription){
-                            $info.=$userSubscription->Subscription->title.' до - '.date('d-m-Y',$userSubscription->to);
-                        }
-                        return $info;
+                    $info = '';
+                    foreach($data->usersubscription as $usersubscription){
+                        $info.=$usersubscription->base->title.' до '.date('d-m-Y',$usersubscription->to).'<br>';
                     }
-                    return '';
+                    return $info;
                 },
             ],
             [
