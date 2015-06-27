@@ -182,7 +182,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'unique', 'targetClass' => self::className(), 'message' => 'Этот адрес почты уже занят.'],
-            ['email', 'string', 'max' => 255],
+
 
             [['status','balance','last_vizit_time'], 'integer'],
             ['status', 'in', 'range' => array_keys(self::getStatusesArray())],

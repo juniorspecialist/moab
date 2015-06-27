@@ -30,6 +30,7 @@ class Financy extends \yii\db\ActiveRecord
     const PAY_SYSTEM_ROBOKASSA = 1;//пополнение через робокассу
     const PAY_SYSTEM_WEBMONEY = 2;// пополнение через вэб-мани
     const PAY_SYSTEM_ADMIN = 3;// пополнение через админку, -админ пополнил баланс юзера
+    const PAY_SYSTEM_BILL = 4;// покупка подписки
 
     /**
      * @inheritdoc
@@ -78,7 +79,7 @@ class Financy extends \yii\db\ActiveRecord
             'balance_after' => 'Баланс',
             'amount' => 'Сумма',
             'paySystem'=>'Система оплаты',
-            'create_ad' => 'Дата операции',
+            'create_at' => 'Дата операции',
             'desc'=>'Описание',
             'status'=>'Статус',
             'type_operation'=>'Система оплаты',

@@ -21,13 +21,13 @@ class LoginForm extends Model
     const EVENT_AFTER_LOGIN = 'afterLogin';
 
 
-    public function afterLogin()
-    {
-        $this->trigger(self::EVENT_AFTER_LOGIN);
-
-        var_dump($_SESSION);
-        die('sdfsdfsdfsdf-afterLogin');
-    }
+//    public function afterLogin()
+//    {
+//        $this->trigger(self::EVENT_AFTER_LOGIN);
+//
+//        var_dump($_SESSION);
+//        die('sdfsdfsdfsdf-afterLogin');
+//    }
     /**
      * @return array the validation rules.
      */
@@ -61,7 +61,7 @@ class LoginForm extends Model
             if (!$user || !$user->validatePassword($this->password)) {
                 $this->addError('password', 'Неверно указана почта пользователя или пароль.');
             } elseif ($user && $user->status == User::STATUS_BLOCKED) {
-                $this->addError('username', 'Ваш аккаунт заблокирован.');
+                $this->addError('username', 'Ваш аккаунт заблокирован, обратитесь в техподдержку.');
             } elseif ($user && $user->status == User::STATUS_WAIT) {
                 $this->addError('username', 'Ваш аккаунт не подтвежден.');
             }

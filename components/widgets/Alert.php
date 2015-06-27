@@ -75,13 +75,13 @@ class Alert extends \yii\bootstrap\Widget
 //                            ],
 //                        ]
                     ]);
-                    /*
-                    echo \yii\bootstrap\Alert::widget([
-                        'body' => $message,
-                        'closeButton' => $this->closeButton,
-                        'options' => $this->options,
 
-                    ]);*/
+//                    echo \yii\bootstrap\Alert::widget([
+//                        'body' => $message,
+//                        'closeButton' => $this->closeButton,
+//                        'options' => $this->options,
+//
+//                    ]);
                 }
                 $session->removeFlash($type);
             }

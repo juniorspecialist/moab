@@ -6,6 +6,8 @@
  * Time: 9:58
  */
 use yii\widgets\ListView;
+use yii\widgets\Pjax;
+
 //use yii\data\ActiveDataProvider;
 $this->title = 'Подписки';
 
@@ -25,10 +27,9 @@ $this->title = 'Подписки';
         </thead>
         <tbody>
 
-<!--<tr data-key="4"><td>juniorspecialistphp@gmail.com</td><td>0</td><td></td><td>Последний вход:2015-06-26 09:29:05|<a href="http://moab/admin/default/history-ip/4">История IP</a> | <a href="http://moab/admin/default/financy/4">Финансы</a></td></tr>-->
-
         <?php
         echo ListView::widget([
+            'id'=>'user_subscription',
             'dataProvider' => $dataProvider,
             'itemView' => '_subscribe',
 
@@ -42,7 +43,7 @@ $this->title = 'Подписки';
                 //'model'=>$model
             ],
         ]);
-
         ?>
     </tbody>
     </table>
+

@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Описание',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->country;
+                    return $data->desc;
                 },
             ],
             [
@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Баланс',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->balance.' руб.';
+                    return $data->balance_after.' руб.';
                 },
             ],
             [

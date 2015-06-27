@@ -55,11 +55,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Инфо',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return "Последний вход:".date('Y-m-d H:i:s', $data->authLogLast->create_at).'|'.
+                    return "Последний вход:".date('Y-m-d H:i:s', $data->authLogLast->create_at).'<br>'.
                         Html::a('История IP', Yii::$app->urlManager->createAbsoluteUrl(['admin/default/history-ip', 'id'=>$data->id])).' | '.
                         Html::a('Финансы', Yii::$app->urlManager->createAbsoluteUrl(['/admin/default/financy', 'id'=>$data->id]));
                 },
             ],
+
+            [
+                'label'=>'Действия',
+                'format'=>'raw',
+                'attribute'=>'id',
+                'value'=>function($data){
+                    $out = Html::a('Пополнить баланс',['/admin/default/add-balance','id'=>$data->id]).'<br>';
+                    $out.=Html::a('Заблокировать/Разблокировать', ['/admin/default/change-status', 'id'=>$data->id]).'<br>';
+                    $out.=Html::a('Сменить пароль', ['/admin/default/change-status', 'id'=>$data->id]);
+                    return $out;
+                }
+            ]
 //            [
 //                'class' => 'yii\grid\ActionColumn',
 //                //'template'=>'{update}'

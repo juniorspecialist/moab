@@ -30,8 +30,8 @@ class UserAccess extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'user_id', 'access_id'], 'required'],
-            [['id', 'user_id', 'access_id'], 'integer']
+            [['user_id', 'access_id'], 'required'],
+            [[ 'user_id', 'access_id'], 'integer']
         ];
     }
 

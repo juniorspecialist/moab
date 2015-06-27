@@ -11,13 +11,12 @@ use yii\grid\GridView;
 $this->title = 'Финансы';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="user-index">
+<div class="financy-index">
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
         'columns' => [
-            'id',
             [
                 'attribute' => 'create_at',
                 'format'=>'raw',
@@ -25,10 +24,29 @@ $this->params['breadcrumbs'][] = $this->title;
                     return date('d-m-Y H:i:s',$data->create_at);
                 },
             ],
-//            'username',
-//            'email',
-//            'statusname',
-//            'balance',
+            [
+                'attribute' => 'create_at',
+                'format'=>'raw',
+                'label'=>'Вид операции',
+                'value' => function ($data) {
+                    return $data->typeOperation;
+                },
+            ],
+            'desc',
+            [
+                'format'=>'raw',
+                'attribute'=>'amount',
+                'value'=>function($data){
+                    return $data->amount.' руб';
+                }
+            ],
+            [
+                'format'=>'raw',
+                'attribute'=>'balance_after',
+                'value'=>function($data){
+                    return $data->balance_after.' руб.';
+                }
+            ],
         ],
     ]); ?>
 
