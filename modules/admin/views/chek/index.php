@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Системы оплаты',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->paySystem;
+                    return $data->paysystem;
                 },
             ],
 

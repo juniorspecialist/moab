@@ -45,6 +45,7 @@ class Financy extends \yii\db\ActiveRecord
             self::PAY_SYSTEM_ADMIN =>'Пополнение админа',
             self::PAY_SYSTEM_ROBOKASSA=>'Robokassa',
             self::PAY_SYSTEM_WEBMONEY=>'Web money',
+            self::PAY_SYSTEM_BILL=>'Подкупка подписки',
         ];
     }
 

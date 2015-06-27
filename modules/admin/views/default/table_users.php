@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value'=>function($data){
                     $out = Html::a('Пополнить баланс',['/admin/default/add-balance','id'=>$data->id]).'<br>';
                     $out.=Html::a('Заблокировать/Разблокировать', ['/admin/default/change-status', 'id'=>$data->id]).'<br>';
-                    $out.=Html::a('Сменить пароль', ['/admin/default/change-status', 'id'=>$data->id]);
+                    $out.=Html::a('Сменить пароль', ['/admin/default/change-pass', 'id'=>$data->id]);
                     return $out;
                 }
             ]
