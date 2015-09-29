@@ -41,7 +41,8 @@ class Access extends \yii\db\ActiveRecord
             [[ 'busy'], 'integer'],
             [[ 'busy'], 'default', 'value'=>self::STATUS_FREE],
             [['login', 'pass', 'server'], 'string', 'max' => 60],
-            [['upload'], 'required', 'on'=>'upload']
+            [['upload'], 'required', 'on'=>'upload'],
+            ['login', 'unique', 'targetAttribute' => ['login', 'server'],'on'=>'create'],
         ];
     }
 

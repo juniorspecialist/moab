@@ -24,6 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+'summary' =>  "Показаны записи {begin} - {end} из {totalCount} <strong class='text-danger'>Свободно:".$free. ' Занято:'.$busy.'</strong>',
         'columns' => [
             [
                 'class' => 'yii\grid\DataColumn',
@@ -60,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template'=>'{update}{delete}'
+                'template'=>'{update}'
             ],
 
         ],

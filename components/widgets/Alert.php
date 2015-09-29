@@ -45,6 +45,7 @@ class Alert extends \yii\bootstrap\Widget
                     /* assign unique id to each alert box */
                     $this->options['id'] = $this->getId() . '-' . $type . '-' . $i;
 
+/*
                     echo Growl::widget([
 
                         'body' => $message,
@@ -59,6 +60,7 @@ class Alert extends \yii\bootstrap\Widget
                                 'align' => 'right',
                             ],
                         ]
+*/
 //                        'type' => Growl::TYPE_MINIMALIST,
 //                        'title' => 'Kartik Visweswaran',
 //                        'icon' => '/images/kartik.png',
@@ -74,14 +76,14 @@ class Alert extends \yii\bootstrap\Widget
 //                                'align' => 'right',
 //                            ],
 //                        ]
-                    ]);
+  //                  ]);
 
-//                    echo \yii\bootstrap\Alert::widget([
-//                        'body' => $message,
-//                        'closeButton' => $this->closeButton,
-//                        'options' => $this->options,
-//
-//                    ]);
+                    echo \yii\bootstrap\Alert::widget([
+                        'body' => $message,
+                        'closeButton' => $this->closeButton,
+                        'options' => $this->options,
+
+                    ]);
                 }
                 $session->removeFlash($type);
             }

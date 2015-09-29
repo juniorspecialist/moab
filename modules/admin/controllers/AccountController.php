@@ -25,6 +25,8 @@ class AccountController extends BaseAdminController{
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'free'=>Access::find()->busy()->count(),
+            'busy'=>Access::find()->where(['busy'=>Access::STATUS_BUSY])->count(),
         ]);
     }
 

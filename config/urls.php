@@ -8,11 +8,35 @@
 
 return [
 
-    '' => 'user/default/login',
-    '<_a:(login|logout|signup|confirm-email|request-password-reset|reset-password|change-password|profile|captcha)>' => 'user/default/<_a>',
+    '' => 'user/default/index',
+    'link/<link:\w+>' => 'user/default/link',
+    '<_a:(login|logout|signup|confirm-email|request-password-reset|reset-password|change-password|profile|captcha|info)>' => 'user/default/<_a>',
+
+    'doc'=>'user/doc/index',
+    'doc/<_a>' => 'user/doc/<_a>',
+
+    'ticket' => 'ticket/ticket/index',
+    //'ticket'=>'ticket/index',
+    'ticket/<_a:(create)>' => 'ticket/ticket/<_a>',
+    [
+        'pattern' => 'ticket/view/<id:\d+>',
+        'route' => 'ticket/ticket/view',
+        'suffix' => ''
+    ],
+
+
+
     'financy' => 'user/financy/index',
     'subscription' => 'user/subscription/index',
+    'rdp' => 'user/subscription/rdp',
     'subscribe'=>'user/subscription/subscribe',
+    'pay'=>'pay/default/index',
+    'pay/robokassa'=>'pay/robokassa/index',
+
+     'api/api.php'=>'api/subscribe',
+
+     'beta'=>'email-subscribe/beta',
+
 
     //'admin/<_a:(users)>' => 'admin/default/<_a>',
 

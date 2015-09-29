@@ -3,14 +3,26 @@ use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
-if (Yii::$app->controller->action->id === 'login' || Yii::$app->controller->action->id === 'request-password-reset' ||Yii::$app->controller->action->id === 'signup') {
-    echo $this->render(
-        'main-login',
-        ['content' => $content]
-    );
+//echo '<pre>';
+//print_r($this->context->module->id); die();
+if( $this->context->module->id=== 'user'){
+    if(Yii::$app->controller->id === 'default'){
+
+        if (Yii::$app->controller->action->id === 'login'
+            || Yii::$app->controller->action->id === 'request-password-reset'
+            ||Yii::$app->controller->action->id === 'signup'
+            ||Yii::$app->controller->action->id === 'index'
+            || Yii::$app->controller->action->id === 'reset-password') {
+            echo $this->render(
+                'main-login',
+                ['content' => $content]
+            );
+
+            Yii::$app->end();
+        }
+
+    }
 }
-else
-{
 
     if (class_exists('backend\assets\AppAsset')) {
         backend\assets\AppAsset::register($this);
@@ -36,15 +48,24 @@ else
     <?php $this->beginBody() ?>
     <div class="wrapper">
 
-        <?= $this->render(
-            'header.php',
-            ['directoryAsset' => $directoryAsset]
-        ) ?>
+        <?php
+            if(!Yii::$app->user->isGuest) {
+                ?>
 
-        <?= $this->render(
-            'left.php',
-            ['directoryAsset' => $directoryAsset]
-        )
+                <?= $this->render(
+                    'header.php',
+                    ['directoryAsset' => $directoryAsset]
+                ) ?>
+
+                <?= $this->render(
+                    'left.php',
+                    ['directoryAsset' => $directoryAsset]
+                )
+                ?>
+
+            <?php
+            }
+
         ?>
 
         <?= $this->render(
@@ -58,5 +79,5 @@ else
     </body>
     </html>
     <?php $this->endPage() ?>
-<?php } ?>
+
 

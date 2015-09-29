@@ -25,7 +25,9 @@ class FinancyController extends  UserMainController{
 
     public function actionIndex(){
 
-        $query = Financy::find()->where(['user_id'=>\Yii::$app->user->id])->orderBy('create_at DESC');
+        $query = Financy::find()
+            ->where(['user_id'=>\Yii::$app->user->id,'status'=>Financy::STATUS_PAID])
+            ->orderBy('id DESC');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

@@ -9,6 +9,7 @@
 namespace app\modules\user\models;
 
 use yii\base\Model;
+use app\modules\user\models\User;
 
 class PasswordResetRequestForm extends Model
 {
@@ -23,7 +24,7 @@ class PasswordResetRequestForm extends Model
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'exist',
-                'targetClass' => '\common\models\User',
+                'targetClass' => 'app\modules\user\models\User',
                 'filter' => ['status' => User::STATUS_ACTIVE],
                 'message' => 'Не найден пользователь с такой почтой.'
             ],
@@ -46,10 +47,11 @@ class PasswordResetRequestForm extends Model
                 $user->generatePasswordResetToken();
             }
             if ($user->save()) {
-                return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
-                    ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
+                return \Yii::$app->mailer->compose(['html' => 'passwordResetToken'], ['user' => $user])
+                    //->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
+                    ->setFrom(['we@moab.pro' => 'MOAB.Pro'])
                     ->setTo($this->email)
-                    ->setSubject('Сброс пароля для пользователя - ' . \Yii::$app->name)
+                    ->setSubject('Восстановление пароля для пользователя - cabinet.moab.pro')
                     ->send();
             }
         }

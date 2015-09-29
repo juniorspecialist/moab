@@ -22,7 +22,7 @@ class ChekController extends AdminController
      */
     public function actionIndex()
     {
-        $query = Financy::find();
+        $query = Financy::find()->orderBy('id DESC');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

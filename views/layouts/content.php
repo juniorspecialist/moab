@@ -37,6 +37,7 @@ use app\components\widgets\Alert;
 </div>
 
 <footer class="main-footer">
+<div class="alert alert-info"><strong><i class="fa fa-warning"></i> Не можете разобраться, или что-то пошло не так?</strong><?=\yii\helpers\Html::a('Напишите нам',(Yii::$app->user->isGuest)?'http://moab.pro/#contacts':['/ticket/ticket/index'])?>, и мы Вам поможем!</div>
 <!--    <div class="pull-right hidden-xs">-->
 <!--        <b>Version</b> 2.0-->
 <!--    </div>-->

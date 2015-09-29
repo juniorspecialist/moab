@@ -9,13 +9,21 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 use app\components\widgets\Alert;
+use yii\bootstrap\Modal;
+
+/*
+ * Пользователь не должен без подписки в списке баз видеть Moab Base и Moab Pro и иметь возможность на них подписаться самостоятельно – на них подписку осуществляет только админ.
+ */
+
 
 $subs = new \app\models\UserSubscription();
 
 $uid = uniqid('form_'.$model->id);
 
+$find = false;
+
 if($subsriptions){
-    $find = false;
+
     foreach($subsriptions as $subsription){
         if($subsription->base_id==$model->id){
             $find = true;
@@ -23,37 +31,18 @@ if($subsriptions){
         }
     }
 }
-?>
 
-<?php Pjax::begin(['id'=>$uid]) ?>
-    <?php $form = ActiveForm::begin(['action'=>'/subscription','options' => ['data-pjax' => 1]]); ?>
-<?= Alert::widget() ?>
-        <tr data-key="<?=$index;?>">
-            <td>
-                <?=$model->title;?>
-                <?= $form->field($subs, 'base_id')->hiddenInput(['value'=>$model->id])->label(false); ?>
-            </td>
-            <td><?= $form->field($subs, 'one_month')->checkbox(['disabled'=>!$subs->isNewRecord,'label'=>''])->label($model->one_month_price.' руб.'); ?></td>
-            <td><?= $form->field($subs, 'three_month')->checkbox(['disabled'=>!$subs->isNewRecord,'label'=>''])->label($model->three_month_price.' руб.'); ?></td>
-            <td><?= $form->field($subs, 'six_month')->checkbox(['disabled'=>!$subs->isNewRecord,'label'=>''])->label($model->six_month_price.' руб.'); ?></td>
-            <td><?= $form->field($subs, 'twelfth_month')->checkbox(['disabled'=>!$subs->isNewRecord,'label'=>''])->label($model->twelfth_month_price.' руб.'); ?></td>
-            <td><?php
-                    echo Html::submitButton(!$subs->isNewRecord ? 'Подписка оформлена' : 'Подписаться',
+if(!in_array($model->id, $except_list)){
+    if($model->id==Yii::$app->params['subscribe_moab_base_id'] ||$model->id==Yii::$app->params['subscribe_moab_pro_id'])
+    {
+        if(\app\modules\user\models\User::isSubscribeMoab() && $find)
+        {
 
-                    [
-                        'disabled'=>!$subs->isNewRecord,
-                        'class' => $subs->isNewRecord ? 'btn btn-success' : 'btn btn-primary',
-                        'style'=>'width:167px'
-                    ]) ;
-                ?>
-            </td>
-            <td><?=$subs->desc?></td>
-            <td>
-                <?= Html::submitButton('Продлить', ['style'=>!($subs->isNewRecord)?'width:167px':'width:167px; display:none','class' =>  'btn btn-primary']) ?>
-            </td>
-        </tr>
+            echo $this->render('_subscribe_form', ['subs'=>$subs, 'model'=>$model,'index'=>$index, 'moab_base'=>true]);
+        }
 
-<?php
- ActiveForm::end();
- Pjax::end()
-?>
+    }else{
+        echo $this->render('_subscribe_form', ['subs'=>$subs, 'model'=>$model,'index'=>$index, 'moab_base'=>false]);
+    }
+}
+

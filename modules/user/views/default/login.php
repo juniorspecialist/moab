@@ -6,7 +6,7 @@
  * Time: 13:58
  */
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
@@ -14,57 +14,25 @@ use yii\bootstrap\ActiveForm;
 
 $this->title = 'Авторизация';
 
-$fieldOptions1 = [
-    'options' => ['class' => 'form-group has-feedback'],
-    'inputTemplate' => "{input}<span class='glyphicon glyphicon-envelope form-control-feedback'></span>"
-];
 
-$fieldOptions2 = [
-    'options' => ['class' => 'form-group has-feedback'],
-    'inputTemplate' => "{input}<span class='glyphicon glyphicon-lock form-control-feedback'></span>"
-];
 ?>
 
 <div class="login-box">
     <div class="login-logo">
-        <strong>Авторизация</strong>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
 <!--        <p class="login-box-msg">Sign in to start your session</p>-->
 
-        <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => false]); ?>
-
-        <?= $form
-            ->field($model, 'username', $fieldOptions1)
-            ->label(false)
-            ->textInput(['placeholder' => $model->getAttributeLabel('username')]) ?>
-
-        <?= $form
-            ->field($model, 'password', $fieldOptions2)
-            ->label(false)
-            ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
-
-        <div class="row">
-<!--            <div class="col-xs-8">-->
-<!--                --><?php //echo $form->field($model, 'rememberMe')->checkbox() ?>
-<!--            </div>-->
-            <!-- /.col -->
-            <div class="col-xs-4">
-                <?= Html::submitButton('Авторизация', ['class' => 'btn btn-primary btn-flat', 'name' => 'login-button']) ?>
-            </div>
-            <!-- /.col -->
+        <div id="div-login">
+            <?php
+                echo $this->render('_login', ['model'=>$model]);
+            ?>
         </div>
 
+        <br/>
+        <?= Html::a('Забыли пароль ?', ['request-password-reset']) ?>
 
-        <?php ActiveForm::end(); ?>
-
-
-        <!-- /.social-auth-links -->
-
-        <?= Html::a('Сбросить пароль', ['request-password-reset']) ?>
-        <br>
-        <?= Html::a('Регистрация', ['signup']) ?>
 
     </div>
     <!-- /.login-box-body -->

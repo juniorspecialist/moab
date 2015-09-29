@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\modules\user\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -27,7 +28,7 @@ class SiteController extends Controller
 //            ],
             'access' => [
                 'class' => AccessControl::className(),
-                //'only' => ['logout', 'signup','admin','profile'],
+                'only' => ['logout', 'error'],
                 'rules' => [
 //                    [
 //                        'actions' => ['signup'],
@@ -37,7 +38,7 @@ class SiteController extends Controller
                     [
                         //'actions' => ['logout','profile'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['@','?'],
                     ],
 //                    [
 //                        'actions' => ['admin'],
@@ -52,12 +53,12 @@ class SiteController extends Controller
 //                    ],
                 ],
             ],
-            'verbs' => [
+            /*'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
-            ],
+            ],*/
         ];
     }
 
@@ -104,6 +105,14 @@ class SiteController extends Controller
 
     public function actionContact()
     {
+
+        /*
+        $users = User::find()->asArray()->all();
+
+        foreach($users as $user){
+            echo $user['email'].'<br>';
+        }die();*/
+
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');

@@ -10,12 +10,11 @@ use yii\helpers\Html;
 /* @var $user app\models\User */
 $confirmLink = Yii::$app->urlManager->createAbsoluteUrl(['user/default/confirm-email', 'token' => $user->email_confirm_token]);
 ?>
+Здравствуйте!<br><br>
 
-Здравствуйте!
-
-
-Для подтверждения адреса пройдите по ссылке:
-
-<?= Html::a(Html::encode($confirmLink), $confirmLink) ?>
-
-Если Вы не регистрировались у на нашем сайте, то просто удалите это письмо.
+Вы  зарегистрировались  в личном  кабинете MOAB.pro.  Для  подтверждения  вашего  электронного адреса и активации аккаунта перейдите по этой   <?=Html::a('ссылке', $confirmLink)?>.
+<br><br>
+Если вы получили это письмо случайно – просто удалите его.
+<br><br>
+С уважением, компания MOAB.<br>
+Лучшая семантика для лучшего бизнеса!
