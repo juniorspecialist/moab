@@ -26,6 +26,7 @@ class Financy extends \yii\db\ActiveRecord
 
     const STATUS_PAID = 1;//статус - оплачено
     const STATUS_NOT_PAID = 2;//статус - НЕ оплачено
+    const STATUS_CANCEL_PAID = 3;//статус - отказался от оплаты
 
     const PAY_SYSTEM_ROBOKASSA = 1;//пополнение через робокассу
     const PAY_SYSTEM_WEBMONEY = 2;// пополнение через вэб-мани
@@ -45,7 +46,7 @@ class Financy extends \yii\db\ActiveRecord
             self::PAY_SYSTEM_ADMIN =>'Пополнение админа',
             self::PAY_SYSTEM_ROBOKASSA=>'Robokassa',
             self::PAY_SYSTEM_WEBMONEY=>'Web money',
-            self::PAY_SYSTEM_BILL=>'Подкупка подписки',
+            self::PAY_SYSTEM_BILL=>'Покупка подписки',
         ];
     }
 
@@ -60,8 +61,9 @@ class Financy extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['balance_after', 'amount', 'type_operation', 'desc','pay_system'], 'required'],
+            [['amount', 'type_operation', 'desc','pay_system'], 'required'],
             [['status', 'user_id', 'balance_after', 'amount', 'type_operation', 'create_at','pay_system'], 'integer'],
+            ['amount', 'integer', 'min'=>1],
             ['create_at', 'default', 'value'=>time()],
             ['status', 'default', 'value'=>self::STATUS_NOT_PAID],
             ['user_id', 'default', 'value'=>\Yii::$app->user->id],
@@ -91,6 +93,7 @@ class Financy extends \yii\db\ActiveRecord
         return [
             self::STATUS_NOT_PAID=>'Не оплачен',
             self::STATUS_PAID=>'Оплачен',
+            self::STATUS_CANCEL_PAID=>'Отказ от оплаты',
         ];
     }
 

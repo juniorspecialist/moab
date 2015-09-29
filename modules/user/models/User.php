@@ -8,12 +8,14 @@ use app\models\AuthLogQuery;
 use app\models\Financy;
 use app\models\UserAccess;
 use app\models\UserSubscription;
+use app\models\EmailSubscribe;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\debug\components\search\matchers\Base;
 use yii\web\IdentityInterface;
 use yii\base\NotSupportedException;
+use app\models\Links;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -39,6 +41,7 @@ class User extends ActiveRecord implements IdentityInterface
     const EVENT_AFTER_LOGIN  = 'afterLogin';
 
     public $admin;
+    public $_subscribe;
     //public $access;
 
 
@@ -122,6 +125,10 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(AuthLog::className(), ['user_id'=>'id'])->orderBy('create_at DESC')->one();
     }
 
+    public function getAuthLogLastTable(){
+        return $this->authLogLast ? date('Y-m-d H:i:s',$this->authLogLast->create_at) : '';
+    }
+
 
     /*
      * получаем данные фин. операциям по юзеру
@@ -129,6 +136,22 @@ class User extends ActiveRecord implements IdentityInterface
     public function getFinancy()
     {
         return $this->hasMany(Financy::className(), ['user_id'=>'id'])->orderBy(['create_at'=>'SORT_DESC']);
+    }
+
+    /*
+     * уничтожаем сессии юзера, открытие в других браузерах
+     */
+    public static function beforeLogin($event)
+    {
+
+        if(!empty($event->identity->session_id))
+        {
+            //имена сессий не совпадают
+            if($event->identity->session_id!=Yii::$app->session->id && !$event->identity->isAdmin())
+            {
+                Yii::$app->session->destroySession($event->identity->session_id);
+            }
+        }
     }
 
     /*
@@ -141,9 +164,15 @@ class User extends ActiveRecord implements IdentityInterface
         //получаем последнее значение в таблице лога, а потом лишь записываем новые данные(юзер уже авторизирован)
         $user = User::findOne(Yii::$app->user->id);
 
-
         //запишим в сессию почту юзера
         \Yii::$app->session->set('user.email',$user->email);
+
+        //обновим имя сессии, после успешной авторизации
+        if(!\Yii::$app->user->identity->isAdmin())
+        {
+            Yii::$app->db->createCommand('UPDATE user SET session_id=:session_id WHERE id=:id',[':id'=>Yii::$app->user->id,':session_id'=>Yii::$app->session->getId()])->execute();
+        }
+
 
         $info  = $user->authLogLast;
 
@@ -154,6 +183,15 @@ class User extends ActiveRecord implements IdentityInterface
                 ->createCommand('UPDATE `user` SET last_visit_ip=:last_vizit_ip,last_vizit_time=:last_vizit_time WHERE id=:user_id')
                 ->bindValues([':user_id'=>Yii::$app->user->id, ':last_vizit_time'=>$info->create_at, ':last_vizit_ip'=>$info->ip])
                 ->execute();
+        }else{
+            if(EmailSubscribe::findOne(['email'=>$user->email])!==null){
+                //первая авторизация юзера
+                \Yii::$app->session->set('user.beta','Поздравляем!  Вы  стали  участником  закрытого  бета-тестирования  веб-сервиса  MOAB. Мы пополнили Ваш баланс на 5 000 руб и уже активировали для Вас вечную подписку на базу ключевых слов из Яндекс.Подсказок. Для начала работы перейдите в меню «Подписки»');
+            }
+            if(Links::findOne(['email'=>$user->email])!==null){
+                //первая авторизация юзера
+                \Yii::$app->session->set('user.beta','Вас приветствует Бизнес Молодость! Поздравляем с присоединением к команде профессионалов MOAB! Мы пополнили Ваш баланс на 2 000 руб и уже активировали для Вас подписку на базу ключевых слов из Яндекс.Подсказок. Для начала работы перейдите в меню «Подписки». Желаем приятной работы!');
+            }
         }
 
         //запишим данные по тек. входу пользователя
@@ -192,6 +230,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['api_key', 'default', 'value'=>$this->getApiKey()],
 
             ['created_at', 'default', 'value'=>time()],//дата регистрации пользователя
+            ['session_id','string'],
         ];
     }
     /**
@@ -467,5 +506,135 @@ class User extends ActiveRecord implements IdentityInterface
     public function removeEmailConfirmToken()
     {
         $this->email_confirm_token = null;
+    }
+
+    public function beforeDelete()
+    {
+        if (parent::beforeDelete()) {
+            //удалим все данные по авторизациям
+            AuthLog::deleteAll(['user_id'=>$this->id]);
+
+            //тперь удалим все фин. операции
+            Financy::deleteAll(['user_id'=>$this->id]);
+
+            $access = UserAccess::findOne(['user_id'=>$this->id]);
+            if($access){
+                $acc = Access::findOne(['id'=>$access->access_id]);
+                if($acc){
+                    $acc->busy = Access::STATUS_FREE;
+                    $acc->save(false);
+                }
+            }
+
+            UserAccess::deleteAll(['user_id'=>$this->id]);
+
+            //удалим подписки
+            UserSubscription::deleteAll(['user_id'=>$this->id]);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /*
+     * проверяем подписан ли юзер на одну из МОАБ подписок
+     * либо МОАБ-про либо МОаб бейс
+     * $is_moab_base - можем проверить подписку юзера на конкретную базу МОАБ
+     */
+    static function isSubscribeMoab($is_moab_base=''){
+        if(!Yii::$app->user->isGuest)
+        {
+            if($is_moab_base)
+            {
+                return Yii::$app
+                    ->db
+                    ->createCommand('SELECT id FROM user_subscription WHERE user_id=:user_id AND base_id=:base_moab')
+                    ->bindValues([
+                        ':base_moab'=>$is_moab_base,
+                        ':user_id'=>Yii::$app->user->id,
+                    ])
+                    ->cache(10)
+                    ->queryScalar();
+            }else{
+                return Yii::$app
+                    ->db
+                    ->createCommand('SELECT id FROM user_subscription WHERE user_id=:user_id AND (base_id=:base_moab_base OR base_id=:base_moab_pro)')
+                    ->bindValues([
+                        ':base_moab_base'=>Yii::$app->params['subscribe_moab_base_id'],
+                        ':base_moab_pro'=>Yii::$app->params['subscribe_moab_pro_id'],
+                        ':user_id'=>Yii::$app->user->id,
+                    ])
+                    ->cache(10)
+                    ->queryScalar();
+            }
+        }else{
+            return false;
+        }
+    }
+
+    /*
+     * пользователь дал согласие на подписку
+     * отправляем запрос на Unisender
+     */
+    static function sendUnisenderSebscribe($user_email,$user_name)
+    {
+        // Ваш ключ доступа к API (из Личного Кабинета)
+        $api_key = Yii::$app->params['unisender.api_key'];
+
+        // Данные о новом подписчике
+        //$user_email = "new@aol.de";
+        //$user_name = iconv('cp1251', 'utf-8', "Василий Иванович Чапаев");
+        $user_lists = "5634414";
+        $user_ip = Yii::$app->request->userIP;
+        $user_tag = urlencode("Added using API");
+
+        // Создаём POST-запрос
+        $POST = array (
+            'api_key' => $api_key,
+            'list_ids' => $user_lists,
+            'fields[email]' => $user_email,
+            'fields[Name]' => $user_name,
+            'request_ip' => '94.178.134.173'/*Yii::$app->request->userIP*/,
+            'request_time'=>date('Y-m-d'),
+            'confirm_ip'=>'94.178.134.173'/*Yii::$app->request->userIP*/,
+            'confirm_time'=>date('Y-m-d'),
+            'tags' => $user_tag,
+            'double_optin'=>3
+        );
+
+        // Устанавливаем соединение
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $POST);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_URL,
+            'http://api.unisender.com/ru/api/subscribe?format=json');
+        $result = curl_exec($ch);
+
+        /*
+        if ($result) {
+            // Раскодируем ответ API-сервера
+            $jsonObj = json_decode($result);
+
+            if(null===$jsonObj) {
+                // Ошибка в полученном ответе
+                echo "Invalid JSON";
+
+            }
+            elseif(!empty($jsonObj->error)) {
+                // Ошибка добавления пользователя
+                echo "An error occured: " . $jsonObj->error . "(code: " . $jsonObj->code . ")";
+
+            } else {
+                // Новый пользователь успешно добавлен
+                echo "Added. ID is " . $jsonObj->result->person_id;
+
+            }
+        } else {
+            // Ошибка соединения с API-сервером
+            echo "API access error";
+        }*/
     }
 }

@@ -24,12 +24,12 @@ class UserMainController extends Controller{
                 //'only' => ['logout', 'signup','admin','profile'],
                 'rules' => [
                     [
-                        'actions' => ['signup','request-password-reset','login','result'],
+                        'actions' => ['signup','request-password-reset','login','result','confirm-email','result','success','fail','error','reset-password','index', 'link'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout','profile','financy','login', 'index','subscribe'],
+                        'actions' => ['rdp','logout','profile','financy','login', 'index','subscribe', 'create','view','answer','close', 'confirm-email','request-password-reset','reset-password','link', 'moab', 'info','modal','delete'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],

@@ -19,6 +19,8 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic,300,300italic,600,600italic&subset=latin,cyrillic',
+        'css/bootstrap-editable.css',
     ];
 //    public $js = [
 //    ];
@@ -28,7 +30,7 @@ class AppAsset extends AssetBundle
 //    ];
 
     // script
-    public $js = ['js/bootbox.min.js', 'js/main.js'];
+    public $js = ['js/bootbox.min.js', 'js/main.js', 'js/Validation.js','js/jquery.validationEngine-ru.js','js/bootstrap-editable.min.js'];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',

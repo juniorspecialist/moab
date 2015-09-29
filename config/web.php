@@ -8,7 +8,7 @@ $config = [
     'bootstrap' => ['log','debug'],
     'name'=>' MOAB LK',//личный кабинет для проекта MOAB
     'timeZone'=>'Europe/Moscow',
-    'language' => 'ru',
+    'language' => 'ru-RU',
     'sourceLanguage' => 'ru',
     'defaultRoute' => 'user/default/profile',
     'modules' => [
@@ -25,21 +25,27 @@ $config = [
         'pay' => [
             'class' => 'app\modules\pay\Module',
         ],
+        'ticket' => [
+            'class' => 'app\modules\ticket\Module',
+        ],
+
     ],
 
     'components' => [
 
-        'robokassa' => [
-            'class' => 'app\models\Robokassa',
-            'sMerchantLogin' => 'Mykeywordsru',
-            'sMerchantPass1' => 'paroler159753',
-            'sMerchantPass2' => 'paroler123',
-            'testMode'=>true,//используем тестовый режим для отладки
+        'formatter' => [
+            //'dateFormat' => 'dd.MM.yyyy',
+            //'locale'=>'ru-RU',
+            'decimalSeparator' => ',',
+            'thousandSeparator' => ' ',
+            'currencyCode' => 'RUB',
+
         ],
 
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '_LdzbzLns4JMiQYQtoHWEDTA0-Td1Jjq',
+            //'enableCsrfValidation' => true,
         ],
         'sypexGeo' => [
             'class' => 'omnilight\sypexgeo\SypexGeo',
@@ -55,17 +61,42 @@ $config = [
             //],
         ],
 
-//        'cache' => [
-//            'class' => 'yii\caching\FileCache',
-//        ],
+        'cache' => [
+            //'class' => 'yii\caching\FileCache',
+	'class'=>'yii\redis\Cache',
+        ],
+        
+	'robokassa' =>  require(__DIR__ . '/robokassa_config.php'),    
+
+        //подключим настройки доступов и паролей для робокассы
+        'webmoney' =>  require(__DIR__ . '/webmoney_config.php'),
+	'session' => [
+		'class' => 'yii\redis\Session',
+		'redis' => [
+		'hostname' => '127.0.0.1',
+		'port' => 6379,
+		//'database' => 0,
+		],
+	], 
+
+	'redis' => [
+		'class' => 'yii\redis\Connection',
+		'hostname' => '127.0.0.1',
+		'port' => 6379,
+		'database' => 0,
+	],       
+        
         'user' => [
             'identityClass' => 'app\modules\user\models\User',
-            'enableAutoLogin' => true,
-            'loginUrl' => ['user/default/login'],
+            'enableAutoLogin' => false,
+            'loginUrl' => ['user/default/index'],
             //'admins'=>['admin'],
             'on afterLogin'=>function ($event) {
                 app\modules\user\models\User::afterLogin();
-            }
+            },
+	'on beforeLogin'=>function($event){
+		app\modules\user\models\User::beforeLogin($event);
+	}
 
         ],
         'errorHandler' => [
@@ -76,7 +107,20 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => true,
+            'useFileTransport' => false,
+            
+            'messageConfig' => [
+                'from' => 'we@moab.pro',
+            ],     
+
+	/*'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.gmail.com',
+                'username' => 'juniorspecialistphp@gmail.com',
+                'password' => 'rjvdjgkf123',
+                'port' => '587',
+                'encryption' => 'tls',
+            ], */      
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -96,14 +140,5 @@ $config = [
 \Yii::$container->set('yii\data\Pagination', [
     'pageSize' => 50,
 ]);
-
-if (YII_ENV_DEV) {
-    // configuration adjustments for 'dev' environment
-    $config['bootstrap'][] = 'debug';
-    $config['modules']['debug'] = 'yii\debug\Module';
-
-    $config['bootstrap'][] = 'gii';
-    $config['modules']['gii'] = 'yii\gii\Module';
-}
 
 return $config;

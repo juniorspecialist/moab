@@ -14,6 +14,7 @@ use Yii;
  */
 class Base extends \yii\db\ActiveRecord
 {
+
     /**
      * @inheritdoc
      */
@@ -28,10 +29,15 @@ class Base extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'one_month_price','three_month_price','six_month_price','twelfth_month_price'], 'required'],
-            [['one_month_price','three_month_price','six_month_price','twelfth_month_price'], 'integer'],
+            ['hide_bases', 'string'],
+            [['title', 'one_month_price','three_month_price','six_month_price','twelfth_month_price','eternal_period_price'], 'required'],
+            [['one_month_price','three_month_price','six_month_price','twelfth_month_price','eternal_period_price','enabled_user'], 'integer'],
             [['title'], 'string', 'max' => 80],
-            [['one_month_user_info','three_month_user_info','six_month_user_info','twelfth_month_user_info'], 'string', 'max' => 128]
+            [['one_month_user_info','three_month_user_info','six_month_user_info','twelfth_month_user_info','eternal_period_user_info'], 'string', 'max' => 128],
+
+            [['hide_bases', 'hidebases'], 'safe'],
+
+
         ];
     }
 
@@ -52,7 +58,11 @@ class Base extends \yii\db\ActiveRecord
             'three_month_user_info'=>'Пользовательская информация(3 месяца)',
             'six_month_user_info'=>'Пользовательская информация(6 месяцев)',
             'twelfth_month_user_info'=>'Пользовательская информация(12 месяцев)',
+            'eternal_period_price'=>'Цена(вечной лицензии)',
+            'eternal_period_user_info'=>'Пользовательская информация(вечная)',
+            'enabled_user'=>'Доступна пользователям',
 
+            'hidebases'=>'Какие базы скрываем при отображении текущей'
         ];
     }
 
@@ -62,5 +72,37 @@ class Base extends \yii\db\ActiveRecord
     public function getUserSubscription()
     {
         return $this->hasMany(UserSubscription::className(), ['base_id' => 'id']);
+    }
+
+    //денормолизация данных, чтобы не плодить таблиц, данные не используются для фильтрации
+    public function getHidebases()
+    {
+        if(empty($this->hide_bases)){
+            return [];
+        }else{
+            return json_decode($this->hide_bases);
+        }
+    }
+
+    public function setHidebases($value)
+    {
+        $this->hide_bases = json_encode($value);
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static function getPriceOfBase($base, $attribute)
+    {
+        if(isset($base->{$attribute}))
+        {
+            return $base->{$attribute};
+        }
     }
 }
