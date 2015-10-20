@@ -87,10 +87,10 @@ $config = [
             ],
         ],
         
-	    'robokassa' =>  require(__DIR__ . '/robokassa_config.php'),
+	    //'robokassa' =>  require(__DIR__ . '/robokassa_config.php'),
 
         //подключим настройки доступов и паролей для робокассы
-        'webmoney' =>  require(__DIR__ . '/webmoney_config.php'),
+        //'webmoney' =>  require(__DIR__ . '/webmoney_config.php'),
         
         
         'user' => [

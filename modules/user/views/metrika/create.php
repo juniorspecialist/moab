@@ -10,6 +10,8 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\Tabs;
 
+$this->title = 'Добавить выборку';
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Selections */
 /* @var $form ActiveForm */
@@ -18,38 +20,31 @@ use yii\bootstrap\Tabs;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?= $form->errorSummary($model); ?>
+
     <?php
 
     echo Tabs::widget([
-            'items' => [
-                [
-                    'label' => 'Исходные фразы',
-                    'content' => $this->render('initial_phrase',['model'=>$model, 'form'=>$form]),
-                    'active' => true
-                ],
-                [
-                    'label' => 'Дополнительные параметры',
-                    'content' => $this->render('extra_options',['model'=>$model, 'form'=>$form]),
-                    //'headerOptions' => [...],
-                    'options' => ['id' => 'myveryownID'],
-                ],
-                [
-                    'label' => 'Параметры Wordstat',
-                    //'url' => 'http://www.example.com',
-                    'content' => $this->render('wordstat_options',['model'=>$model, 'form'=>$form]),
-                ],
+        'items' => [
             [
-                'label' => 'Dropdown',
-                'items' => [
-                    [
-                        'label' => 'DropdownA',
-                        'content' => 'DropdownA, Anim pariatur cliche...',
-                    ],
-                    [
-                        'label' => 'DropdownB',
-                        'content' => 'DropdownB, Anim pariatur cliche...',
-                    ],
-                ],
+                'label' => 'Исходные фразы',
+                'content' => $this->render('initial_phrase',['model'=>$model, 'form'=>$form]),
+                'active' => true
+            ],
+            [
+                'label' => 'Дополнительные параметры',
+                'content' => $this->render('extra_options',['model'=>$model, 'form'=>$form]),
+                //'headerOptions' => [...],
+                'options' => ['id' => 'extra_options'],
+            ],
+            [
+                'label' => 'Параметры Wordstat',
+                //'url' => 'http://www.example.com',
+                'content' => $this->render('wordstat_options',['model'=>$model, 'form'=>$form]),
+            ],
+            [
+                'label' => 'Минус-слова',
+                'content' => $this->render('stop_words',['model'=>$model, 'form'=>$form]),
             ],
         ],
     ]);
@@ -66,13 +61,9 @@ use yii\bootstrap\Tabs;
 
 
 
-    <?= $form->field($model, 'need_wordstat') ?>
 
-    <?= $form->field($model, 'wordstat_syntax') ?>
 
-    <?= $form->field($model, 'wordstat_from') ?>
 
-    <?= $form->field($model, 'wordstat_to') ?>
 
 
 
@@ -82,3 +73,9 @@ use yii\bootstrap\Tabs;
     <?php ActiveForm::end(); ?>
 
 </div><!-- modules-user-views-create -->
+
+<style>
+    #selections-need_wordstat{
+        width: 400px;
+    }
+</style>
