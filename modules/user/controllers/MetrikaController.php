@@ -68,10 +68,18 @@ class MetrikaController extends UserMainController{
 
         $model = new Selections();
 
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
-        return $this->render('create',[
-            'model' => $model,
-        ]);
+            Yii::$app->getSession()->setFlash('success', 'Успешно добавили новую запись.');
+
+            return $this->redirect(['index']);
+
+        } else {
+
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /*

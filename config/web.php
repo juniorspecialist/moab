@@ -29,6 +29,11 @@ $config = [
             'class' => 'app\modules\ticket\Module',
         ],
 
+        'gii' => [
+            'class' => 'yii\gii\Module',
+            'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*', '192.168.178.20'] // adjust this to your needs
+        ],
+
     ],
 
     'components' => [
@@ -63,40 +68,42 @@ $config = [
 
         'cache' => [
             //'class' => 'yii\caching\FileCache',
-	'class'=>'yii\redis\Cache',
+            'class'=>'yii\redis\Cache',
+        ],
+
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => '127.0.0.1',
+            'port' => 6379,
+            'database' => 0,
+        ],
+
+        'session' => [
+            'class' => 'yii\redis\Session',
+            'redis' => [
+                'hostname' => '127.0.0.1',
+                'port' => 6379,
+                //'database' => 0,
+            ],
         ],
         
-	'robokassa' =>  require(__DIR__ . '/robokassa_config.php'),    
+	    'robokassa' =>  require(__DIR__ . '/robokassa_config.php'),
 
         //подключим настройки доступов и паролей для робокассы
         'webmoney' =>  require(__DIR__ . '/webmoney_config.php'),
-	'session' => [
-		'class' => 'yii\redis\Session',
-		'redis' => [
-		'hostname' => '127.0.0.1',
-		'port' => 6379,
-		//'database' => 0,
-		],
-	], 
-
-	'redis' => [
-		'class' => 'yii\redis\Connection',
-		'hostname' => '127.0.0.1',
-		'port' => 6379,
-		'database' => 0,
-	],       
+        
         
         'user' => [
             'identityClass' => 'app\modules\user\models\User',
-            'enableAutoLogin' => false,
+            'enableAutoLogin' => true,
             'loginUrl' => ['user/default/index'],
             //'admins'=>['admin'],
             'on afterLogin'=>function ($event) {
                 app\modules\user\models\User::afterLogin();
             },
-	'on beforeLogin'=>function($event){
-		app\modules\user\models\User::beforeLogin($event);
-	}
+            'on beforeLogin'=>function($event){
+                app\modules\user\models\User::beforeLogin($event);
+            }
 
         ],
         'errorHandler' => [
@@ -111,16 +118,7 @@ $config = [
             
             'messageConfig' => [
                 'from' => 'we@moab.pro',
-            ],     
-
-	/*'transport' => [
-                'class' => 'Swift_SmtpTransport',
-                'host' => 'smtp.gmail.com',
-                'username' => 'juniorspecialistphp@gmail.com',
-                'password' => 'rjvdjgkf123',
-                'port' => '587',
-                'encryption' => 'tls',
-            ], */      
+            ],            
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -140,5 +138,14 @@ $config = [
 \Yii::$container->set('yii\data\Pagination', [
     'pageSize' => 50,
 ]);
+
+if (YII_ENV_DEV) {
+    // configuration adjustments for 'dev' environment
+    $config['bootstrap'][] = 'debug';
+    $config['modules']['debug'] = 'yii\debug\Module';
+
+    $config['bootstrap'][] = 'gii';
+    $config['modules']['gii'] = 'yii\gii\Module';
+}
 
 return $config;
