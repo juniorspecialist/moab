@@ -15,10 +15,27 @@ use app\modules\user\models\User;
 use app\modules\user\controllers\UserMainController;
 
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 class FinancyController extends  UserMainController{
 
+
+    public function behaviors()
+    {
+        return  [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     public $defaultAction = 'index';
 

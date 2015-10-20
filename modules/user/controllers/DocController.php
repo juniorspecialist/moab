@@ -12,6 +12,7 @@ namespace app\modules\user\controllers;
 //use app\modules\user\controllers\UserMainController;
 use app\models\Docs;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
@@ -19,6 +20,24 @@ use Yii;
 
 class DocController extends UserMainController
 {
+
+
+
+    public function behaviors()
+    {
+        return  [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index','modal'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     /*
      * выводим список доков по юзеру

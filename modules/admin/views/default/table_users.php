@@ -141,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return [$action,'id'=>$model['id']];
                 },
             ],
-            //katysh.diana@yandex.ru
+            //
 
         ],
     ]); ?>

@@ -9,9 +9,28 @@
 namespace app\modules\user\controllers;
 
 
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 class SuggestController extends UserMainController{
+
+    public function behaviors()
+    {
+        return  [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+
     /*
      * информация о выборках из БД - Моаб-Метрика
      */

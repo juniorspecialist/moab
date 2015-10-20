@@ -30,7 +30,7 @@ class AppAsset extends AssetBundle
 //    ];
 
     // script
-    public $js = ['js/bootbox.min.js', 'js/main.js', 'js/Validation.js','js/jquery.validationEngine-ru.js','js/bootstrap-editable.min.js'];
+    public $js = ['js/bootbox.min.js', 'js/main.js', 'js/Validation.js','js/jquery.validationEngine-ru.js'];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',

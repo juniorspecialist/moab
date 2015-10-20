@@ -11,9 +11,27 @@ namespace app\modules\user\controllers;
 
 use app\models\Category;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 class CategoryController extends UserMainController{
+
+
+    public function behaviors()
+    {
+        return  [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index','delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
 
     /*
      * выводим список категорий пользователя

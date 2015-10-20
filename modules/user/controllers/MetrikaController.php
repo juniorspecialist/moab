@@ -10,11 +10,14 @@ namespace app\modules\user\controllers;
 
 
 use app\models\Category;
+use app\models\Selections;
+use app\models\SelectionsSearch;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use Yii;
 use yii\web\View;
+
 
 class MetrikaController extends UserMainController{
 
@@ -26,7 +29,7 @@ class MetrikaController extends UserMainController{
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index','create'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -43,8 +46,32 @@ class MetrikaController extends UserMainController{
         //проверка доступа к выборкам для тек. юзера
         $this->access();
 
+        //выбираем данные по выборкам пользователя
 
-        return $this->render('index');
+        $model = new SelectionsSearch();
+
+        $dataProvider = $model->search(Yii::$app->request->queryParams);
+
+
+        return $this->render('index',[
+            'dataProvider' => $dataProvider,
+            'searchModel' => $model,
+        ]);
+    }
+
+    /*
+     * форма создания задания на выборку -
+     * в одном задании может быть указано несколько фраз/ключей и на каждую фразу/ключ создаётся отдельное задание
+     */
+    public function actionCreate()
+    {
+
+        $model = new Selections();
+
+
+        return $this->render('create',[
+            'model' => $model,
+        ]);
     }
 
     /*
