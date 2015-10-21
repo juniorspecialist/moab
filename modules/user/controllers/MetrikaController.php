@@ -12,10 +12,12 @@ namespace app\modules\user\controllers;
 use app\models\Category;
 use app\models\Selections;
 use app\models\SelectionsSearch;
+use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use Yii;
+use yii\web\Response;
 use yii\web\View;
 
 
@@ -67,6 +69,12 @@ class MetrikaController extends UserMainController{
     {
 
         $model = new Selections();
+
+
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 

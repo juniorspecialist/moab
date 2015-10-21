@@ -18,7 +18,7 @@ $this->title = 'Добавить выборку';
 ?>
 <div class="modules-user-views-create">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['id'=>'metrika-form']); ?>
 
     <?= $form->errorSummary($model); ?>
 
@@ -51,22 +51,6 @@ $this->title = 'Добавить выборку';
 
     ?>
 
-
-    <?= $form->field($model, 'type') ?>
-    <?= $form->field($model, 'name') ?>
-
-    <?= $form->field($model, 'results_count') ?>
-
-
-
-
-
-
-
-
-
-
-
     <div class="form-group">
         <?= Html::submitButton('Добавить', ['class' => 'btn btn-primary']) ?>
     </div>
@@ -75,7 +59,18 @@ $this->title = 'Добавить выборку';
 </div><!-- modules-user-views-create -->
 
 <style>
-    #selections-need_wordstat{
+    #selections-need_wordstat, #selections-potential_traffic, #selections-category_id{
         width: 400px;
     }
 </style>
+
+<?php
+//регистрируем скрипт для выбора числовых значений в удобной форме
+$this->registerJsFile('/js/jquery.fs.stepper.js', ['depends' => [\yii\web\JqueryAsset::className()]]);
+$this->registerJs('$(document).ready(function(){
+    $("input[type=number]").stepper();
+});', \yii\web\View::POS_READY);
+//ограничение на ввод кол-ва значений в поля textarea
+
+$this->registerCssFile('/css/jquery.fs.stepper.css');
+?>

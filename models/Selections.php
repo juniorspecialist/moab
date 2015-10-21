@@ -40,6 +40,7 @@ use yii\helpers\ArrayHelper;
 class Selections extends \yii\db\ActiveRecord
 {
 
+    //статусы для очереди заданий на выборку
     const STATUS_WAIT = 0;//ожидает
     const STATUS_EXECUTE = 1;//выполняется
     const STATUS_DONE = 2;//готово
@@ -47,6 +48,10 @@ class Selections extends \yii\db\ActiveRecord
 
     const YES = 1;//да
     const NO = 0;//нет
+
+    //типы выборок
+    const TYPE_SELECT_TIPS_YA = 2;//подсказок –всегда тип 2
+    const TYPE_SELECT_METRIKA = 1;//метрика
 
     //список вариантов значений потенциального траффика
     const POTENCIAL_TRAFFIC_USER = 1;//пользовательский
@@ -131,11 +136,11 @@ class Selections extends \yii\db\ActiveRecord
     static function getPotencialTraffic()
     {
         return [
+            self::POTENCIAL_TRAFFIC_ANYONE => 'Любой',
             self::POTENCIAL_TRAFFIC_USER => 'Пользовательский',
             self::POTENCIAL_TRAFFIC_LOW => 'Низкий',
             self::POTENCIAL_TRAFFIC_MEDIUM => 'Средний',
             self::POTENCIAL_TRAFFIC_HIGH => 'Высокий',
-            self::POTENCIAL_TRAFFIC_ANYONE => 'Любой',
         ];
     }
 
@@ -183,9 +188,9 @@ class Selections extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['type', 'name', 'source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
+            [['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
-                'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to', 'hash'], 'required'],
+                'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'required'],
             [['user_id', 'type', 'results_count', 'date_created', 'status', 'potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
             [['name', 'source_phrase'], 'string', 'max' => 255],
             [['hash'], 'string', 'max' => 50],
@@ -193,14 +198,57 @@ class Selections extends \yii\db\ActiveRecord
             //проверка списка стоп-слов
             ['stop_words', 'validateStopWords'],
 
+            //проверка всех текстовых полей, в которых указывается интервал чисел (От и До)
+            ['wordstat_from','validateParamsFromTo'],
+
             //параметры по-умолчанию
             ['user_id', 'default', 'value'=>Yii::$app->user->id],
             ['date_created', 'default', 'value'=>time()],
             ['status', 'default', 'value'=>self::STATUS_WAIT],
+            ['type','default','value'=>self::TYPE_SELECT_TIPS_YA],
+            ['name', 'default', 'value'=>$this->source_phrase],
 
 
             [['result_txt_zip', 'result_csv_zip', 'result_xlsx_zip'], 'string', 'max' => 128]
         ];
+    }
+
+    /*
+     * валидируем числовые параметры
+     * параметр "От" не может быть больше параметра "До"
+     */
+    public function validateParamsFromTo()
+    {
+
+        if(!$this->hasErrors())
+        {
+            foreach($this->attributes() as $attribute)
+            {
+
+                //die($attribute.'|aSDASD');
+
+                //если есть параметр с "from" то должен быть и параметр с таким же именем но с окончанием "to"
+                if(preg_match('/from$/',$attribute))
+                {
+
+                    $param = str_replace('_from','', $attribute);
+
+                    $from = $this->$attribute;//параметр "От"
+
+                    if($this->hasAttribute($param.'_to'))
+                    {
+                        //параметр "От" не должен быть больше параметра "До"
+                        if($this->getAttribute($attribute) > $this->getAttribute($param.'_to'))
+                        {
+                            $this->addError($attribute,
+                                'Значение поля "'.$this->getAttributeLabel($attribute).'" не может быть больше значения поля "'.
+                                 $this->getAttributeLabel($param.'_to').'"');
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /*
@@ -247,18 +295,18 @@ class Selections extends \yii\db\ActiveRecord
             'date_created' => 'дата создания',
             'status' => 'Статус выборки',
             'potential_traffic' => 'Потенциальный траффик',
-            'source_words_count_from' => 'Source Words Count From',
-            'source_words_count_to' => 'Source Words Count To',
-            'position_from' => 'Position From',
-            'position_to' => 'Position To',
-            'suggest_words_count_from' => 'Suggest Words Count From',
-            'suggest_words_count_to' => 'Suggestwords Count To',
-            'length_from' => 'Length From',
-            'length_to' => 'Length To',
+            'source_words_count_from' => 'Частотность От',
+            'source_words_count_to' => 'Частотность До',
+            'position_from' => 'Позиция подсказки От',
+            'position_to' => 'Позиция подсказки До',
+            'suggest_words_count_from' => 'Количество слов в исходной фразе От',
+            'suggest_words_count_to' => 'Количество слов в исходной фразе До',
+            'length_from' => 'Длина подсказки от',
+            'length_to' => 'Длина подсказки до',
             'need_wordstat' => 'Нужны фразы с частотностью Wordstat',//'0 –ненужна частота по Wordstat1 –нужна частота по Wordstat',
-            'wordstat_syntax' => '0 –слово1 слово21 –“слово1 слово2”2 –“!слово1 !слово2”',
-            'wordstat_from' => 'Wordstat From',
-            'wordstat_to' => 'Wordstat To',
+            'wordstat_syntax' => 'Вид частотности',
+            'wordstat_from' => 'Частотность Wordstat от',
+            'wordstat_to' => 'Частотность Wordstat до',
             'hash' => 'MD5 от конкатенации значений',
             'result_txt_zip' => 'ссылка на файл txt',
             'result_csv_zip' => 'ссылка на файл csv',

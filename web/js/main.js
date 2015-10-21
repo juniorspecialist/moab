@@ -150,4 +150,73 @@ $(document).ready(function () {
         //alert($(this).closest('td','a').find('a.mypopover').attr('data-pk'));
         //alert($(this).closest('a').html());
     })
+
+
+    //====================форма добавления задания на выборку================
+
+    //пользвоатель выбирает различные - потенциальные трафики
+    $(document).on('change','#selections-potential_traffic', function(){
+
+        //определяем потенциальный трафик
+        var potencial_traffic = $('#selections-potential_traffic option:selected').val();
+
+        //если не пользовательский выбран, то блокируем все поля на форме
+        if(potencial_traffic != 1)
+        {
+
+            $('.extra_options').attr('disabled',true);
+
+            //потенциальный траффик - любой(5)
+            if(potencial_traffic == 5)
+            {
+                //кол-во слов в исходной фразе (1-32)
+                $('#selections-suggest_words_count_from').val(1);
+                $('#selections-suggest_words_count_to').val(32);
+
+                //позиция подсказки (1-10)
+                $('#selections-position_from').val(1);
+                $('#selections-position_to').val(10);
+            }
+
+            //потенциальный траффик - высокий(4)
+            if(potencial_traffic == 4)
+            {
+                //кол-во слов в исходной фразе (1-32)
+                $('#selections-suggest_words_count_from').val(1);
+                $('#selections-suggest_words_count_to').val(1);
+
+                //позиция подсказки (1-10)
+                $('#selections-position_from').val(1);
+                $('#selections-position_to').val(8);
+            }
+
+            //потенциальный траффик - средний(3)
+            if(potencial_traffic == 3)
+            {
+                //кол-во слов в исходной фразе (1-32)
+                $('#selections-suggest_words_count_from').val(5);
+                $('#selections-suggest_words_count_to').val(10);
+
+                //позиция подсказки (1-10)
+                $('#selections-position_from').val(2);
+                $('#selections-position_to').val(2);
+            }
+
+            //потенциальный траффик - низкий(2)
+            if(potencial_traffic == 2)
+            {
+                //кол-во слов в исходной фразе (1-32)
+                $('#selections-suggest_words_count_from').val(5);
+                $('#selections-suggest_words_count_to').val(10);
+
+                //позиция подсказки (1-10)
+                $('#selections-position_from').val(3);
+                $('#selections-position_to').val(3);
+            }
+
+        }else{
+            $('.extra_options').prop('disabled', false);
+        }
+
+    });
 })
