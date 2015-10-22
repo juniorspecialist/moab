@@ -31,12 +31,16 @@ class Base extends \yii\db\ActiveRecord
         return [
             ['hide_bases', 'string'],
             [['title', 'one_month_price','three_month_price','six_month_price','twelfth_month_price','eternal_period_price'], 'required'],
-            [['one_month_price','three_month_price','six_month_price','twelfth_month_price','eternal_period_price','enabled_user'], 'integer'],
+            [['one_month_price','three_month_price','six_month_price','twelfth_month_price','eternal_period_price','enabled_user','count_keywords','add_in_update'], 'integer'],
             [['title'], 'string', 'max' => 80],
             [['one_month_user_info','three_month_user_info','six_month_user_info','twelfth_month_user_info','eternal_period_user_info'], 'string', 'max' => 128],
 
             [['hide_bases', 'hidebases'], 'safe'],
 
+            // normalize "date" input
+            [['last_update','next_update'], 'filter', 'filter' => function ($value) {
+                return strtotime($value);
+            }],
 
         ];
     }
@@ -62,7 +66,11 @@ class Base extends \yii\db\ActiveRecord
             'eternal_period_user_info'=>'Пользовательская информация(вечная)',
             'enabled_user'=>'Доступна пользователям',
 
-            'hidebases'=>'Какие базы скрываем при отображении текущей'
+            'hidebases'=>'Какие базы скрываем при отображении текущей',
+            'last_update'=>'Последнее обновление',
+            'next_update'=>'Следующее обновление',
+            'count_keywords'=>'Всего ключевых фраз',
+            'add_in_update'=>'Добавлено в обновлении',
         ];
     }
 
@@ -104,5 +112,15 @@ class Base extends \yii\db\ActiveRecord
         {
             return $base->{$attribute};
         }
+    }
+
+    public function afterFind()
+    {
+
+        parent::afterFind();
+
+        //преобразование дат к нужному формату
+        $this->last_update = date('d.m.Y H:i',($this->last_update==0)?time():strtotime($this->last_update));
+        $this->next_update = date('d.m.Y H:i',($this->next_update==0)?time():strtotime($this->next_update));
     }
 }

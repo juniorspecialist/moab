@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use zhuravljov\widgets\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Base */
@@ -38,6 +39,35 @@ use yii\widgets\ActiveForm;
 
 
     <?= $form->field($model, 'enabled_user')->checkbox() ?>
+
+
+    <?= $form->field($model, 'last_update')->widget(DateTimePicker::className(), [
+        'clientOptions' => [
+            'format' => 'dd.mm.yyyy hh:ii',
+            'language' => 'ru',
+            'autoclose' => true,
+            'todayBtn' => true,
+            'minuteStep'=> 5,
+        ],
+        'clientEvents' => [],
+    ]) ?>
+
+    <?= $form->field($model, 'next_update')->widget(DateTimePicker::className(), [
+        'clientOptions' => [
+            'format' => 'dd.mm.yyyy hh:ii',
+            'language' => 'ru',
+            'autoclose' => true,
+            'todayBtn' => true,
+            'minuteStep'=> 5,
+        ],
+        'clientEvents' => [],
+    ]) ?>
+
+
+    <?= $form->field($model, 'count_keywords')->textInput() ?>
+
+    <?= $form->field($model, 'add_in_update')->textInput() ?>
+
 
     <?=$form->field($model, 'hidebases')->checkboxList(\yii\helpers\ArrayHelper::map(($model->isNewRecord)?\app\models\Base::find()->all():\app\models\Base::find()->where(['!=','id',$model->id])->all(),'id','title'))->label('Если пользователь будет подписан на тек. базу, то какие подписки необходимо для него спрятать')?>
 

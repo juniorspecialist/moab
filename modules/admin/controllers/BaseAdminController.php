@@ -25,7 +25,7 @@ class BaseAdminController extends Controller{
                     [
                         //'actions' => ['admin'],
                         'allow' => true,
-                        //'roles' => ['@'],
+                        'roles' => ['@'],
                         'matchCallback' => function() {
                             if(!\Yii::$app->user->isGuest && \Yii::$app->user->identity->isAdmin()){
                                 return true;
