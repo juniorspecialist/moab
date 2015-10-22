@@ -23,6 +23,7 @@ $this->registerJs(
 
     <?php $form = ActiveForm::begin([
         'id' => 'form-category',
+        'action'=>'/user/category/index',
         //'layout' => 'horizontal',
         //['data-pjax' => true ],
         'options' => [

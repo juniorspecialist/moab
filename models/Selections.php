@@ -62,30 +62,13 @@ class Selections extends \yii\db\ActiveRecord
 
 
     public $stop_words;//минус слова
-    private $stop_words_limit = 10;//максимальное кол-во слов в листе стоп-слов
+    protected $stop_words_exploded; //список минус-слов после преобразования(текста) их в массив
+    private $stop_words_limit = 10;//максимальное кол-во слов в листе минус-слов
 
 
     const WORD_STAT_SYNTAX_ZERO = 0;//слово1 слово2
     const WORD_STAT_SYNTAX_ONE = 1;//“слово1 слово2”
     const WORD_STAT_SYNTAX_TWO = 2;//
-
-
-    /*
-     * формируем массив чисел указанного интервала
-     * $from  - начало отсчёта массива чисел
-     * $to - последнее значение в массиве чисел
-     */
-    static function getNumbersArray($from, $to)
-    {
-        $result = [];
-
-        for($i = $from;$i<=$to;$i++)
-        {
-            $result[$i] = $i;
-        }
-
-        return $result;
-    }
 
 
     /*
@@ -103,30 +86,11 @@ class Selections extends \yii\db\ActiveRecord
     /*
      * по выбранному типу совпадений-сравнений в ключевике - выводим пример/описание
      */
-    public function getWordStatSyntaxName()
+    private function getWordStatSyntaxName()
     {
         $list = self::getWordsStatSyntax();
 
         return $list[$this->wordstat_syntax];
-    }
-
-    /*
-     * список значений от 1 до 10
-     */
-    static function getNumberList()
-    {
-        return [
-            1=>1,
-            2=>2,
-            3=>3,
-            4=>4,
-            5=>5,
-            6=>6,
-            7=>7,
-            8=>8,
-            9=>9,
-            10=>10,
-        ];
     }
 
     /*
@@ -147,11 +111,32 @@ class Selections extends \yii\db\ActiveRecord
     /*
      * текстовое обозначение потенциального трафика
      */
-    public function getPotentialTrafficName()
+    private function getPotentialTrafficName()
     {
         $list = self::getPotencialTraffic();
 
         return $list[$this->potential_traffic];
+    }
+
+    /*
+     * формируем текстовое описание для выбранного потенциального траффика
+     * параметр используем при формировании общего описания задания по выборке(юзера)
+     *  на основании выбранного траффика - формируем структуру нужной инфы
+     *
+     * Если значение –4 (пользовательский), то в окно параметровпосле «Потенциальный траффик: Пользовательский»
+     * добавятся еще 2 строки –Количествослов в исходной фразе: от source_words_count_fromдо source_words_count_toиПозицияподсказки:отposition_fromдоposition_to
+     */
+    private function getPotencialTrafficTotalInfo()
+    {
+        $out = 'Потенциальный траффик: '.$this->getPotentialTrafficName().PHP_EOL;
+
+        if($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)
+        {
+            $out.='Количествослов в исходной фразе: от '.$this->source_words_count_from.' до '.$this->source_words_count_to.PHP_EOL;
+            $out.='Позицияподсказки: от '.$this->position_from.' до '.$this->position_to.PHP_EOL;
+        }
+
+        return $out;
     }
 
 
@@ -191,11 +176,16 @@ class Selections extends \yii\db\ActiveRecord
             [['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
                 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'required'],
-            [['user_id', 'type', 'results_count', 'date_created', 'status', 'potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
-            [['name', 'source_phrase'], 'string', 'max' => 255],
+
+            [['user_id', 'type', 'results_count', 'date_created', 'status', 'potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to',
+                'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
+
+            [['name'], 'string', 'max' => 255],
+
+
             [['hash'], 'string', 'max' => 50],
 
-            //проверка списка стоп-слов
+            //проверка списка минус-слов
             ['stop_words', 'validateStopWords'],
 
             //проверка всех текстовых полей, в которых указывается интервал чисел (От и До)
@@ -206,7 +196,7 @@ class Selections extends \yii\db\ActiveRecord
             ['date_created', 'default', 'value'=>time()],
             ['status', 'default', 'value'=>self::STATUS_WAIT],
             ['type','default','value'=>self::TYPE_SELECT_TIPS_YA],
-            ['name', 'default', 'value'=>$this->source_phrase],
+            //['name', 'default', 'value'=>$this->source_phrase],
 
 
             [['result_txt_zip', 'result_csv_zip', 'result_xlsx_zip'], 'string', 'max' => 128]
@@ -214,70 +204,19 @@ class Selections extends \yii\db\ActiveRecord
     }
 
     /*
-     * валидируем числовые параметры
-     * параметр "От" не может быть больше параметра "До"
+     * общая информация о выборке
+     * выводим информацию в диалоговом окне для пользователя
      */
-    public function validateParamsFromTo()
+    private function getTotalInfo()
     {
-
-        if(!$this->hasErrors())
-        {
-            foreach($this->attributes() as $attribute)
-            {
-
-                //die($attribute.'|aSDASD');
-
-                //если есть параметр с "from" то должен быть и параметр с таким же именем но с окончанием "to"
-                if(preg_match('/from$/',$attribute))
-                {
-
-                    $param = str_replace('_from','', $attribute);
-
-                    $from = $this->$attribute;//параметр "От"
-
-                    if($this->hasAttribute($param.'_to'))
-                    {
-                        //параметр "От" не должен быть больше параметра "До"
-                        if($this->getAttribute($attribute) > $this->getAttribute($param.'_to'))
-                        {
-                            $this->addError($attribute,
-                                'Значение поля "'.$this->getAttributeLabel($attribute).'" не может быть больше значения поля "'.
-                                 $this->getAttributeLabel($param.'_to').'"');
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /*
-     * если заполнен список стоп-слов - проверим этот параметр
-     */
-    public function validateStopWords()
-    {
-        if(!$this->hasErrors() && !empty($this->stop_words))
-        {
-            $stop_words_list = explode(PHP_EOL, $this->stop_words);
-
-            if(sizeof($stop_words_list)>$this->stop_words_limit)
-            {
-                $this->addError('stop_words','Разрешено не более 10ти стоп-слов');
-            }
-
-            //проверим каждое стоп-слово отдельно
-            if(!$this->hasErrors())
-            {
-                foreach($stop_words_list as $word)
-                {
-                    if(!preg_match('/^[a-z0-9а-яїіє ]+$/',$word))
-                    {
-                        $this->addError('stop_words','Стоп-слово:'.$word.' имеет недопустимый формат');
-                        break;
-                    }
-                }
-            }
-        }
+        $out = 'Исходная ключевая фраза:$this->source_phrase'.PHP_EOL;
+        $out.='В группе:$this->category->title'.PHP_EOL;
+        //описание к потенциальному трафику
+        $out.=$this->getPotencialTrafficTotalInfo();
+        $out.='Количество слов в подсказке: от '.$this->suggest_words_count_from.' до '.$this->suggestwords_count_to.PHP_EOL;
+        $out.='Длина подсказки (симв.) от'.$this->length_from.' до '.$this->length_to.PHP_EOL;
+        //список минус-слов, через разделитель
+        $out.=($this->getMinusWordsText())?$this->getMinusWordsText().PHP_EOL:'';
     }
 
     /**
@@ -312,7 +251,7 @@ class Selections extends \yii\db\ActiveRecord
             'result_csv_zip' => 'ссылка на файл csv',
             'result_xlsx_zip' => 'ссылка на файл xlsx',
             'category_id'=>'Категория',
-            'stop_words'=>'Список стоп-слов',
+            'stop_words'=>'Список минус-слов',
         ];
     }
 
@@ -325,7 +264,7 @@ class Selections extends \yii\db\ActiveRecord
     }
 
     /*
-     *выводим текстовое представление списка стоп-слов, для отображению юзеру
+     *выводим текстовое представление списка минус-слов, для отображению юзеру
      */
     public function getMinusWordsText()
     {

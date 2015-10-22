@@ -12,6 +12,7 @@ namespace app\modules\user\controllers;
 use app\models\Category;
 use app\models\Selections;
 use app\models\SelectionsSearch;
+use app\modules\user\models\MetrikaForm;
 use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -68,15 +69,15 @@ class MetrikaController extends UserMainController{
     public function actionCreate()
     {
 
-        $model = new Selections();
+        $model = new MetrikaForm();
 
-
+        /*
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
-        }
+        }*/
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 
             Yii::$app->getSession()->setFlash('success', 'Успешно добавили новую запись.');
 
