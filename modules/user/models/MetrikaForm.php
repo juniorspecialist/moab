@@ -36,7 +36,7 @@ class MetrikaForm extends Model
     public $wordstat_from;
     public $wordstat_to;
     public $stop_words;
-    public $stop_words_limit;
+    public $stop_words_limit = 10;
     protected $stop_words_exploded; //список минус-слов после преобразования(текста) их в массив
     private $source_phrase_list;
 
@@ -110,9 +110,9 @@ class MetrikaForm extends Model
                 //регулярка-^[a-z0-9а-яїіє\* ]+$
                 if(!$this->hasErrors())
                 {
-                    if(!preg_match('/^[a-z0-9а-яїіє\* ]+$/', $source_phrase_word))
+                    if(!preg_match('/[a-z0-9а-яїіє\* ]/i', $source_phrase_word))
                     {
-                        $this->addError('source_phrase', "Ключевая фраза '$source_phrase_word' не соотвествует формату регулярного выражения ^[a-z0-9а-яїіє\* ]+$");
+                        $this->addError('source_phrase', "Исходная фраза '$source_phrase_word' введена в неверном формате");
                     }
                 }
 
@@ -155,7 +155,7 @@ class MetrikaForm extends Model
             {
                 foreach($stop_words_list as $word)
                 {
-                    if(!preg_match('/^[a-z0-9а-яїіє ]+$/',$word))
+                    if(!preg_match('/[a-z0-9а-яїіє\* ]/i',$word))
                     {
                         $this->addError('stop_words',"Минус-слово:$word имеет недопустимый формат");
                         break;
@@ -177,21 +177,17 @@ class MetrikaForm extends Model
         {
             foreach($this->attributes() as $attribute)
             {
-
-                //die($attribute.'|aSDASD');
-
                 //если есть параметр с "from" то должен быть и параметр с таким же именем но с окончанием "to"
                 if(preg_match('/from$/',$attribute))
                 {
-
                     $param = str_replace('_from','', $attribute);
 
                     $from = $this->$attribute;//параметр "От"
 
-                    if($this->hasAttribute($param.'_to'))
+                    if(isset($this->{$param.'_to'}))
                     {
                         //параметр "От" не должен быть больше параметра "До"
-                        if($this->getAttribute($attribute) > $this->getAttribute($param.'_to'))
+                        if($this->$attribute > $this->{$param.'_to'})
                         {
                             $this->addError($attribute,
                                 'Значение поля "'.$this->getAttributeLabel($attribute).'" не может быть больше значения поля "'.
@@ -214,7 +210,7 @@ class MetrikaForm extends Model
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
                 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'required'],
 
-            [['results_count', 'date_created', 'status', 'potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to',
+            [['potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to',
                 'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
 
 
@@ -224,7 +220,7 @@ class MetrikaForm extends Model
             //валидируем список ключевых слов
             ['source_phrase','validateSourcePhrase'],
 
-            [['hash'], 'string', 'max' => 50],
+            //[['hash'], 'string', 'max' => 50],
 
             //проверка списка минус-слов
             ['stop_words', 'validateStopWords'],
@@ -294,6 +290,8 @@ class MetrikaForm extends Model
                 if($model->validate())
                 {
 
+                    echo 'ok<br>';
+                    /*
                     if($model->save())
                     {
                         if($this->stop_words_exploded)
@@ -304,7 +302,7 @@ class MetrikaForm extends Model
                                 Yii::$app->db->createCommand()->insert('minus_words',['selection_id'=>$model->id,'minus_word'=>$stop_word_relation])->execute();
                             }
                         }
-                    }
+                    }*/
                 }else{
                     echo '<pre>'; print_r($model->errors); break;
                 }
