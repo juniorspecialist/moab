@@ -41,6 +41,8 @@ class SuggestForm extends Model
     private $source_phrase_list;
     public $hash;
 
+    private $hash_list = [];//список хеш-сумм, которые формируем по каждой выборке(каждому ключевому слову)
+
 
     /*
      * список значений от 1 до 10
@@ -228,6 +230,7 @@ class SuggestForm extends Model
 
         ];
     }
+
     /**
      * @inheritdoc
      */
@@ -314,9 +317,14 @@ class SuggestForm extends Model
 
     /*
      * формируем хеш-сумму по указанным параметрам выборки, для исключения дублирующихся выборок у пользователя
+     * HASH - сумма формируется для каждого отдельного слова по выборке
+     * $source_phrase - ключевое слово, по которому будет отдельная выборка
      */
-    public function getHash()
+    public function createHash($source_phrase)
     {
+        $hash = $this->source_phrase.$this->source_words_count_from.$this->source_words_count_to.$this->position_from.$this->position_to.$this->suggest_words_count_from;
+        $hash.=$this->suggest_words_count_to.$this->suggest_length_from.$this->suggest_length_to.$this->need_wordstat.$this->wordstat_syntax.$this->wordstat_from.$this->wordstat_to;
+        $hash.=$this->type.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.;
 
     }
 }

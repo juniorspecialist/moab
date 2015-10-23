@@ -9,16 +9,19 @@ use yii\helpers\Html;
 use yii\bootstrap\Modal;
 
 
-echo Html::a($button_label, '#',['class'=>'btn btn-success control' ,'id'=>'category_modal_btn','value'=>'/user/category/index']);
+//echo Html::a($button_label, '#',['class'=>'btn btn-success control' ,'id'=>'category_modal_btn','value'=>'/user/category/index']);
 
 Modal::begin([
     //'header' => '<h2>Группы</h2>',
     'id'=>'modal_control_category',
     'toggleButton' => [
-        'label' => 'Управление группами',
-        'style'=>'display:none',
+        'label' => $button_label,
+        //'style'=>'display:none',
     ],
 ]);
+
+echo $info;
+
 Modal::end();
 ?>
 

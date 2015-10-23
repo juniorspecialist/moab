@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\bootstrap\Modal;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -237,6 +238,8 @@ class Selections extends \yii\db\ActiveRecord
         $out.=($this->getMinusWordsText())?$this->getMinusWordsText().PHP_EOL:'';
         $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName.', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.PHP_EOL;
         $out.='Источник:'.$this->getTypeSelect().PHP_EOL;
+
+        return $out;
     }
 
     /**
@@ -312,11 +315,4 @@ class Selections extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
-
-
-    //формируем кнопку, которая покажет диалоговое окно с общей информацией о выборке
-    public function getModalWindowInfo(){
-        Html::a('Параметры', $data)
-    }
-
 }

@@ -8,6 +8,7 @@
 use yii\helpers\Html;
 use app\components\widgets\UserCategoryWidget;
 use yii\grid\GridView;
+use app\components\widgets\ModalWinWithBtnWidget;
 
 
 
@@ -122,36 +123,41 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 
             [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
+                'class' => 'yii\grid\DataColumn',
                 'label'=>'Параметры',
                 'format'=>'raw',
                 'value' => function ($data) {
                     //Ссылка/кнопка на всплывающее окно с параметрами выборки. В этом всплывающем окне будет выводиться информация о выборке,
-                    return $data->getModalWindowInfo();
+                    return ModalWinWithBtnWidget::widget(['info'=>$data->getTotalInfo()]);
                 },
             ],
 
             [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
+                'class' => 'yii\grid\DataColumn',
                 'label'=>'Просмотр',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->eternal_period_price.'<br>'.$data->eternal_period_user_info; // $data['name'] for array data, e.g. using SqlDataProvider.
+                    //Высвечивается только для выборок в статусе «Выполнена»
+                    if($data->status==\app\models\Selections::STATUS_DONE)
+                    {
+                        return Html::a('Просмотреть',['#']);;
+                    }
+                    return Html::a('Просмотреть',['#']);
                 },
             ],
             [
-                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
+                'class' => 'yii\grid\DataColumn',
                 'label'=>'Скачать',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->eternal_period_price.'<br>'.$data->eternal_period_user_info; // $data['name'] for array data, e.g. using SqlDataProvider.
+                    return Html::a('Скачать TXT',$data->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$data->result_csv_zip,['target'=>'_blank']).' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank']);
                 },
             ],
 
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'template'=>'{update}'
-            ],
+//            [
+//                'class' => 'yii\grid\ActionColumn',
+//                'template'=>'{update}'
+//            ],
         ],
     ]); ?>
 
