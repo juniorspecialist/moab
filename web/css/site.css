@@ -239,3 +239,43 @@ a.desc:after {
 .how_connect{
 font-weight: 700;
 }
+
+.clear-search{
+    margin-left: -20px;
+    position: fixed;
+    z-index: 99999999;
+    margin-top: 5px;
+}
+
+.search-suggest-wordstat{
+    margin-top: 20px;
+    /*border: 1px solid red;*/
+
+}
+
+
+.suggest_wordstat_buttons{
+    /*width: 250px;*/
+    /*border: 1px solid #008000;*/
+
+
+}
+.suggest_wordstat_control>a, button {
+    /*margin-top: 10px;*/
+}
+.suggest_wordstat_buttons  >a, button {
+
+
+}
+a.control{
+    width: 260px;
+    margin-bottom: 10px;
+}
+.suggest_wordstat_base_info{
+    /*width: 350px;*/
+    margin-left: 150px;
+
+}
+.sugget_wordstat_search_btn{
+    border: 1px solid red;
+}

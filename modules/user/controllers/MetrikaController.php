@@ -9,18 +9,12 @@
 namespace app\modules\user\controllers;
 
 
-use app\models\Category;
-use app\models\Selections;
+use app\models\Base;
 use app\models\SelectionsSearch;
 use app\modules\user\models\MetrikaForm;
-use yii\bootstrap\ActiveForm;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use Yii;
-use yii\web\Response;
-use yii\web\View;
-
 
 class MetrikaController extends UserMainController{
 
@@ -49,47 +43,9 @@ class MetrikaController extends UserMainController{
         //проверка доступа к выборкам для тек. юзера
         $this->access();
 
-        //выбираем данные по выборкам пользователя
-
-        $model = new SelectionsSearch();
-
-        $dataProvider = $model->search(Yii::$app->request->queryParams);
-
-
-        return $this->render('index',[
-            'dataProvider' => $dataProvider,
-            'searchModel' => $model,
-        ]);
+        return $this->render('index');
     }
 
-    /*
-     * форма создания задания на выборку -
-     * в одном задании может быть указано несколько фраз/ключей и на каждую фразу/ключ создаётся отдельное задание
-     */
-    public function actionCreate()
-    {
-
-        $model = new MetrikaForm();
-
-        /*
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($model);
-        }*/
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-
-            Yii::$app->getSession()->setFlash('success', 'Успешно добавили новую запись.');
-
-            return $this->redirect(['index']);
-
-        } else {
-
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
 
     /*
      * проверка доступа пользователя к БД
@@ -100,5 +56,4 @@ class MetrikaController extends UserMainController{
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 }

@@ -41,31 +41,9 @@ use zhuravljov\widgets\DateTimePicker;
     <?= $form->field($model, 'enabled_user')->checkbox() ?>
 
 
-    <?= $form->field($model, 'last_update')->widget(DateTimePicker::className(), [
-        'clientOptions' => [
-            'format' => 'dd.mm.yyyy hh:ii',
-            'language' => 'ru',
-            'autoclose' => true,
-            'todayBtn' => true,
-            'minuteStep'=> 5,
-        ],
-        'clientEvents' => [],
-    ]) ?>
-
-    <?= $form->field($model, 'next_update')->widget(DateTimePicker::className(), [
-        'clientOptions' => [
-            'format' => 'dd.mm.yyyy hh:ii',
-            'language' => 'ru',
-            'autoclose' => true,
-            'todayBtn' => true,
-            'minuteStep'=> 5,
-        ],
-        'clientEvents' => [],
-    ]) ?>
-
-
+    <?= $form->field($model, 'last_update')->textInput() ?>
+    <?= $form->field($model, 'next_update')->textInput() ?>
     <?= $form->field($model, 'count_keywords')->textInput() ?>
-
     <?= $form->field($model, 'add_in_update')->textInput() ?>
 
 

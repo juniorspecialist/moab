@@ -9,6 +9,7 @@ return [
     'supportEmail' => 'we@moab.pro',
     'user.passwordResetTokenExpire' => 3600,
     'admins'=>['we@moab.pro'],//список админов
+    'subscribe_suggest_and_wordstat'=>5,//ID подписки на базу подсказки+вордстат
     'subscribe_moab_pro_id'=>4,//ID подписки на базу МОБА-про
     'subscribe_moab_base_id'=>3,//ID подписки на базу МОБА-бейс
     'subsribe_moab_suggest'=>1,//ID подписки на базу яндекс-подсказки

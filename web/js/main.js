@@ -152,13 +152,33 @@ $(document).ready(function () {
     })
 
 
-    //====================форма добавления задания на выборку================
 
+    //удаление выбранных значений из таблицы - подсказки-вордстат
+    $(document).on('click','#delete_checked_selects_btn',function(e){
+
+        var keys = $('#suggest-wordstat-grid').yiiGridView('getSelectedRows');
+
+        var url = $(this).attr('delete');//url to send
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: keys,
+            success: function (result) {
+                location.reload();
+            }
+        });
+
+        return false;
+    });
+    //====================форма добавления задания на выборку================
     //пользвоатель выбирает различные - потенциальные трафики
-    $(document).on('change','#selections-potential_traffic', function(){
+    $(document).on('change','#suggestform-potential_traffic', function(){
 
         //определяем потенциальный трафик
-        var potencial_traffic = $('#selections-potential_traffic option:selected').val();
+        var potencial_traffic = $('#suggestform-potential_traffic option:selected').val();
+
+        console.log(potencial_traffic);
 
         //если не пользовательский выбран, то блокируем все поля на форме
         if(potencial_traffic != 1)
@@ -170,48 +190,48 @@ $(document).ready(function () {
             if(potencial_traffic == 5)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#selections-suggest_words_count_from').val(1);
-                $('#selections-suggest_words_count_to').val(32);
+                $('#suggestform-source_words_count_from').val(1);
+                $('#suggestform-source_words_count_to').val(32);
 
                 //позиция подсказки (1-10)
-                $('#selections-position_from').val(1);
-                $('#selections-position_to').val(10);
+                $('#suggestform-position_from').val(1);
+                $('#suggestform-position_to').val(10);
             }
 
             //потенциальный траффик - высокий(4)
             if(potencial_traffic == 4)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#selections-suggest_words_count_from').val(1);
-                $('#selections-suggest_words_count_to').val(1);
+                $('#suggestform-source_words_count_from').val(1);
+                $('#suggestform-source_words_count_to').val(1);
 
                 //позиция подсказки (1-10)
-                $('#selections-position_from').val(1);
-                $('#selections-position_to').val(8);
+                $('#suggestform-position_from').val(1);
+                $('#suggestform-position_to').val(8);
             }
 
             //потенциальный траффик - средний(3)
             if(potencial_traffic == 3)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#selections-suggest_words_count_from').val(5);
-                $('#selections-suggest_words_count_to').val(10);
+                $('#suggestform-suggest_words_count_from').val(5);
+                $('#suggestform-suggest_words_count_to').val(10);
 
                 //позиция подсказки (1-10)
-                $('#selections-position_from').val(2);
-                $('#selections-position_to').val(2);
+                $('#suggestform-position_from').val(2);
+                $('#suggestform-position_to').val(2);
             }
 
             //потенциальный траффик - низкий(2)
             if(potencial_traffic == 2)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#selections-suggest_words_count_from').val(5);
-                $('#selections-suggest_words_count_to').val(10);
+                $('#suggestform-suggest_words_count_from').val(5);
+                $('#suggestform-suggest_words_count_to').val(10);
 
                 //позиция подсказки (1-10)
-                $('#selections-position_from').val(3);
-                $('#selections-position_to').val(3);
+                $('#suggestform-position_from').val(3);
+                $('#suggestform-position_to').val(3);
             }
 
         }else{

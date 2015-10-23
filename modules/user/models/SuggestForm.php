@@ -17,7 +17,7 @@ use yii\base\Model;
  * модель для валидации формы добавления задания на выборку-для яндекс-подсказок
  */
 
-class MetrikaForm extends Model
+class SuggestForm extends Model
 {
 
     public $category_id;

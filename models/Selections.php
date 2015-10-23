@@ -72,6 +72,24 @@ class Selections extends \yii\db\ActiveRecord
 
 
     /*
+     * список типов источников для задания(выборки)
+     */
+    static function getTypeSelectList()
+    {
+        return [
+            self::TYPE_SELECT_METRIKA=>'Метрика',
+            self::TYPE_SELECT_TIPS_YA=>'Яндекс.Подсказки',
+        ];
+    }
+
+    public function getTypeSelect()
+    {
+        $list = self::getTypeSelectList();
+        return $list[$this->type];
+    }
+
+
+    /*
      * список вариантов формата совпадения по сравнению ключей в запросе
      */
     static function getWordsStatSyntax()
@@ -217,6 +235,8 @@ class Selections extends \yii\db\ActiveRecord
         $out.='Длина подсказки (симв.) от'.$this->length_from.' до '.$this->length_to.PHP_EOL;
         //список минус-слов, через разделитель
         $out.=($this->getMinusWordsText())?$this->getMinusWordsText().PHP_EOL:'';
+        $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName.', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.PHP_EOL;
+        $out.='Источник:'.$this->getTypeSelect().PHP_EOL;
     }
 
     /**
@@ -292,4 +312,7 @@ class Selections extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
+
+
+    //
 }
