@@ -39,6 +39,7 @@ class SuggestForm extends Model
     public $stop_words_limit = 10;
     protected $stop_words_exploded; //список минус-слов после преобразования(текста) их в массив
     private $source_phrase_list;
+    public $hash;
 
 
     /*
@@ -308,6 +309,14 @@ class SuggestForm extends Model
                 }
             }
         }
+
+    }
+
+    /*
+     * формируем хеш-сумму по указанным параметрам выборки, для исключения дублирующихся выборок у пользователя
+     */
+    public function getHash()
+    {
 
     }
 }

@@ -314,5 +314,9 @@ class Selections extends \yii\db\ActiveRecord
     }
 
 
-    //
+    //формируем кнопку, которая покажет диалоговое окно с общей информацией о выборке
+    public function getModalWindowInfo(){
+        Html::a('Параметры', $data)
+    }
+
 }

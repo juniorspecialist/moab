@@ -33,12 +33,6 @@ $(document).ready(function () {
                 //$.pjax.reload({container:"#categorys"});
                 $('.modal-body').html(data);
             }
-
-            /*
-             error: function (XMLHttpRequest, textStatus, errorThrown) {
-             $("#error").html("Kļūda! Neizdevās pievienot ierakstu.").fadeIn('highlight','', 2000, callbackError());
-             $("#solutions-solution").val("");
-             }*/
         });
 
         return false;
@@ -65,9 +59,6 @@ $(document).ready(function () {
         $('.photo_id').val($(this).attr('alt_id'));
         return false;
     })
-
-
-
 
     $(document).on('click','.modalWin', function(e){
         $('#modalWondow').modal('show').find('.modal-body').load($(this).attr('value'));
@@ -114,19 +105,13 @@ $(document).ready(function () {
         }
     });
 
-
+    //пользователь удаляе выбранную категорию(выборок)
     $(document).on('click', '.btn-danger',function(e){
 
         e.preventDefault();
 
         var id = $(this).closest('td','a').find('a.mypopover:first').attr('data-pk');
 
-        //bootbox.confirm("Вы уверены, что хотите удалить выбранную группу ?", function(result) {
-        //if (result) {
-        //alert("User confirmed dialog");
-        //alert("User declined dialog");
-        //e.preventDefault();
-        //var form = $(this);
         $.ajax({
             url: '/user/category/delete',
             type: "POST",
@@ -136,19 +121,6 @@ $(document).ready(function () {
                 $('.modal-body').html(result);
             }
         });
-
-        // }
-        //});
-
-//            bootbox.confirm("Are you sure?", "No way!", "Yes, definitely!", function(result) {
-//                console.log("Confirmed? "+result);
-//            });
-
-        //alert('sdfsdf');
-        //alert(result);
-
-        //alert($(this).closest('td','a').find('a.mypopover').attr('data-pk'));
-        //alert($(this).closest('a').html());
     })
 
 
@@ -156,6 +128,9 @@ $(document).ready(function () {
     //удаление выбранных значений из таблицы - подсказки-вордстат
     $(document).on('click','#delete_checked_selects_btn',function(e){
 
+        e.preventDefault();
+
+        //получаем массив выбранных значений
         var keys = $('#suggest-wordstat-grid').yiiGridView('getSelectedRows');
 
         var url = $(this).attr('delete');//url to send
@@ -177,8 +152,6 @@ $(document).ready(function () {
 
         //определяем потенциальный трафик
         var potencial_traffic = $('#suggestform-potential_traffic option:selected').val();
-
-        console.log(potencial_traffic);
 
         //если не пользовательский выбран, то блокируем все поля на форме
         if(potencial_traffic != 1)

@@ -61,9 +61,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <div class="selects-index">
-    <!--    * ```javascript-->
-    <!--    * var keys = $('#grid').yiiGridView('getSelectedRows');-->
-    <!--    * // keys is an array consisting of the keys associated with the selected rows    -->
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -96,7 +93,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Кол-во результатов',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->six_month_price.'<br>'.$data->six_month_user_info; // $data['name'] for array data, e.g. using SqlDataProvider.
+                    //Высвечивается только для выборок в статусе «Выполнена». Для остальных статусов –пустая строка.
+                    if($data->status==\app\models\Selections::STATUS_DONE)
+                    {
+                        return $data->results_count;
+                    }
+                    return '';
                 },
             ],
 
@@ -105,7 +107,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Дата создания',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->twelfth_month_price.'<br>'.$data->twelfth_month_user_info; // $data['name'] for array data, e.g. using SqlDataProvider.
+                    // с точностью до секунды в формате 15.10.2015 13:25:41
+                    return date('d.m.Y H:i:s', $data->date_created);
                 },
             ],
 
@@ -114,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Статус',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->eternal_period_price.'<br>'.$data->eternal_period_user_info; // $data['name'] for array data, e.g. using SqlDataProvider.
+                    return $data->getStatusName();
                 },
             ],
 
@@ -123,7 +126,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Параметры',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->eternal_period_price.'<br>'.$data->eternal_period_user_info; // $data['name'] for array data, e.g. using SqlDataProvider.
+                    //Ссылка/кнопка на всплывающее окно с параметрами выборки. В этом всплывающем окне будет выводиться информация о выборке,
+                    return $data->getModalWindowInfo();
                 },
             ],
 
