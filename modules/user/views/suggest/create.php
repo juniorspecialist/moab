@@ -34,12 +34,10 @@ $this->title = 'Добавить выборку';
             [
                 'label' => 'Дополнительные параметры',
                 'content' => $this->render('extra_options',['model'=>$model, 'form'=>$form]),
-                //'headerOptions' => [...],
                 'options' => ['id' => 'extra_options'],
             ],
             [
                 'label' => 'Параметры Wordstat',
-                //'url' => 'http://www.example.com',
                 'content' => $this->render('wordstat_options',['model'=>$model, 'form'=>$form]),
             ],
             [

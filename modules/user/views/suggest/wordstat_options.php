@@ -48,9 +48,16 @@
         ])->label(false);
 
 
+?>
 
-echo $form->field($model, 'wordstat_syntax')->dropDownList(\app\models\Selections::getWordsStatSyntax(), [ 'class'=>'wordstat']);
+<span class="wordstat_selects_params" style="display: none">
+    <?php
 
-echo $form->field($model, 'wordstat_from')->textInput( [ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>1000000,'value'=>1]);
+        echo $form->field($model, 'wordstat_syntax')->dropDownList(\app\models\Selections::getWordsStatSyntax(), [ 'class'=>'wordstat']);
 
-echo $form->field($model, 'wordstat_to')->textInput([ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>1000000,'value'=>1000000]);
+        echo $form->field($model, 'wordstat_from')->textInput( [ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>1000000,'value'=>1]);
+
+        echo $form->field($model, 'wordstat_to')->textInput([ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>1000000,'value'=>1000000]);
+    ?>
+</span>
+

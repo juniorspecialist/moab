@@ -96,9 +96,9 @@ class Selections extends \yii\db\ActiveRecord
     static function getWordsStatSyntax()
     {
         return [
+            self::WORD_STAT_SYNTAX_TWO=>'“!слово1 !слово2”',
             self::WORD_STAT_SYNTAX_ZERO=>'слово1 слово2',
             self::WORD_STAT_SYNTAX_ONE=>'“слово1 слово2”',
-            self::WORD_STAT_SYNTAX_TWO=>'“!слово1 !слово2”',
         ];
     }
 
@@ -151,7 +151,7 @@ class Selections extends \yii\db\ActiveRecord
 
         if($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)
         {
-            $out.='Количествослов в исходной фразе: от '.$this->source_words_count_from.' до '.$this->source_words_count_to.PHP_EOL;
+            $out.='Количество слов в исходной фразе: от '.$this->source_words_count_from.' до '.$this->source_words_count_to.PHP_EOL;
             $out.='Позицияподсказки: от '.$this->position_from.' до '.$this->position_to.PHP_EOL;
         }
 
@@ -250,12 +250,12 @@ class Selections extends \yii\db\ActiveRecord
             'date_created' => 'дата создания',
             'status' => 'Статус выборки',
             'potential_traffic' => 'Потенциальный траффик',
-            'source_words_count_from' => 'Частотность От',
-            'source_words_count_to' => 'Частотность До',
+            'source_words_count_from' => 'Количество слов в исходной фразе От',
+            'source_words_count_to' => 'Количество слов в исходной фразе До',
             'position_from' => 'Позиция подсказки От',
             'position_to' => 'Позиция подсказки До',
-            'suggest_words_count_from' => 'Количество слов в исходной фразе От',
-            'suggest_words_count_to' => 'Количество слов в исходной фразе До',
+            'suggest_words_count_from' => 'Количество слов в подсказке От',
+            'suggest_words_count_to' => 'Количество слов в подсказке До',
             'length_from' => 'Длина подсказки от',
             'length_to' => 'Длина подсказки до',
             'need_wordstat' => 'Нужны фразы с частотностью Wordstat',//'0 –ненужна частота по Wordstat1 –нужна частота по Wordstat',
@@ -327,5 +327,19 @@ class Selections extends \yii\db\ActiveRecord
     public function previewInfo()
     {
 
+    }
+
+    public function beforeDelete()
+    {
+        if (parent::beforeDelete()) {
+
+            MinusWords::deleteAll(['selection_id'=>$this->id]);
+
+            Preview::deleteAll(['selection_id'=>$this->id]);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }

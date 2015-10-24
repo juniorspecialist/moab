@@ -135,16 +135,12 @@ $(document).ready(function () {
 
         var url = $(this).attr('delete');//url to send
 
-        console.log(JSON.stringify(keys));
         $.ajax({
             url: url,
             type: "POST",
-            //contentType: 'application/json',
-            //data: JSON.stringify(keys),
-            //dataType: 'json',
             data: { 'ids': keys },
             success: function (result) {
-                if(result=='ok')
+                if(result==true)
                 {
                     location.reload();
                 }
@@ -154,6 +150,19 @@ $(document).ready(function () {
         return false;
     });
     //====================форма добавления задания на выборку================
+
+    $(document).on('click','input[name="SuggestForm[need_wordstat]"]',function(){
+        if($(this).val()==0)
+        {
+            $('.wordstat_selects_params').hide();
+            $('select.wordstat').attr('disabled',false);
+        }else{
+            $('.wordstat_selects_params').show();
+            $('select.wordstat').attr('disabled','disabled');
+        }
+    });
+
+
     //пользвоатель выбирает различные - потенциальные трафики
     $(document).on('change','#suggestform-potential_traffic', function(){
 
@@ -170,7 +179,7 @@ $(document).ready(function () {
             if(potencial_traffic == 5)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-source_words_count_from').val(1);
+                $('#suggestform-source_words_count_from').val("1");
                 $('#suggestform-source_words_count_to').val(32);
 
                 //позиция подсказки (1-10)
@@ -182,7 +191,7 @@ $(document).ready(function () {
             if(potencial_traffic == 4)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-source_words_count_from').val(1);
+                $('#suggestform-source_words_count_from').val('1');
                 $('#suggestform-source_words_count_to').val(1);
 
                 //позиция подсказки (1-10)
@@ -194,7 +203,7 @@ $(document).ready(function () {
             if(potencial_traffic == 3)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-suggest_words_count_from').val(5);
+                $('#suggestform-suggest_words_count_from').val('5');
                 $('#suggestform-suggest_words_count_to').val(10);
 
                 //позиция подсказки (1-10)
@@ -206,7 +215,7 @@ $(document).ready(function () {
             if(potencial_traffic == 2)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-suggest_words_count_from').val(5);
+                $('#suggestform-suggest_words_count_from').val('5');
                 $('#suggestform-suggest_words_count_to').val(10);
 
                 //позиция подсказки (1-10)

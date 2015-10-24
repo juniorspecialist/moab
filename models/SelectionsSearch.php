@@ -58,6 +58,8 @@ class SelectionsSearch extends Selections{
 
         $query->joinWith(['category']);
 
+        $query->select('selections.*,CONCAT(selections.name+selections.source_phrase+selections.results_count) as search');
+
         //если пользователь НЕ админ, показываем только его финансы
         //if user not admin
         if( \Yii::$app->user->identity->isAdmin()){
@@ -68,7 +70,8 @@ class SelectionsSearch extends Selections{
             ]);
         }
 
-        $query->orderBy('date_created DESC');
+        $query->orderBy('date_created DESC, id DESC');
+
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to any records when validation fails
@@ -76,21 +79,9 @@ class SelectionsSearch extends Selections{
             return $dataProvider;
         }
 
-        /*
-        if( \Yii::$app->user->identity->isAdmin()){
+        //объединили поля и поиск совпадений по разным полям
+        $query->andFilterWhere(['like','CONCAT(category.title,selections.name,selections.source_phrase,selections.results_count)', $this->search]);
 
-            $query->andFilterWhere([
-                'tbl_tickets.id' => $this->id,
-                'tbl_tickets.prioritet' => $this->prioritet,
-                'tbl_tickets.status' => $this->status,
-            ]);
-
-            $query->andFilterWhere(['like', 'user.email', $this->author_id]);
-
-            $query->andFilterWhere(['like', 'u2.email', $this->author_id_last_msg]);
-
-            $query->andFilterWhere(['like', 'tbl_tickets.theme', $this->theme]);
-        }*/
 
         return $dataProvider;
     }

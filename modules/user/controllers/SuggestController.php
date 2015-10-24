@@ -74,13 +74,8 @@ class SuggestController extends UserMainController{
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 
-            //$model->getHashList();
-
             //создаём выборки
             $model->createSelects();
-
-
-            //die();
 
             Yii::$app->getSession()->setFlash('success', 'Успешно добавили выборку(и)');
 
@@ -103,34 +98,17 @@ class SuggestController extends UserMainController{
         if(Yii::$app->request->isPost)
         {
             //находим список совпадений выборок, принадлежащих текущему юзеру(чтобы юзер лишь свои выборки мог удалить)
-            $rows = Yii::$app->db
-                ->createCommand('SELECT id FROM selections WHERE user_id=:user_id AND id IN (:ids)')
-                ->bindValues([':user_id'=>Yii::$app->user->id, ':ids'=>implode(',',Yii::$app->request->post('ids'))])
-                ->queryAll();
+            $rows = (new \yii\db\Query())
+                ->select(['id'])
+                ->from('selections')
+                ->where(['id' => Yii::$app->request->post('ids'),'user_id'=>Yii::$app->user->id])
+                ->all();
 
             if($rows){
-                echo '<pre>'; print_r($rows);
-                //echo implode(',',$rows['id']).'<br>';
-                echo implode(',',$rows).'<br>';
-                die();
-                //удаляем подвязанные данные к выборкам(таблица предв. просмотров+таблица минус-слов)
-                //удаляем минус-слова
-                Yii::$app->db
-                    ->createCommand('DELETE FROM '.MinusWords::tableName().' WHERE selection_id IN (:ids)')
-                    ->bindValues([':ids'=>implode(',', ArrayHelper::map($rows, 'id','id'))])
-                    ->execute();
 
-                //удаляем список предв. просмотров по выборкам
-                Yii::$app->db
-                    ->createCommand('DELETE FROM '.Preview::tableName().' WHERE selection_id IN (:ids)')
-                    ->bindValues([':ids'=>implode(',', ArrayHelper::map($rows, 'id','id'))])
-                    ->execute();
-
-                ////удаляем выбранные выборки по связке - user_id+ID(выбранных им выборок)
-                Yii::$app->db
-                    ->createCommand('DELETE FROM selections WHERE user_id=:user_id AND id IN (:ids)')
-                    ->bindValues([':user_id'=>Yii::$app->user->id, ':ids'=>implode(',',Yii::$app->request->post('ids'))])
-                    ->execute();
+                foreach($rows as $id){
+                    Selections::findOne(['id'=>$id['id']])->delete();
+                }
 
                 return true;
             }
@@ -145,7 +123,7 @@ class SuggestController extends UserMainController{
      */
     protected function access()
     {
-        if(!\app\modules\user\models\User::isSubscribeMoab()){
+        if(!\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat'])){
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }

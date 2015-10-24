@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <div class="search-suggest-wordstat col-md-12">
-    <form method="get"  action="search">
+    <form method="get"  action="">
 
         <div class="input-group ">
 
@@ -50,7 +50,8 @@ $this->params['breadcrumbs'][] = $this->title;
             </button>
         </span>
 
-            <input type="text" id="search_field" class="form-control ng-pristine ng-valid ng-touched" placeholder="Введите значение фильтра"  tabindex="0" aria-invalid="false" style="width: 90%">
+
+            <?=Html::activeInput('text',$searchModel,'search',['id'=>'search_field', 'class'=>'form-control','placeholder'=>'Введите значение фильтра', 'style'=>'width: 90%'])?>
 
             <a href="#" class="clear-search" onclick="$('#search_field').val(''); window.location='<?=\yii\helpers\Url::to(['/user/suggest/index'])?>'; return false;"> <i class="fa fa-times"></i> </a>
 

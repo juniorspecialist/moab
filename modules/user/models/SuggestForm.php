@@ -23,16 +23,16 @@ class SuggestForm extends Model
     public $category_id;
     public $source_phrase;
     public $potential_traffic;
-    public $source_words_count_from;
-    public $source_words_count_to;
-    public $position_from;
-    public $position_to;
-    public $suggest_words_count_from;
-    public $suggest_words_count_to;
+    public $source_words_count_from = 1;
+    public $source_words_count_to = 10;
+    public $position_from = 1;
+    public $position_to = 10;
+    public $suggest_words_count_from = 1;
+    public $suggest_words_count_to = 32;
     public $length_from;
     public $length_to;
     public $need_wordstat;
-    public $wordstat_syntax;
+    public $wordstat_syntax = Selections::WORD_STAT_SYNTAX_TWO;
     public $wordstat_from;
     public $wordstat_to;
     public $stop_words;
@@ -252,7 +252,7 @@ class SuggestForm extends Model
         return [
             [['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
-                'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'required'],
+                'length_from', 'length_to', 'need_wordstat',  'wordstat_from', 'wordstat_to'], 'required'],
 
             [['potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to',
                 'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
@@ -283,12 +283,12 @@ class SuggestForm extends Model
             'source_phrase' => 'Исходная ключевая фраза',
             'results_count' => 'кол-во результатов',
             'potential_traffic' => 'Потенциальный траффик',
-            'source_words_count_from' => 'Частотность От',
-            'source_words_count_to' => 'Частотность До',
+            'source_words_count_from' => 'Количество слов в исходной фразе От',
+            'source_words_count_to' => 'Количество слов в исходной фразе До',
             'position_from' => 'Позиция подсказки От',
             'position_to' => 'Позиция подсказки До',
-            'suggest_words_count_from' => 'Количество слов в исходной фразе От',
-            'suggest_words_count_to' => 'Количество слов в исходной фразе До',
+            'suggest_words_count_from' => 'Количество слов в подсказке От',
+            'suggest_words_count_to' => 'Количество слов в подсказке До',
             'length_from' => 'Длина подсказки от',
             'length_to' => 'Длина подсказки до',
             'need_wordstat' => 'Нужны фразы с частотностью Wordstat',//'0 –ненужна частота по Wordstat1 –нужна частота по Wordstat',
@@ -333,6 +333,9 @@ class SuggestForm extends Model
                 $model->hash = $this->createHash($source_phrase);
 
                 $model->source_phrase = trim($source_phrase);
+
+                //денормализация данных
+                $model->minus_words = json_encode($this->stop_words_exploded);
 
                 //если параметры указаны верно, сохраним задание на выборку
                 if($model->validate())

@@ -57,9 +57,9 @@ if(!Yii::$app->user->isGuest){
 		                        ['label' => '<i class="fa fa-briefcase"></i><span>Документы</span>', 'url' => ['/user/doc/index'],  'active' => $checkController('doc/index')],
 
                                 //['label'=>'Выборки','visible'=>\app\modules\user\models\User::isSubscribeMoab()],
-                                ['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">Moab.Metrika</span>', 'url'=>['/user/metrika/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(), 'active' => $checkController('metrika/index')],
+                                //['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">Moab.Metrika</span>', 'url'=>['/user/metrika/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']), 'active' => $checkController('metrika/index')],
 
-                                ['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">Moab.Suggests</span>', 'url'=>['/user/suggest/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(), 'active' => $checkController('suggest/index')],
+                                ['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">Moab.Suggests</span>', 'url'=>['/user/suggest/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']), 'active' => $checkController('suggest/index')],
 
                             ],
                         ]
