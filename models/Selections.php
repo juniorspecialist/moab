@@ -266,7 +266,7 @@ class Selections extends \yii\db\ActiveRecord
             'result_txt_zip' => 'ссылка на файл txt',
             'result_csv_zip' => 'ссылка на файл csv',
             'result_xlsx_zip' => 'ссылка на файл xlsx',
-            'category_id'=>'Категория',
+            'category_id'=>'Группа',
             'stop_words'=>'Список минус-слов',
         ];
     }

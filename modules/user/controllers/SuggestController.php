@@ -15,10 +15,12 @@ use app\models\Preview;
 use app\models\Selections;
 use app\models\SelectionsSearch;
 use app\modules\user\models\SuggestForm;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use Yii;
+
 
 class SuggestController extends UserMainController{
 
@@ -29,7 +31,7 @@ class SuggestController extends UserMainController{
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'delete'],
+                        'actions' => ['index', 'create', 'delete','preview'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -60,6 +62,58 @@ class SuggestController extends UserMainController{
             'searchModel' => $model,
             'base'=>$base
         ]);
+    }
+
+    /*
+     * предварительный просмотр результатов выборки
+     */
+    public function actionPreview($id)
+    {
+
+        //TODO доделать вывод информации через диалоговое окно в таблице выборок
+        if(Yii::$app->request->isPost)
+        {
+            $cache_id = 'preview_suggest_'.$id;
+
+            //проверим свою ли выборку юзер хочет посмотреть
+            $selections = $this->loadSelect($id);
+
+            if($selections !== Selections::STATUS_DONE)
+            {
+                throw new NotFoundHttpException('The requested page does not exist.');
+            }
+
+            //если результат выборки закеширован - получаем из кеша
+            $data = Yii::$app->cache->get($cache_id);
+
+            if ($data === false) {
+
+                // данные не закешированы - производим выборку
+
+                $query = Preview::find()
+                    ->select(['phrase','length','position','wordstat_1','wordstat_2','wordstat_3'])
+                    ->where([
+                        'user_id' => Yii::$app->user->id,
+                        'selection_id'=>$selections->id
+                    ])
+                    ->limit(1000);
+
+                $provider = new ActiveDataProvider([
+                    'query' => $query,
+                    'pagination' => false,
+                    'sort' => false,
+                ]);
+
+                $data = $this->render('preview', ['dataProvider'=>$provider]);
+
+                // store $data in cache so that it can be retrieved next time
+                Yii::$app->cache->set($cache_id, $data);
+            }
+
+            return $data;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
 
@@ -135,4 +189,13 @@ class SuggestController extends UserMainController{
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    protected function loadSelect($id){
+        if (($model = Selections::findOne(['id'=>$id, 'user_id'=>Yii::$app->user->id])) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
 }

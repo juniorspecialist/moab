@@ -9,6 +9,7 @@
 namespace app\modules\user\models;
 
 use app\models\Base;
+use app\models\Category;
 use app\models\EmailSubscribe;
 use app\models\Financy;
 use app\models\UserSubscription;
@@ -84,6 +85,12 @@ class SignupForm extends Model
                 $user->promo = mb_strtolower($this->promo,'UTF-8');
             }
             if ($user->save()) {
+
+                //добавим группу пользователю по-умолчанию
+                $category = new Category();
+                $category->user_id = $user->id;
+                $category->title = 'Без группы';
+                $category->save();
 
                 //отрпавка почты пользователю для подтверждения регистрации
                  Yii::$app->mailer->compose(['html'=>'confirmEmail'], ['user' => $user])

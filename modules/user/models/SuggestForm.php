@@ -106,10 +106,13 @@ class SuggestForm extends Model
                     //получаем массив минус-слов
                     $this->explodedStopWords();
 
-                    //поиск фразы в массиве минус-слов
-                    if(in_array($source_phrase_word, $this->stop_words_exploded))
+                    if($this->stop_words_exploded)
                     {
-                        $this->addError('source_phrase'," Указанная вами фраза '$source_phrase_word' встречается в минус словах");
+                        //поиск фразы в массиве минус-слов
+                        if(in_array($source_phrase_word, $this->stop_words_exploded))
+                        {
+                            $this->addError('source_phrase'," Указанная вами фраза '$source_phrase_word' встречается в минус словах");
+                        }
                     }
                 }
 
@@ -299,7 +302,7 @@ class SuggestForm extends Model
             'result_txt_zip' => 'ссылка на файл txt',
             'result_csv_zip' => 'ссылка на файл csv',
             'result_xlsx_zip' => 'ссылка на файл xlsx',
-            'category_id'=>'Категория',
+            'category_id'=>'Группа',
             'stop_words'=>'Список минус-слов',
             'stop_words_limit'=>'Лимит на список минус-слов',
         ];
@@ -335,7 +338,9 @@ class SuggestForm extends Model
                 $model->source_phrase = trim($source_phrase);
 
                 //денормализация данных
-                $model->minus_words = json_encode($this->stop_words_exploded);
+                if($this->stop_words_exploded){
+                    $model->minus_words = json_encode($this->stop_words_exploded);
+                }
 
                 //если параметры указаны верно, сохраним задание на выборку
                 if($model->validate())
@@ -368,8 +373,13 @@ class SuggestForm extends Model
     public function createHash($source_phrase)
     {
         $hash = trim($source_phrase).$this->potential_traffic.$this->source_words_count_from.$this->source_words_count_to.$this->position_from.$this->position_to.$this->suggest_words_count_from;
+
         $hash.=$this->suggest_words_count_to.$this->length_from.$this->length_to.$this->need_wordstat.$this->wordstat_syntax.$this->wordstat_from.$this->wordstat_to;
-        $hash.=$this->type.'w'.implode('',$this->stop_words_exploded);
+
+        //если указан список минус-слов, используем его
+        if($this->stop_words_exploded){
+            $hash.=$this->type.'w'.implode('',$this->stop_words_exploded);
+        }
 
         return md5($hash);
     }

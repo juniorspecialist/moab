@@ -51,9 +51,9 @@ class Preview extends \yii\db\ActiveRecord
             'phrase' => 'фраза',
             'length' => 'длина исходной фразы',
             'position' => 'позиция исходной фразы',
-            'wordstat_1' => 'частота wordstat без синтаксиса',
-            'wordstat_2' => 'частота wordstatс синтаксисом в кавычках',
-            'wordstat_3' => 'частота wordstatс синтаксисом в кавычках и с восклицательным знаком',
+            'wordstat_1' => 'слово1 слово2',
+            'wordstat_2' => '"слово1 слово2"',
+            'wordstat_3' => '"!слово1 !слово2"',
         ];
     }
 

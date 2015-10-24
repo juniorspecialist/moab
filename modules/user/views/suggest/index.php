@@ -142,9 +142,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     //Высвечивается только для выборок в статусе «Выполнена»
                     if($data->status==\app\models\Selections::STATUS_DONE)
                     {
-                        return Html::a('Просмотреть',['#']);
+                        return Html::a('Просмотреть',['#'],[
+                            'alt'=>\yii\helpers\Url::to(['/user/suggest/preview','id'=>$data->id]),
+                            'class'=>'modal_preview_suggest'
+                        ]);
                     }
-                    return Html::a('Просмотреть',['#']);
+                    return '';
                 },
             ],
             [
