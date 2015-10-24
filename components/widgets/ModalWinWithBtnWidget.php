@@ -18,20 +18,21 @@ use yii\base\Widget;
 
 class ModalWinWithBtnWidget extends Widget{
 
-    private $info;
-    private $button_label = 'Кнопка';
+    public $info;
+    public $button_label = 'Кнопка';
+    public $header='Заголовок окна';
 
-    public function init($info, $button_label){
-        $this->button_label = $button_label;
-        $this->info = $info;
+    public function init(){
+        parent::init();
     }
 
 
     public function run()
     {
         return $this->render('modal_win_with_btn', [
-            'info',$this->info,
-            'button_label'=>$this->button_label
+            'info'=>$this->info,
+            'button_label'=>$this->button_label,
+            'header'=>$this->header,
         ]);
     }
 }

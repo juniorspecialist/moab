@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <input type="text" id="search_field" class="form-control ng-pristine ng-valid ng-touched" placeholder="Введите значение фильтра"  tabindex="0" aria-invalid="false" style="width: 90%">
 
-            <a href="#" class="clear-search" onclick="$('#search_field').val('');return false;"> <i class="fa fa-times"></i> </a>
+            <a href="#" class="clear-search" onclick="$('#search_field').val(''); window.location='<?=\yii\helpers\Url::to(['/user/suggest/index'])?>'; return false;"> <i class="fa fa-times"></i> </a>
 
         </div>
     </form>
@@ -61,10 +61,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-<div class="selects-index">
+<div class="selects-index ">
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'summary'=>false,
         'id' => 'suggest-wordstat-grid',
 //        'tableOptions' => [
 //            'class' => 'table table-striped table-bordered'
@@ -78,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Группа',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->one_month_price.'<br>'.$data->one_month_user_info;
+                    return $data->category->title;
                 },
             ],
             [
@@ -86,7 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Ключевая фраза',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->three_month_price.'<br>'.$data->three_month_user_info;
+                    return $data->name;
                 },
             ],
             [
@@ -128,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function ($data) {
                     //Ссылка/кнопка на всплывающее окно с параметрами выборки. В этом всплывающем окне будет выводиться информация о выборке,
-                    return ModalWinWithBtnWidget::widget(['info'=>$data->getTotalInfo()]);
+                    return  ModalWinWithBtnWidget::widget(['info'=>$data->getTotalInfo(),'button_label'=>'Параметры','header'=>'Параметры выборки']);
                 },
             ],
 
@@ -140,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     //Высвечивается только для выборок в статусе «Выполнена»
                     if($data->status==\app\models\Selections::STATUS_DONE)
                     {
-                        return Html::a('Просмотреть',['#']);;
+                        return Html::a('Просмотреть',['#']);
                     }
                     return Html::a('Просмотреть',['#']);
                 },
@@ -150,14 +151,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Скачать',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return Html::a('Скачать TXT',$data->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$data->result_csv_zip,['target'=>'_blank']).' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank']);
+                    if($data->status==\app\models\Selections::STATUS_DONE){
+                        return Html::a('Скачать TXT',$data->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$data->result_csv_zip,['target'=>'_blank']).' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank']);
+                    }
+                    return '';
                 },
             ],
-
-//            [
-//                'class' => 'yii\grid\ActionColumn',
-//                'template'=>'{update}'
-//            ],
         ],
     ]); ?>
 

@@ -40,6 +40,7 @@ class SuggestForm extends Model
     protected $stop_words_exploded; //список минус-слов после преобразования(текста) их в массив
     private $source_phrase_list;
     public $hash;
+    public $type = Selections::TYPE_SELECT_TIPS_YA;
 
     private $hash_list = [];//список хеш-сумм, которые формируем по каждой выборке(каждому ключевому слову)
 
@@ -79,6 +80,9 @@ class SuggestForm extends Model
             //по каждому ключевому слову выполняем валидацию
             foreach($source_phrase_list as $source_phrase_word)
             {
+
+                $source_phrase_word = trim($source_phrase_word);
+
                 //при появлении ошибки - остановим дальнейшие проверки
                 if($this->hasErrors()){ break; }
 
@@ -118,6 +122,41 @@ class SuggestForm extends Model
                         $this->addError('source_phrase', "Исходная фраза '$source_phrase_word' введена в неверном формате");
                     }
                 }
+
+                //формируем hash-сумму по параметрам выборки и проверяем на дубли
+                if(!$this->hasErrors())
+                {
+                    //формируем HASH, на основании общих параметров выборки
+                    $hash = $this->createHash($source_phrase_word);
+
+                    //поиск совпадения в списке хешей
+                    if(in_array($hash, $this->hash_list))
+                    {
+                        //echo '<pre>'; print_r($this->hash_list);
+                        //echo 'current_hash='.$hash.'<br>';
+                        $this->addError('source_phrase',"Исходная фраза '$source_phrase_word' продублирована у вас в списке исходных ключевых фраз");
+                    }
+
+                    //die($hash);
+                    //если ранее была создана выборка с такими же параметрами то сверим с бд
+                    if(!$this->hasErrors())
+                    {
+                        $db_hash = Yii::$app->db
+                            ->createCommand("SELECT id FROM selections WHERE user_id=:user_id AND hash=:hash")
+                            ->bindValues([":hash"=>$hash, ":user_id"=>Yii::$app->user->id])
+                            ->queryScalar();
+
+                        //нашли совпадение, юзер ранее добавлял такую выборку, нашли в БД
+                        if($db_hash)
+                        {
+                            $this->addError('source_phrase',"Выборка по исходной фразе '$source_phrase_word' с такими же параметрами встречается у вас ранее");
+                        }
+
+                    }
+
+                    if(!$this->hasErrors()) { $this->hash_list[] = $hash; }
+                }
+
 
                 // добавим в общий список ключевых слов - провалидированное ключ. слово
                 if(!$this->hasErrors())
@@ -165,6 +204,8 @@ class SuggestForm extends Model
                     }
                 }
             }
+
+            $this->explodedStopWords();
         }
     }
 
@@ -220,14 +261,11 @@ class SuggestForm extends Model
             //проверка всех текстовых полей, в которых указывается интервал чисел (От и До)
             ['wordstat_from','validateParamsFromTo'],
 
-            //валидируем список ключевых слов
-            ['source_phrase','validateSourcePhrase'],
-
-            //[['hash'], 'string', 'max' => 50],
-
             //проверка списка минус-слов
             ['stop_words', 'validateStopWords'],
 
+            //валидируем список ключевых слов
+            ['source_phrase','validateSourcePhrase'],
         ];
     }
 
@@ -290,12 +328,16 @@ class SuggestForm extends Model
                     }
                 }
 
+                $model->name = trim($source_phrase);
+
+                $model->hash = $this->createHash($source_phrase);
+
+                $model->source_phrase = trim($source_phrase);
+
                 //если параметры указаны верно, сохраним задание на выборку
                 if($model->validate())
                 {
 
-                    echo 'ok<br>';
-                    /*
                     if($model->save())
                     {
                         if($this->stop_words_exploded)
@@ -306,9 +348,9 @@ class SuggestForm extends Model
                                 Yii::$app->db->createCommand()->insert('minus_words',['selection_id'=>$model->id,'minus_word'=>$stop_word_relation])->execute();
                             }
                         }
-                    }*/
+                    }
                 }else{
-                    echo '<pre>'; print_r($model->errors); break;
+                    echo '<pre>'; print_r($model->errors); die();
                 }
             }
         }
@@ -322,9 +364,11 @@ class SuggestForm extends Model
      */
     public function createHash($source_phrase)
     {
-        $hash = $this->source_phrase.$this->source_words_count_from.$this->source_words_count_to.$this->position_from.$this->position_to.$this->suggest_words_count_from;
-        $hash.=$this->suggest_words_count_to.$this->suggest_length_from.$this->suggest_length_to.$this->need_wordstat.$this->wordstat_syntax.$this->wordstat_from.$this->wordstat_to;
-        $hash.=$this->type.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.$this->.;
+        $hash = trim($source_phrase).$this->potential_traffic.$this->source_words_count_from.$this->source_words_count_to.$this->position_from.$this->position_to.$this->suggest_words_count_from;
+        $hash.=$this->suggest_words_count_to.$this->length_from.$this->length_to.$this->need_wordstat.$this->wordstat_syntax.$this->wordstat_from.$this->wordstat_to;
+        $hash.=$this->type.'w'.implode('',$this->stop_words_exploded);
 
+        return md5($hash);
     }
+
 }

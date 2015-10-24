@@ -194,7 +194,7 @@ class Selections extends \yii\db\ActiveRecord
         return [
             [['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
-                'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'required'],
+                'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to', 'hash', 'name'], 'required'],
 
             [['user_id', 'type', 'results_count', 'date_created', 'status', 'potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to',
                 'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
@@ -204,18 +204,11 @@ class Selections extends \yii\db\ActiveRecord
 
             [['hash'], 'string', 'max' => 50],
 
-            //проверка списка минус-слов
-            ['stop_words', 'validateStopWords'],
-
-            //проверка всех текстовых полей, в которых указывается интервал чисел (От и До)
-            ['wordstat_from','validateParamsFromTo'],
-
             //параметры по-умолчанию
             ['user_id', 'default', 'value'=>Yii::$app->user->id],
             ['date_created', 'default', 'value'=>time()],
             ['status', 'default', 'value'=>self::STATUS_WAIT],
             ['type','default','value'=>self::TYPE_SELECT_TIPS_YA],
-            //['name', 'default', 'value'=>$this->source_phrase],
 
 
             [['result_txt_zip', 'result_csv_zip', 'result_xlsx_zip'], 'string', 'max' => 128]
@@ -226,18 +219,18 @@ class Selections extends \yii\db\ActiveRecord
      * общая информация о выборке
      * выводим информацию в диалоговом окне для пользователя
      */
-    private function getTotalInfo()
+    public function getTotalInfo()
     {
-        $out = 'Исходная ключевая фраза:$this->source_phrase'.PHP_EOL;
-        $out.='В группе:$this->category->title'.PHP_EOL;
+        $out = "Исходная ключевая фраза:$this->source_phrase<br>";
+        $out.="В группе:".$this->category->title.'<br>';
         //описание к потенциальному трафику
-        $out.=$this->getPotencialTrafficTotalInfo();
-        $out.='Количество слов в подсказке: от '.$this->suggest_words_count_from.' до '.$this->suggestwords_count_to.PHP_EOL;
-        $out.='Длина подсказки (симв.) от'.$this->length_from.' до '.$this->length_to.PHP_EOL;
+        $out.=$this->getPotencialTrafficTotalInfo().'<br>';
+        $out.='Количество слов в подсказке: от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to.'<br>';
+        $out.='Длина подсказки (симв.) от'.$this->length_from.' до '.$this->length_to.PHP_EOL.'<br>';
         //список минус-слов, через разделитель
-        $out.=($this->getMinusWordsText())?$this->getMinusWordsText().PHP_EOL:'';
-        $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName.', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.PHP_EOL;
-        $out.='Источник:'.$this->getTypeSelect().PHP_EOL;
+        $out.=($this->getMinusWordsTextJson())?('Минус-слова: '.$this->getMinusWordsTextJson().'<br>'):'';
+        $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.'<br>';
+        $out.='Источник:'.$this->getTypeSelect().'<br>';
 
         return $out;
     }
@@ -293,9 +286,20 @@ class Selections extends \yii\db\ActiveRecord
     {
         if($this->minusWords)
         {
-            return 'Минус-слова: '.implode(', ', ArrayHelper::map($this->minusWords, 'minus_word', 'minus_word'));
+            return implode(', ', ArrayHelper::map($this->minusWords, 'minus_word', 'minus_word'));
         }
 
+        //нет минус-слов, значит пустое значение выводим
+        return '';
+    }
+
+    /*
+     * чтобы не делать доп. запросы к таблице минус-слов - храним массив минус-слов к json формате в самой таблице выборок
+     */
+    public function getMinusWordsTextJson(){
+        if($this->minus_words){
+            return implode(', ', json_decode($this->minus_words, true));
+        }
         //нет минус-слов, значит пустое значение выводим
         return '';
     }
@@ -314,5 +318,14 @@ class Selections extends \yii\db\ActiveRecord
     public function getCategory()
     {
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
+    }
+
+
+    /*
+     * формируем данные для предварительного просмотра результатов выборки
+     */
+    public function previewInfo()
+    {
+
     }
 }

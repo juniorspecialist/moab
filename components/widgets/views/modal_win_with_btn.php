@@ -8,15 +8,13 @@
 use yii\helpers\Html;
 use yii\bootstrap\Modal;
 
-
-//echo Html::a($button_label, '#',['class'=>'btn btn-success control' ,'id'=>'category_modal_btn','value'=>'/user/category/index']);
-
 Modal::begin([
-    //'header' => '<h2>Группы</h2>',
-    'id'=>'modal_control_category',
+    'header' => "<h2>$header</h2>",
+    'id'=>uniqid(time().rand(1,1000)),
     'toggleButton' => [
         'label' => $button_label,
         //'style'=>'display:none',
+        'tag'=>'a'
     ],
 ]);
 

@@ -39,8 +39,6 @@ $this->title = 'Редактирование интервала подписок
     <?php
 
     echo $form->field($model, 'to')->widget('trntv\yii\datetimepicker\DatetimepickerWidget', [
-        //'phpDatetimeFormat' => 'yyyy-MM-dd\'T\'HH:mm:ssZZZZZ',
-        //'phpDatetimeFormat' => 'dd-MM-yyyy\'T\'HH:mm:ssZZZZZ',
         'clientOptions' => [
             //'minDate' => new \yii\web\JsExpression('new Date("2015-01-01")'),
             'sideBySide' => true,

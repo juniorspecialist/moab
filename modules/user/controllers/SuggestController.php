@@ -10,10 +10,13 @@ namespace app\modules\user\controllers;
 
 
 use app\models\Base;
+use app\models\MinusWords;
+use app\models\Preview;
 use app\models\Selections;
 use app\models\SelectionsSearch;
 use app\modules\user\models\SuggestForm;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use Yii;
 
@@ -26,7 +29,7 @@ class SuggestController extends UserMainController{
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create'],
+                        'actions' => ['index', 'create', 'delete'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -71,7 +74,15 @@ class SuggestController extends UserMainController{
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 
-            Yii::$app->getSession()->setFlash('success', 'Успешно добавили новую запись.');
+            //$model->getHashList();
+
+            //создаём выборки
+            $model->createSelects();
+
+
+            //die();
+
+            Yii::$app->getSession()->setFlash('success', 'Успешно добавили выборку(и)');
 
             return $this->redirect(['index']);
 
@@ -88,14 +99,43 @@ class SuggestController extends UserMainController{
      */
     public function actionDelete()
     {
+
         if(Yii::$app->request->isPost)
         {
-            //удаляем выбранные выборки по связке - user_id+ID(выбранных им выборок)
-            Yii::$app->db
-                ->createCommand("DELETE FROM Selections::tableName() WHERE user_id=:user_id AND id IN (:ids)")
-                ->bindValues([':user_id'=>Yii::$app->user->id, ':ids'=>Yii::$app->request->post('ids')])
-                ->execute();
-            return 'ok';
+            //находим список совпадений выборок, принадлежащих текущему юзеру(чтобы юзер лишь свои выборки мог удалить)
+            $rows = Yii::$app->db
+                ->createCommand('SELECT id FROM selections WHERE user_id=:user_id AND id IN (:ids)')
+                ->bindValues([':user_id'=>Yii::$app->user->id, ':ids'=>implode(',',Yii::$app->request->post('ids'))])
+                ->queryAll();
+
+            if($rows){
+                echo '<pre>'; print_r($rows);
+                //echo implode(',',$rows['id']).'<br>';
+                echo implode(',',$rows).'<br>';
+                die();
+                //удаляем подвязанные данные к выборкам(таблица предв. просмотров+таблица минус-слов)
+                //удаляем минус-слова
+                Yii::$app->db
+                    ->createCommand('DELETE FROM '.MinusWords::tableName().' WHERE selection_id IN (:ids)')
+                    ->bindValues([':ids'=>implode(',', ArrayHelper::map($rows, 'id','id'))])
+                    ->execute();
+
+                //удаляем список предв. просмотров по выборкам
+                Yii::$app->db
+                    ->createCommand('DELETE FROM '.Preview::tableName().' WHERE selection_id IN (:ids)')
+                    ->bindValues([':ids'=>implode(',', ArrayHelper::map($rows, 'id','id'))])
+                    ->execute();
+
+                ////удаляем выбранные выборки по связке - user_id+ID(выбранных им выборок)
+                Yii::$app->db
+                    ->createCommand('DELETE FROM selections WHERE user_id=:user_id AND id IN (:ids)')
+                    ->bindValues([':user_id'=>Yii::$app->user->id, ':ids'=>implode(',',Yii::$app->request->post('ids'))])
+                    ->execute();
+
+                return true;
+            }
+
+            return false;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
     }

@@ -135,12 +135,19 @@ $(document).ready(function () {
 
         var url = $(this).attr('delete');//url to send
 
+        console.log(JSON.stringify(keys));
         $.ajax({
             url: url,
             type: "POST",
-            data: keys,
+            //contentType: 'application/json',
+            //data: JSON.stringify(keys),
+            //dataType: 'json',
+            data: { 'ids': keys },
             success: function (result) {
-                location.reload();
+                if(result=='ok')
+                {
+                    location.reload();
+                }
             }
         });
 
