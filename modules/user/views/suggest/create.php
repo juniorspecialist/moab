@@ -18,7 +18,10 @@ $this->title = 'Добавить выборку';
 ?>
 <div class="modules-user-views-create">
 
-    <?php $form = ActiveForm::begin(['id'=>'metrika-form']); ?>
+    <?php $form = ActiveForm::begin(['id'=>'metrika-form',    'fieldConfig' => [
+        'template' => "{label}\n{input}\n",
+
+    ],'enableClientValidation'=>false]); ?>
 
     <?= $form->errorSummary($model); ?>
 
@@ -32,6 +35,10 @@ $this->title = 'Добавить выборку';
                 'active' => true
             ],
             [
+                'label' => 'Минус-слова',
+                'content' => $this->render('stop_words',['model'=>$model, 'form'=>$form]),
+            ],
+            [
                 'label' => 'Дополнительные параметры',
                 'content' => $this->render('extra_options',['model'=>$model, 'form'=>$form]),
                 'options' => ['id' => 'extra_options'],
@@ -40,10 +47,7 @@ $this->title = 'Добавить выборку';
                 'label' => 'Параметры Wordstat',
                 'content' => $this->render('wordstat_options',['model'=>$model, 'form'=>$form]),
             ],
-            [
-                'label' => 'Минус-слова',
-                'content' => $this->render('stop_words',['model'=>$model, 'form'=>$form]),
-            ],
+
         ],
     ]);
 

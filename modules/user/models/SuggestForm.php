@@ -36,11 +36,13 @@ class SuggestForm extends Model
     public $wordstat_from;
     public $wordstat_to;
     public $stop_words;
-    public $stop_words_limit = 10;
+    public $stop_words_limit = 100;//сколько фраз в рамках списка минус-слов, разрешено добавлять юзеру
     protected $stop_words_exploded; //список минус-слов после преобразования(текста) их в массив
     private $source_phrase_list;
     public $hash;
     public $type = Selections::TYPE_SELECT_TIPS_YA;
+
+    public $source_phrase_list_limit = 10;//сколько фраз в рамках одного поля выборки, юзер может добавить фраз для выборок
 
     private $hash_list = [];//список хеш-сумм, которые формируем по каждой выборке(каждому ключевому слову)
 
@@ -56,6 +58,10 @@ class SuggestForm extends Model
 
             //каждый ключевик с новой строки
             $source_phrase_list = explode(PHP_EOL, $this->source_phrase);
+
+            if(sizeof($source_phrase_list)>$this->source_phrase_list_limit){
+                $this->addError('source_phrase','Превышен лимит на количество исходных ключевых фраз, вам разрешено '.$this->source_phrase_list_limit.' ключевых фраз');
+            }
 
             //по каждому ключевому слову выполняем валидацию
             foreach($source_phrase_list as $source_phrase_word)
@@ -132,7 +138,7 @@ class SuggestForm extends Model
                         //нашли совпадение, юзер ранее добавлял такую выборку, нашли в БД
                         if($db_hash)
                         {
-                            $this->addError('source_phrase',"Выборка по исходной фразе '$source_phrase_word' с такими же параметрами встречается у вас ранее");
+                            $this->addError('source_phrase',"Выборка по исходной фразе '$source_phrase_word' с такими же параметрами уже была создана вам ранее");
                         }
 
                     }
@@ -294,6 +300,8 @@ class SuggestForm extends Model
             'category_id'=>'Группа',
             'stop_words'=>'Список минус-слов',
             'stop_words_limit'=>'Лимит на список минус-слов',
+            'source_phrase_list_limit'=>'Лимит на добавление исходных ключевых фраз',
+
         ];
     }
 
