@@ -24,13 +24,13 @@ class SuggestForm extends Model
     public $source_phrase;
     public $potential_traffic;
     public $source_words_count_from = 1;
-    public $source_words_count_to = 10;
+    public $source_words_count_to = 32;
     public $position_from = 1;
     public $position_to = 10;
     public $suggest_words_count_from = 1;
     public $suggest_words_count_to = 32;
-    public $length_from;
-    public $length_to;
+    public $length_from = 1;
+    public $length_to = 256;
     public $need_wordstat;
     public $wordstat_syntax = Selections::WORD_STAT_SYNTAX_TWO;
     public $wordstat_from;
@@ -43,26 +43,6 @@ class SuggestForm extends Model
     public $type = Selections::TYPE_SELECT_TIPS_YA;
 
     private $hash_list = [];//список хеш-сумм, которые формируем по каждой выборке(каждому ключевому слову)
-
-
-    /*
-     * список значений от 1 до 10
-     */
-    static function getNumberList()
-    {
-        return [
-            1=>1,
-            2=>2,
-            3=>3,
-            4=>4,
-            5=>5,
-            6=>6,
-            7=>7,
-            8=>8,
-            9=>9,
-            10=>10,
-        ];
-    }
 
     /*
      * валидируем исходную ключевую фразу
@@ -177,7 +157,11 @@ class SuggestForm extends Model
     {
         if(!$this->hasErrors() && !empty($this->stop_words) && empty($this->stop_words_exploded))
         {
-            $this->stop_words_exploded = explode(PHP_EOL, $this->stop_words);
+            $stop_words_exploded = explode(PHP_EOL, $this->stop_words);
+
+            foreach($stop_words_exploded as $stop_word){
+                $this->stop_words_exploded[] = trim($stop_word);
+            }
         }
     }
 
@@ -257,9 +241,14 @@ class SuggestForm extends Model
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
                 'length_from', 'length_to', 'need_wordstat',  'wordstat_from', 'wordstat_to'], 'required'],
 
-            [['potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to',
-                'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
+            [['potential_traffic', 'wordstat_syntax'], 'integer'],
 
+            //индивидуальные лимиты по цифровым параметрам
+            [['wordstat_from', 'wordstat_to'], 'integer', 'min'=>1, 'max'=>100000000],
+            [['position_from', 'position_to'], 'integer', 'min'=>1, 'max'=>10],
+            ['need_wordstat', 'integer', 'min'=>0, 'max'=>1],
+            [['length_from', 'length_to'], 'integer', 'min'=>1, 'max'=>256],
+            [['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'integer','min'=>1, 'max'=>32],
 
             //проверка всех текстовых полей, в которых указывается интервал чисел (От и До)
             ['wordstat_from','validateParamsFromTo'],

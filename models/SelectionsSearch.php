@@ -58,7 +58,7 @@ class SelectionsSearch extends Selections{
 
         $query->joinWith(['category']);
 
-        $query->select('selections.*,CONCAT(selections.name+selections.source_phrase+selections.results_count) as search');
+        $query->select('selections.*,LOWER(CONCAT(category.title,selections.name+selections.source_phrase+selections.results_count)) as search');
 
         //если пользователь НЕ админ, показываем только его финансы
         //if user not admin
@@ -80,7 +80,7 @@ class SelectionsSearch extends Selections{
         }
 
         //объединили поля и поиск совпадений по разным полям
-        $query->andFilterWhere(['like','CONCAT(category.title,selections.name,selections.source_phrase,selections.results_count)', $this->search]);
+        $query->andFilterWhere(['like','LOWER(CONCAT(category.title,selections.name,selections.source_phrase,selections.results_count))', $this->search]);
 
 
         return $dataProvider;

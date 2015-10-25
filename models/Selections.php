@@ -98,7 +98,7 @@ class Selections extends \yii\db\ActiveRecord
         return [
             self::WORD_STAT_SYNTAX_TWO=>'“!слово1 !слово2”',
             self::WORD_STAT_SYNTAX_ZERO=>'слово1 слово2',
-            self::WORD_STAT_SYNTAX_ONE=>'“слово1 слово2”',
+            //self::WORD_STAT_SYNTAX_ONE=>'“слово1 слово2”',
         ];
     }
 
@@ -147,12 +147,12 @@ class Selections extends \yii\db\ActiveRecord
      */
     private function getPotencialTrafficTotalInfo()
     {
-        $out = 'Потенциальный траффик: '.$this->getPotentialTrafficName().PHP_EOL;
+        $out = 'Потенциальный траффик: '.$this->getPotentialTrafficName().'<br>';
 
         if($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)
         {
-            $out.='Количество слов в исходной фразе: от '.$this->source_words_count_from.' до '.$this->source_words_count_to.PHP_EOL;
-            $out.='Позицияподсказки: от '.$this->position_from.' до '.$this->position_to.PHP_EOL;
+            $out.='Количество слов в исходной фразе: от '.$this->source_words_count_from.' до '.$this->source_words_count_to.'<br>';
+            $out.='Позиция подсказки: от '.$this->position_from.' до '.$this->position_to.'<br>';
         }
 
         return $out;
@@ -221,16 +221,21 @@ class Selections extends \yii\db\ActiveRecord
      */
     public function getTotalInfo()
     {
-        $out = "Исходная ключевая фраза:$this->source_phrase<br>";
-        $out.="В группе:".$this->category->title.'<br>';
+        $out = "Исходная ключевая фраза: $this->source_phrase<br>";
+        $out.="В группе: ".$this->category->title.'<br>';
         //описание к потенциальному трафику
-        $out.=$this->getPotencialTrafficTotalInfo().'<br>';
+        $out.=$this->getPotencialTrafficTotalInfo();
         $out.='Количество слов в подсказке: от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to.'<br>';
-        $out.='Длина подсказки (симв.) от'.$this->length_from.' до '.$this->length_to.PHP_EOL.'<br>';
+        $out.='Длина подсказки (симв.): от '.$this->length_from.' до '.$this->length_to.PHP_EOL.'<br>';
         //список минус-слов, через разделитель
         $out.=($this->getMinusWordsTextJson())?('Минус-слова: '.$this->getMinusWordsTextJson().'<br>'):'';
-        $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.'<br>';
-        $out.='Источник:'.$this->getTypeSelect().'<br>';
+
+        if($this->need_wordstat == 1)
+        {
+            $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.'<br>';
+        }
+
+        $out.='Источник: '.$this->getTypeSelect().'<br>';
 
         return $out;
     }
@@ -298,7 +303,7 @@ class Selections extends \yii\db\ActiveRecord
      */
     public function getMinusWordsTextJson(){
         if($this->minus_words){
-            return implode(', ', json_decode($this->minus_words, true));
+            return str_replace(' ,',',',implode(', ', json_decode($this->minus_words, true)));
         }
         //нет минус-слов, значит пустое значение выводим
         return '';

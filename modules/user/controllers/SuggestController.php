@@ -86,9 +86,8 @@ class SuggestController extends UserMainController{
             //если результат выборки закеширован - получаем из кеша
             $data = Yii::$app->cache->get($cache_id);
 
+            // данные не закешированы - производим выборку
             if ($data === false) {
-
-                // данные не закешированы - производим выборку
 
                 $query = Preview::find()
                     ->select(['phrase','length','position','wordstat_1','wordstat_2','wordstat_3'])

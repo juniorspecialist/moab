@@ -14,7 +14,8 @@ Modal::begin([
     'toggleButton' => [
         'label' => $button_label,
         //'style'=>'display:none',
-        'tag'=>'a'
+        'tag'=>'a',
+        'style'=>'',
     ],
 ]);
 
@@ -24,6 +25,9 @@ Modal::end();
 ?>
 
 <style>
+    a:hover{
+        cursor:pointer;
+    }
     .modal-dialog{
         overflow-y: initial !important
     }
