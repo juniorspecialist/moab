@@ -222,7 +222,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['email', 'unique', 'targetClass' => self::className(), 'message' => 'Этот адрес почты уже занят.'],
 
 
-            [['status','balance','last_vizit_time'], 'integer'],
+            [['status','balance','last_vizit_time','suggest_limit_words','suggest_limit_stop_words'], 'integer'],
             ['status', 'in', 'range' => array_keys(self::getStatusesArray())],
 
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
@@ -231,8 +231,11 @@ class User extends ActiveRecord implements IdentityInterface
 
             ['created_at', 'default', 'value'=>time()],//дата регистрации пользователя
             ['session_id','string'],
+            ['suggest_limit_words', 'default', 'value'=>10],
+            ['suggest_limit_stop_words', 'default', 'value'=>100],
         ];
     }
+
     /**
      * @inheritdoc
      */
@@ -251,6 +254,8 @@ class User extends ActiveRecord implements IdentityInterface
             'last_vizit_time'=>'',
             'api_key'=>'API-ключ',
             'access'=>'Доступ',
+            'suggest_limit_stop_words'=>'Максимум минус-слов в одной выборке',
+            'suggest_limit_words'=>'Максимум исходных фраз в одной выборке',
         ];
     }
 

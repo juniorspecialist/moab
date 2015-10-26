@@ -48,6 +48,15 @@ class DefaultController extends BaseAdminController
     {
         $user = $this->loadUser($id);
 
+        if ($user->load(\Yii::$app->request->post()) && $user->validate()) {
+
+            \Yii::$app->getSession()->setFlash('success', 'Успешно обновили данные для пользователя.');
+
+            $user->update(true, ['suggest_limit_words', 'suggest_limit_stop_words']);
+
+            $this->refresh();
+        }
+
         return $this->render('info_user',['user'=>$user]);
     }
 

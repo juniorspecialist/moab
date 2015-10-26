@@ -59,7 +59,8 @@ if(!Yii::$app->user->isGuest){
                                 //['label'=>'Выборки','visible'=>\app\modules\user\models\User::isSubscribeMoab()],
                                 //['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">Moab.Metrika</span>', 'url'=>['/user/metrika/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']), 'active' => $checkController('metrika/index')],
 
-                                ['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">Moab.Suggests</span>', 'url'=>['/user/suggest/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']), 'active' => $checkController('suggest/index')],
+                                //TODO переделать под вызов ВИДЖЕТА всё меню
+                                ['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">'.\app\models\Base::getTitleBase(Yii::$app->params['subscribe_suggest_and_wordstat']).'</span>', 'url'=>['/user/suggest/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']), 'active' => $checkController('suggest/index')],
 
                             ],
                         ]

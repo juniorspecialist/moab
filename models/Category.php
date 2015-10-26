@@ -59,4 +59,43 @@ class Category extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
+
+    /*
+     * перед удалением группы, обновим все поля выборок по этой группе на "Без группы"
+     */
+    public function beforeDelete(){
+
+        if(parent::beforeDelete()){
+
+            //есть ли у юзера выборки, в которых подвязана категория, которую удаляем
+            $change_data = Yii::$app->db->createCommand("SELECT id FROM ".Selections::tableName()." WHERE user_id=:user_id AND category_id=:category_id LIMIT 1")
+                            ->bindValues([':user_id'=>Yii::$app->user->id, 'category_id'=>$this->id])
+                            ->queryScalar();
+
+            //есть выборки для обновления по ним категории
+            if($change_data){
+
+                //поиск ID группы "Без группы"
+                $no_name_category = Yii::$app->db
+                    ->createCommand('SELECT id FROM category WHERE user_id=:user_id AND title="Без группы"')
+                    ->bindValues([':user_id'=>Yii::$app->user->id])
+                    ->queryScalar();
+
+
+                if(empty($no_name_category)){
+                    return false;
+                }
+
+                Yii::$app->db
+                    ->createCommand()
+                    ->update(Selections::tableName(), ['category_id'=>$no_name_category],['category_id'=>$this->id, 'user_id'=>Yii::$app->user->id])
+                    ->execute();
+            }
+
+            return true;
+
+        }else{
+            return false;
+        }
+    }
 }

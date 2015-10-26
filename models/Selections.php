@@ -120,10 +120,10 @@ class Selections extends \yii\db\ActiveRecord
     {
         return [
             self::POTENCIAL_TRAFFIC_ANYONE => 'Любой',
-            self::POTENCIAL_TRAFFIC_USER => 'Пользовательский',
-            self::POTENCIAL_TRAFFIC_LOW => 'Низкий',
-            self::POTENCIAL_TRAFFIC_MEDIUM => 'Средний',
             self::POTENCIAL_TRAFFIC_HIGH => 'Высокий',
+            self::POTENCIAL_TRAFFIC_MEDIUM => 'Средний',
+            self::POTENCIAL_TRAFFIC_LOW => 'Низкий',
+            self::POTENCIAL_TRAFFIC_USER => 'Пользовательский',
         ];
     }
 
@@ -235,7 +235,7 @@ class Selections extends \yii\db\ActiveRecord
             $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.'<br>';
         }
 
-        $out.='Источник: '.$this->getTypeSelect().'<br>';
+        $out.='Источник: '.$this->base->title.'<br>';
 
         return $out;
     }
@@ -325,6 +325,13 @@ class Selections extends \yii\db\ActiveRecord
         return $this->hasOne(Category::className(), ['id' => 'category_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBase()
+    {
+        return $this->hasOne(Base::className(), ['id' => 'base_id']);
+    }
 
     /*
      * формируем данные для предварительного просмотра результатов выборки

@@ -74,7 +74,8 @@ use yii\bootstrap\Modal;
             );
         }else{
             if($subs->isExpired()){
-                echo Html::a('Как подключиться' , ['/info'],
+                //формируем ссылку по кнопке, на основании веб-версия бд или нет
+                echo Html::a('Как подключиться' , $model->getUrlInfoBase(),
                     ['class'=>'btn btn-success',
                         'id'=>'modalWindowDetailBtn1',
                         'style'=>'width:167px; margin-top:5px;'

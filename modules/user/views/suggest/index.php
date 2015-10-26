@@ -12,7 +12,7 @@ use app\components\widgets\ModalWinWithBtnWidget;
 
 
 
-$this->title = 'Выборки: Яндекс-Подсказки';
+$this->title = 'Выборки: '.$base->title;
 //$this->params['breadcrumbs'][] = ['label' => 'Тикеты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

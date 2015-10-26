@@ -41,6 +41,8 @@ use zhuravljov\widgets\DateTimePicker;
     <?= $form->field($model, 'enabled_user')->checkbox() ?>
 
 
+    <?= $form->field($model, 'cabinet_link')->textInput() ?>
+
     <?= $form->field($model, 'last_update')->textInput() ?>
     <?= $form->field($model, 'next_update')->textInput() ?>
     <?= $form->field($model, 'count_keywords')->textInput() ?>

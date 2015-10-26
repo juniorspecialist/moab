@@ -36,15 +36,17 @@ class SuggestForm extends Model
     public $wordstat_from;
     public $wordstat_to;
     public $stop_words;
-    public $stop_words_limit = 100;//сколько фраз в рамках списка минус-слов, разрешено добавлять юзеру
+    //public $stop_words_limit = 100;//сколько фраз в рамках списка минус-слов, разрешено добавлять юзеру
     protected $stop_words_exploded; //список минус-слов после преобразования(текста) их в массив
     private $source_phrase_list;
     public $hash;
     public $type = Selections::TYPE_SELECT_TIPS_YA;
+    public $base_id;//
 
-    public $source_phrase_list_limit = 10;//сколько фраз в рамках одного поля выборки, юзер может добавить фраз для выборок
+    //public $source_phrase_list_limit = 10;//сколько фраз в рамках одного поля выборки, юзер может добавить фраз для выборок
 
     private $hash_list = [];//список хеш-сумм, которые формируем по каждой выборке(каждому ключевому слову)
+
 
     /*
      * валидируем исходную ключевую фразу
@@ -57,10 +59,10 @@ class SuggestForm extends Model
         {
 
             //каждый ключевик с новой строки
-            $source_phrase_list = explode(PHP_EOL, $this->source_phrase);
+            $source_phrase_list = explode(PHP_EOL, trim($this->source_phrase));
 
-            if(sizeof($source_phrase_list)>$this->source_phrase_list_limit){
-                $this->addError('source_phrase','Превышен лимит на количество исходных ключевых фраз, вам разрешено '.$this->source_phrase_list_limit.' ключевых фраз');
+            if(sizeof($source_phrase_list)>Yii::$app->user->identity->suggest_limit_words){
+                $this->addError('source_phrase','Превышен лимит на количество исходных ключевых фраз, вам разрешено '.Yii::$app->user->identity->suggest_limit_words.' ключевых фраз');
             }
 
             //по каждому ключевому слову выполняем валидацию
@@ -68,6 +70,11 @@ class SuggestForm extends Model
             {
 
                 $source_phrase_word = trim($source_phrase_word);
+
+                if(empty($source_phrase_word))
+                {
+                    $this->addError('source_phrase','В списке исходных ключевых фраз, указано пустое значение');
+                }
 
                 //при появлении ошибки - остановим дальнейшие проверки
                 if($this->hasErrors()){ break; }
@@ -166,7 +173,13 @@ class SuggestForm extends Model
             $stop_words_exploded = explode(PHP_EOL, $this->stop_words);
 
             foreach($stop_words_exploded as $stop_word){
-                $this->stop_words_exploded[] = trim($stop_word);
+
+                $stop_word = trim($stop_word);
+
+                if(!empty($stop_word)){
+                    $this->stop_words_exploded[] = trim($stop_word);
+                }
+
             }
         }
     }
@@ -178,11 +191,11 @@ class SuggestForm extends Model
     {
         if(!$this->hasErrors() && !empty($this->stop_words))
         {
-            $stop_words_list = explode(PHP_EOL, $this->stop_words);
+            $stop_words_list = explode(PHP_EOL, trim($this->stop_words));
 
-            if(sizeof($stop_words_list)>$this->stop_words_limit)
+            if(sizeof($stop_words_list)>Yii::$app->user->identity->suggest_limit_stop_words)
             {
-                $this->addError('stop_words',"Разрешено не более $this->stop_words_limit минус-слов");
+                $this->addError('stop_words',"Разрешено не более ".Yii::$app->user->identity->suggest_limit_stop_words." минус-слов");
             }
 
             //проверим каждое минус-слово отдельно
@@ -190,15 +203,23 @@ class SuggestForm extends Model
             {
                 foreach($stop_words_list as $word)
                 {
-                    if(!preg_match('/[a-z0-9а-яїіє\* ]/i',$word))
+                    $word = trim($word);
+
+                    if(!empty($word))
                     {
-                        $this->addError('stop_words',"Минус-слово:$word имеет недопустимый формат");
-                        break;
+                        if(!preg_match('/[a-z0-9а-яїіє\* ]/i',$word))
+                        {
+                            $this->addError('stop_words',"Минус-слово:'$word' имеет недопустимый формат");
+                            break;
+                        }else{
+                            $this->stop_words_exploded[] = trim($word);
+                        }
                     }
+
                 }
             }
 
-            $this->explodedStopWords();
+            //$this->explodedStopWords();
         }
     }
 
@@ -262,7 +283,7 @@ class SuggestForm extends Model
             //проверка списка минус-слов
             ['stop_words', 'validateStopWords'],
 
-            //валидируем список ключевых слов
+            //валидируем список ключевых слов(важна последовательность валидации,сперва валидируем минус-слова, а потом уже ключевики)
             ['source_phrase','validateSourcePhrase'],
         ];
     }

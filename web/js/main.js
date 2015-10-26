@@ -133,19 +133,28 @@ $(document).ready(function () {
         //получаем массив выбранных значений
         var keys = $('#suggest-wordstat-grid').yiiGridView('getSelectedRows');
 
-        var url = $(this).attr('delete');//url to send
+        if (typeof keys !== 'undefined' && keys.length > 0) {
+            var url = $(this).attr('delete');//url to send
 
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: { 'ids': keys },
-            success: function (result) {
-                if(result==true)
-                {
-                    location.reload();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: { 'ids': keys },
+                success: function (result) {
+                    if(result==true)
+                    {
+                        location.reload();
+                    }
                 }
-            }
-        });
+            });
+        }else{
+
+            //уведомление, если юзер не выбрал ни одной выборки
+            bootbox.alert("Необходимо выбрать хотя бы одну выборку", function() {
+                return true;
+            });
+        }
+
 
         return false;
     });
@@ -173,13 +182,13 @@ $(document).ready(function () {
         if(potencial_traffic != 1)
         {
 
-            $('.extra_options').attr('disabled',true);
+            $('.extra_options').parent('div').addClass('disabled');
 
             //потенциальный траффик - любой(5)
             if(potencial_traffic == 5)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-source_words_count_from').val("1");
+                $('#suggestform-source_words_count_from').val(1);
                 $('#suggestform-source_words_count_to').val(32);
 
                 //позиция подсказки (1-10)
@@ -191,7 +200,7 @@ $(document).ready(function () {
             if(potencial_traffic == 4)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-source_words_count_from').val('1');
+                $('#suggestform-source_words_count_from').val(1);
                 $('#suggestform-source_words_count_to').val(1);
 
                 //позиция подсказки (1-10)
@@ -203,8 +212,8 @@ $(document).ready(function () {
             if(potencial_traffic == 3)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-suggest_words_count_from').val('5');
-                $('#suggestform-suggest_words_count_to').val(10);
+                $('#suggestform-source_words_count_from').val(5);
+                $('#suggestform-source_words_count_to').val(10);
 
                 //позиция подсказки (1-10)
                 $('#suggestform-position_from').val(2);
@@ -215,8 +224,8 @@ $(document).ready(function () {
             if(potencial_traffic == 2)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-suggest_words_count_from').val('5');
-                $('#suggestform-suggest_words_count_to').val(10);
+                $('#suggestform-source_words_count_from').val(5);
+                $('#suggestform-source_words_count_to').val(10);
 
                 //позиция подсказки (1-10)
                 $('#suggestform-position_from').val(3);
@@ -225,6 +234,7 @@ $(document).ready(function () {
 
         }else{
             $('.extra_options').prop('disabled', false);
+            $('.extra_options').parent('div').removeClass('disabled');
         }
 
     });

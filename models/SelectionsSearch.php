@@ -56,7 +56,7 @@ class SelectionsSearch extends Selections{
 
         $this->load($params);
 
-        $query->joinWith(['category']);
+        $query->joinWith(['category','base']);
 
         $query->select('selections.*');
 

@@ -7,8 +7,15 @@
  */
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\bootstrap\ActiveForm;
+
+
+$this->title = 'Информация о пользователе: '.$user->email;
+
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<h2>Информация о пользователе:<?=$user->email?></h2>
+
+
 
 <div class="profil-view">
     <?= DetailView::widget([
@@ -54,6 +61,21 @@ use yii\widgets\DetailView;
 
         ],
     ]);
-
     ?>
+
+    <?php $form = ActiveForm::begin(); ?>
+
+    <?php //echo $form->errorSummary($model); ?>
+
+    <?= $form->field($user, 'suggest_limit_words')->textInput(); ?>
+
+    <?=$form->field($user,'suggest_limit_stop_words')->textInput()?>
+
+
+    <div class="form-group">
+        <?= Html::submitButton('Обновить', ['class' => 'btn btn-success']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+
 </div>

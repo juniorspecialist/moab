@@ -24,6 +24,8 @@ use Yii;
 
 class SuggestController extends UserMainController{
 
+    private $_base;
+
     public function behaviors()
     {
         return  [
@@ -40,6 +42,13 @@ class SuggestController extends UserMainController{
         ];
     }
 
+    public function getBase(){
+        if($this->_base == null){
+            $this->_base = $this->findBase(Yii::$app->params['subscribe_suggest_and_wordstat']);
+        }
+        return $this->_base;
+    }
+
 
     /*
      * информация о выборках из БД - Моаб-Метрика
@@ -49,9 +58,6 @@ class SuggestController extends UserMainController{
         //проверка доступа к выборкам для тек. юзера
         $this->access();
 
-        //находим базу на тек. страницы и выводим общие данные по базе
-        $base = $this->findBase(Yii::$app->params['subscribe_suggest_and_wordstat']);
-
         //выбираем данные по выборкам пользователя
         $model = new SelectionsSearch();
 
@@ -60,7 +66,8 @@ class SuggestController extends UserMainController{
         return $this->render('index',[
             'dataProvider' => $dataProvider,
             'searchModel' => $model,
-            'base'=>$base
+            //находим базу на тек. страницы и выводим общие данные по базе
+            'base'=>$this->base,
         ]);
     }
 
@@ -115,6 +122,29 @@ class SuggestController extends UserMainController{
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    /*
+     * перемещение выборок в другую группу
+     * получаем список выбранных выборок из таблицы+получаем ID категории выборок
+     */
+    public function actionChangeCategory(){
+
+        //проверка наличия параметров
+        if(Yii::$app->request->isPost && Yii::$app->request->post('ids') && Yii::$app->request->post('category_id'))
+        {
+
+            //убедимся, что юзер выбрал существующую категорию
+            $category = Yii::$app->db->createCommand('SELECT id FROM category WHERE user_id=:user_id AND id=:id')->bindValues([':id'=>Yii::$app->request->post('category_id'), ':user_id'=>Yii::$app->user->id])->queryScalar();
+
+            if($category){
+                //обновим подвязку к новой категории
+                //TODO доделать выпадающий список на форме выборок и дописать JS-код для отправки запроса на контроллер
+                Selections::updateAll(['category_id'=>$category],['in', 'id', Yii::$app->request->post('ids')]);
+            }
+
+        }
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
 
     /*
      * форма создания задания на выборку -
@@ -148,7 +178,7 @@ class SuggestController extends UserMainController{
     public function actionDelete()
     {
 
-        if(Yii::$app->request->isPost)
+        if(Yii::$app->request->isPost && Yii::$app->request->post('ids'))
         {
             //находим список совпадений выборок, принадлежащих текущему юзеру(чтобы юзер лишь свои выборки мог удалить)
             $rows = (new \yii\db\Query())

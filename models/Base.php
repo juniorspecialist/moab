@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\Url;
 
 /**
  * This is the model class for table "base".
@@ -33,7 +34,7 @@ class Base extends \yii\db\ActiveRecord
             [['title', 'one_month_price','three_month_price','six_month_price','twelfth_month_price','eternal_period_price'], 'required'],
             [['one_month_price','three_month_price','six_month_price','twelfth_month_price','eternal_period_price','enabled_user'], 'integer'],
             [['title'], 'string', 'max' => 80],
-            [['one_month_user_info','three_month_user_info','six_month_user_info','twelfth_month_user_info','eternal_period_user_info'], 'string', 'max' => 128],
+            [['one_month_user_info','three_month_user_info','six_month_user_info','twelfth_month_user_info','eternal_period_user_info','cabinet_link'], 'string', 'max' => 128],
 
             [['hide_bases', 'hidebases','last_update','next_update','count_keywords','add_in_update'], 'safe'],
 
@@ -66,6 +67,7 @@ class Base extends \yii\db\ActiveRecord
             'next_update'=>'Следующее обновление',
             'count_keywords'=>'Всего ключевых фраз',
             'add_in_update'=>'Добавлено в обновлении',
+            'cabinet_link'=>'Ссылка на работу с базой внутри кабинет',
         ];
     }
 
@@ -113,5 +115,26 @@ class Base extends \yii\db\ActiveRecord
     {
 
         parent::afterFind();
+    }
+
+    /*
+     * формируем ссылку для кнопки в списке подписок юзера
+     * логика - если это веб-версия бд, то ссылка на страницу внутри кабинета, где юзер создаёт выборке по бд
+     * если это не веб-версия бд, то юзер переходит на страницу доступов RDP
+     */
+    public function getUrlInfoBase(){
+        if(empty($this->cabinet_link)){
+            return Url::to(['/info']);
+        }
+        return Url::to($this->cabinet_link);
+    }
+    /*
+     * по ID базы находим её заголовок
+     */
+    static function getTitleBase($id){
+        if($id){
+            return Yii::$app->db->createCommand('SELECT title FROM base WHERE id=:id')->bindValues([':id'=>$id])->queryScalar();
+        }
+        return '';
     }
 }

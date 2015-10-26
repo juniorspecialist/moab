@@ -80,6 +80,7 @@ $config = [
 
         'session' => [
             'class' => 'yii\redis\Session',
+            'timeout' => 2592000,
             'redis' => [
                 'hostname' => '127.0.0.1',
                 'port' => 6379,
