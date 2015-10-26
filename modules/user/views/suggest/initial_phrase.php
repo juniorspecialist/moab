@@ -9,7 +9,13 @@
 echo $form->field($model, 'category_id')
     ->dropDownList(
         \yii\helpers\ArrayHelper::map(
-            \app\models\Category::find()->select(['id','title'])->where(['user_id'=>Yii::$app->user->id])->all(),'id','title')
+            \app\models\Category::find()
+                ->select(['id','title'])
+                ->where(['user_id'=>Yii::$app->user->id])
+                ->orderBy('id DESC')
+                ->all()
+            ,'id','title'
+        )
     );
 
 //Label для поля «Исходная ключевая фраза»

@@ -228,7 +228,7 @@ class Selections extends \yii\db\ActiveRecord
         $out.='Количество слов в подсказке: от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to.'<br>';
         $out.='Длина подсказки (симв.): от '.$this->length_from.' до '.$this->length_to.PHP_EOL.'<br>';
         //список минус-слов, через разделитель
-        $out.=($this->getMinusWordsTextJson())?('Минус-слова: '.$this->getMinusWordsTextJson().'<br>'):'';
+        $out.=($this->getMinusWordsTextJson())?('Минус-слова: '.$this->getMinusWordsTextJson().'.<br>'):'';
 
         if($this->need_wordstat == 1)
         {

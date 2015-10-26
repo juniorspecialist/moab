@@ -5,7 +5,9 @@ namespace app\modules\user\models;
 use app\models\Access;
 use app\models\AuthLog;
 use app\models\AuthLogQuery;
+use app\models\Category;
 use app\models\Financy;
+use app\models\Selections;
 use app\models\UserAccess;
 use app\models\UserSubscription;
 use app\models\EmailSubscribe;
@@ -231,7 +233,7 @@ class User extends ActiveRecord implements IdentityInterface
 
             ['created_at', 'default', 'value'=>time()],//дата регистрации пользователя
             ['session_id','string'],
-            ['suggest_limit_words', 'default', 'value'=>10],
+            ['suggest_limit_words', 'default', 'value'=>100],
             ['suggest_limit_stop_words', 'default', 'value'=>100],
         ];
     }
@@ -254,8 +256,8 @@ class User extends ActiveRecord implements IdentityInterface
             'last_vizit_time'=>'',
             'api_key'=>'API-ключ',
             'access'=>'Доступ',
-            'suggest_limit_stop_words'=>'Максимум минус-слов в одной выборке',
-            'suggest_limit_words'=>'Максимум исходных фраз в одной выборке',
+            'suggest_limit_stop_words'=>'Максимум минус-слов в одной выборке(suggest)',
+            'suggest_limit_words'=>'Максимум исходных фраз в одной выборке(suggest)',
         ];
     }
 
@@ -535,6 +537,12 @@ class User extends ActiveRecord implements IdentityInterface
 
             //удалим подписки
             UserSubscription::deleteAll(['user_id'=>$this->id]);
+
+            // удалим все выборки юзера
+            Selections::deleteAll(['user_id'=>$this->id]);
+
+            //удалим все категории, котор. он добавил
+            Category::deleteAll(['user_id'=>$this->id]);
 
             return true;
         } else {

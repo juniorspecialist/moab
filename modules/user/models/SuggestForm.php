@@ -73,7 +73,7 @@ class SuggestForm extends Model
 
                 if(empty($source_phrase_word))
                 {
-                    $this->addError('source_phrase','В списке исходных ключевых фраз, указано пустое значение');
+                    $this->addError('source_phrase','В списке исходных ключевых фраз указано пустое значение');
                 }
 
                 //при появлении ошибки - остановим дальнейшие проверки
@@ -268,7 +268,9 @@ class SuggestForm extends Model
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
                 'length_from', 'length_to', 'need_wordstat',  'wordstat_from', 'wordstat_to'], 'required'],
 
-            [['potential_traffic', 'wordstat_syntax'], 'integer'],
+            ['base_id', 'default', 'value'=>Yii::$app->params['subscribe_suggest_and_wordstat']],
+
+            [['potential_traffic', 'wordstat_syntax', 'base_id'], 'integer'],
 
             //индивидуальные лимиты по цифровым параметрам
             [['wordstat_from', 'wordstat_to'], 'integer', 'min'=>1, 'max'=>100000000],

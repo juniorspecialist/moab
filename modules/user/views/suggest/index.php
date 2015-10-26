@@ -30,10 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
 </div>
 <div class="suggest_wordstat_base_info col-md-4">
-    <?php echo Html::tag('div',$base->getAttributeLabel('last_update').':'.$base->getAttribute('last_update'),['class'=>'last_update']);?>
-    <?php echo Html::tag('div',$base->getAttributeLabel('next_update').':'.$base->getAttribute('next_update'),['class'=>'next_update']);?>
-    <?php echo Html::tag('div',$base->getAttributeLabel('count_keywords').':'.$base->getAttribute('count_keywords'),['class'=>'next_update']);?>
-    <?php echo Html::tag('div',$base->getAttributeLabel('add_in_update').':'.$base->getAttribute('add_in_update'),['class'=>'next_update']);?>
+    <?php echo Html::tag('div',$base->getAttributeLabel('last_update').': '.$base->getAttribute('last_update'),['class'=>'last_update']);?>
+    <?php echo Html::tag('div',$base->getAttributeLabel('next_update').': '.$base->getAttribute('next_update'),['class'=>'next_update']);?>
+    <?php echo Html::tag('div',$base->getAttributeLabel('count_keywords').': '.$base->getAttribute('count_keywords'),['class'=>'next_update']);?>
+    <?php echo Html::tag('div',$base->getAttributeLabel('add_in_update').': '.$base->getAttribute('add_in_update'),['class'=>'next_update']);?>
 </div>
 </div>
 
