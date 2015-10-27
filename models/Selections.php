@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\bootstrap\Modal;
 use yii\helpers\ArrayHelper;
+use yii\widgets\DetailView;
 
 /**
  * This is the model class for table "selections".
@@ -221,6 +222,9 @@ class Selections extends \yii\db\ActiveRecord
      */
     public function getTotalInfo()
     {
+
+
+/*
         $out = "Исходная ключевая фраза: $this->source_phrase<br>";
         $out.="В группе: ".$this->category->title.'<br>';
         //описание к потенциальному трафику
@@ -235,9 +239,55 @@ class Selections extends \yii\db\ActiveRecord
             $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.'<br>';
         }
 
-        $out.='Источник: '.$this->base->title.'<br>';
+        $out.='Источник: '.$this->base->title.'<br>';*/
 
-        return $out;
+        return DetailView::widget([
+                'model' => $this,
+                'attributes' => [
+                    [
+                        'label'=>'Исходная ключевая фраза:',
+                        'value'=>$this->source_phrase,
+                    ],
+                    [
+                        'label'=>'В группе:',
+                        'value'=>$this->category->title,
+                    ],
+                    [
+                        'label'=>'Потенциальный траффик:',
+                        'value'=>$this->getPotentialTrafficName(),
+                    ],
+                    [
+                        'label'=>'Количество слов в исходной фразе:',
+                        'value'=>'от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to,
+                        'visible'=>($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)?true:false,
+                    ],
+                    [
+                        'label'=>'Позиция подсказки:',
+                        'value'=>'от '.$this->position_from.' до '.$this->position_to,
+                        'visible'=>($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)?true:false,
+                    ],
+                    [
+                        'label'=>'Количество слов в подсказке:',
+                        'value'=>'от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to,
+                    ],
+                    [
+                        'label'=>'Длина подсказки (симв.):',
+                        'value'=>'от '.$this->length_from.' до '.$this->length_to,
+                    ],
+                    [
+                        'label'=>'Минус-слова:',
+                        'value'=>$this->getMinusWordsTextJson(),
+                        'visible'=>($this->getMinusWordsTextJson())?true:false,
+                    ],
+                    [
+                        'label'=>'Параметры Wordstat:',
+                        'value'=>'синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to,
+                        'visible'=>($this->need_wordstat == 1)?true:false,
+                    ]
+                ],
+            ]);
+
+        //return $out;
     }
 
     /**

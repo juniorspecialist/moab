@@ -241,14 +241,17 @@ font-weight: 700;
 }
 
 .clear-search{
-    margin-left: -20px;
+    margin-left: -40px;
     position: fixed;
     z-index: 99999999;
-    margin-top: 5px;
+    margin-top: 0px;
+    top:5px;
+	float:right;
+
 }
 
 .search-suggest-wordstat{
-    margin-top: 20px;
+    margin: 10px 0px 20px 0px;
     /*border: 1px solid red;*/
 
 }
@@ -260,6 +263,7 @@ font-weight: 700;
 
 
 }
+
 .suggest_wordstat_control>a, button {
     /*margin-top: 10px;*/
 }
@@ -268,14 +272,29 @@ font-weight: 700;
 
 }
 a.control{
-    width: 260px;
+  
     margin-bottom: 10px;
 }
 .suggest_wordstat_base_info{
-    /*width: 350px;*/
-    margin-left: 150px;
+    /*width:350px;
+    margin-left: 150px;*/
+	float:left;
+	
 
 }
 .sugget_wordstat_search_btn{
     border: 1px solid red;
 }
+
+#metrika-form   .tab-content{padding-top:20px;}
+#metrika-form   .nav-tabs {border-color:#F0605B;}
+#metrika-form   .nav-tabs .active a{border-color:#F0605B;background-color:#F0605B;color:#fff;}
+
+#suggestform-need_wordstat .modal-radio {padding-left:15px;}
+#suggestform-need_wordstat .modal-radio span{padding-left:7px;}
+
+.fixed-width {max-width:570px !important;}
+.fixed-left {max-width:600px; float:left;margin-right:40px;}
+.margin-right {margin-right:4px;}
+
+.alert-success2 {background-color:#71E2AD;font-size:18px;margin:10px 0px; border:1px solid #008D4C;}

@@ -12,7 +12,7 @@ use yii\bootstrap\Modal;
 echo Html::a('Управление группами', '#',['class'=>'btn btn-success control' ,'id'=>'category_modal_btn','value'=>'/user/category/index']);
 
 Modal::begin([
-    'header' => '<h2>Группы</h2>',
+    'header' => '<h4>Группы</h4>',
     'id'=>'modal_control_category',
     'toggleButton' => [
         'label' => 'Управление группами',

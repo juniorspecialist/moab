@@ -98,4 +98,11 @@ class Category extends \yii\db\ActiveRecord
             return false;
         }
     }
+
+    /*
+     * список категорий по пользователю
+     */
+    static function getCategoryArrayByUser(){
+        return Yii::$app->db->createCommand('SELECT id, title FROM category WHERE user_id=:user_id ORDER BY id DESC')->bindValues([':user_id'=>Yii::$app->user->id])->queryAll();
+    }
 }

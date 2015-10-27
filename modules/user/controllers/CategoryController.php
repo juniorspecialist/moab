@@ -97,7 +97,7 @@ class CategoryController extends UserMainController{
              * список категорий пользователя
              */
             $dataProvider = new ActiveDataProvider([
-                'query' => Category::find()->where(['user_id'=>\Yii::$app->user->id])->orderBy('title ASC'),
+                'query' => Category::find()->where(['user_id'=>\Yii::$app->user->id])->orderBy('id DESC'),
                 'pagination' =>false,
                 'sort'=>false,
             ]);

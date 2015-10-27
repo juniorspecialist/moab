@@ -106,7 +106,7 @@ $(document).ready(function () {
     });
 
     //пользователь удаляе выбранную категорию(выборок)
-    $(document).on('click', '.btn-danger',function(e){
+    $(document).on('click', '.editable-clear',function(e){
 
         e.preventDefault();
 
@@ -121,9 +121,66 @@ $(document).ready(function () {
                 $('.modal-body').html(result);
             }
         });
-    })
+    });
 
 
+    /*
+    предварительный просмотр результатов выборки по SUGGEST
+     */
+    $(document).on('click','a.modal_preview_suggest', function(e){
+        e.preventDefault();
+        $('#modal_preview_result_suggest').modal('show').find('.modal-content').load($(this).attr('alt'));//.css('height','80%').css('width', '80%')
+        //$('.mypopover').popover();
+        return false;
+
+    });
+    //перемещение выборок из одной группы в другую -suggest
+    $(document).on('change','#suggest_change_category_list', function(){
+
+        //получаем массив выбранных значений
+        var keys = $('#suggest-wordstat-grid').yiiGridView('getSelectedRows');
+
+        //определили выбранное значение в выпдающем списке
+        var change_category_value = $('#suggest_change_category_list').val();
+
+
+        console.log('change_category_value='+$('#suggest_change_category_list').val());
+
+        console.log(keys);
+
+        if($('#suggest_change_category_list').val() == ''){
+            //уведомление, если юзер не выбрал категорию
+            bootbox.alert("Необходимо корректно выбрать отмеченную группу", function() {
+                return true;
+            });
+            return true;
+        }
+
+        if (typeof keys !== 'undefined' && keys.length > 0  && $('#suggest_change_category_list').val()!='') {
+
+            //url to send
+            var url = $(this).attr('url');
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: { 'ids': keys, 'category_id': change_category_value},
+                success: function (result) {
+                    if(result==true)
+                    {
+                        location.reload();
+                    }
+                }
+            });
+        }else{
+
+            //уведомление, если юзер не выбрал ни одной выборки
+            bootbox.alert("Необходимо выбрать хотя бы одну выборку", function() {
+                return true;
+            });
+            return true;
+        }
+    });
 
     //удаление выбранных значений из таблицы - подсказки-вордстат
     $(document).on('click','#delete_checked_selects_btn',function(e){

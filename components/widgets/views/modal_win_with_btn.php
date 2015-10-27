@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use yii\bootstrap\Modal;
 
 Modal::begin([
-    'header' => "<h2>$header</h2>",
+    'header' => "<h4>$header</h4>",
     'id'=>uniqid(time().rand(1,1000)),
     'toggleButton' => [
         'label' => $button_label,

@@ -33,7 +33,7 @@ class SuggestController extends UserMainController{
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'delete','preview'],
+                        'actions' => ['index', 'create', 'delete','preview', 'change-category'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -77,15 +77,17 @@ class SuggestController extends UserMainController{
     public function actionPreview($id)
     {
 
+        Yii::$app->cache->flush();
+
         //TODO доделать вывод информации через диалоговое окно в таблице выборок
-        if(Yii::$app->request->isPost)
-        {
+        //if(Yii::$app->request->isAjax)
+        //{
             $cache_id = 'preview_suggest_'.$id;
 
             //проверим свою ли выборку юзер хочет посмотреть
             $selections = $this->loadSelect($id);
 
-            if($selections !== Selections::STATUS_DONE)
+            if($selections->status !== Selections::STATUS_DONE)
             {
                 throw new NotFoundHttpException('The requested page does not exist.');
             }
@@ -99,7 +101,6 @@ class SuggestController extends UserMainController{
                 $query = Preview::find()
                     ->select(['phrase','length','position','wordstat_1','wordstat_2','wordstat_3'])
                     ->where([
-                        'user_id' => Yii::$app->user->id,
                         'selection_id'=>$selections->id
                     ])
                     ->limit(1000);
@@ -110,16 +111,16 @@ class SuggestController extends UserMainController{
                     'sort' => false,
                 ]);
 
-                $data = $this->render('preview', ['dataProvider'=>$provider]);
+                $data = $this->renderAjax('preview', ['dataProvider'=>$provider]);
 
                 // store $data in cache so that it can be retrieved next time
                 Yii::$app->cache->set($cache_id, $data);
             }
 
-            return $data;
-        }
+            echo $data;
+        //}
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        //throw new NotFoundHttpException('The requested page does not exist.');
     }
 
     /*
@@ -137,8 +138,9 @@ class SuggestController extends UserMainController{
 
             if($category){
                 //обновим подвязку к новой категории
-                //TODO доделать выпадающий список на форме выборок и дописать JS-код для отправки запроса на контроллер
                 Selections::updateAll(['category_id'=>$category],['in', 'id', Yii::$app->request->post('ids')]);
+
+                return true;
             }
 
         }

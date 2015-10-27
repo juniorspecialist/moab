@@ -52,7 +52,7 @@ if(!Yii::$app->user->isGuest){
                                 ],
                                 ['label' => '<i class="fa fa-info"></i><span>Как подключиться</span>', 'url'=>['/info'],  'active' => $checkController('default/info')],
 
-                                ['label' => '<i class="fa fa-briefcase"></i><span>Тикеты</span>', 'url' => ['/ticket/ticket/index'],  'active' => $checkController('ticket/index')],
+                                ['label' => '<i class="fa fa-edit"></i><span>Тикеты</span>', 'url' => ['/ticket/ticket/index'],  'active' => $checkController('ticket/index')],
 
 		                        ['label' => '<i class="fa fa-briefcase"></i><span>Документы</span>', 'url' => ['/user/doc/index'],  'active' => $checkController('doc/index')],
 
