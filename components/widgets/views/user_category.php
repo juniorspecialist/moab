@@ -18,7 +18,14 @@ Modal::begin([
         'label' => 'Управление группами',
         'style'=>'display:none',
     ],
-    'clientEvents'=>['hide.bs.modal'=>'function(){document.location.reload(true); return true;}'],
+
+    'clientEvents'=>[
+        'hide.bs.modal'=>'function(){
+            if($("#can_we_refrash_page").val()==1){
+                document.location.reload(true);
+                return true;
+            }}'
+    ],
 ]);
 Modal::end();
 ?>

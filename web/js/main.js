@@ -17,6 +17,16 @@ yii.confirm = function (message, ok, cancel) {
 }
 
 
+function user_error($msg){
+
+    $('span.error-text-msg').text($msg);
+
+    $('#custom-error-msg').show();
+
+    return true;
+}
+
+
 $(document).ready(function () {
 
     $(document).on('submit','#form-category', function(e){
@@ -32,6 +42,9 @@ $(document).ready(function () {
                  }*/
                 //$.pjax.reload({container:"#categorys"});
                 $('.modal-body').html(data);
+
+                //установим флаг, перезагрузки страницы
+                $('#can_we_refrash_page').val(1);
             }
         });
 
@@ -119,6 +132,9 @@ $(document).ready(function () {
             success: function (result) {
                 //$(this).closest('tr').remove();
                 $('.modal-body').html(result);
+
+                //установим флаг, перезагрузки страницы
+                $('#can_we_refrash_page').val(1);
             }
         });
     });
@@ -133,15 +149,13 @@ $(document).ready(function () {
         var change_category_value = $('#suggest_change_category_list').val();
 
 
-        console.log('change_category_value='+$('#suggest_change_category_list').val());
-
-        console.log(keys);
-
         if($('#suggest_change_category_list').val() == ''){
             //уведомление, если юзер не выбрал категорию
-            bootbox.alert("Необходимо корректно выбрать отмеченную группу", function() {
+            /*bootbox.alert("Необходимо корректно выбрать отмеченную группу", function() {
                 return true;
-            });
+            });*/
+            user_error("Необходимо корректно выбрать отмеченную группу");
+
             return true;
         }
 
@@ -164,9 +178,11 @@ $(document).ready(function () {
         }else{
 
             //уведомление, если юзер не выбрал ни одной выборки
+            user_error("Необходимо отметитьхотя бы одну выборку");
+            /*
             bootbox.alert("Необходимо выбрать хотя бы одну выборку", function() {
                 return true;
-            });
+            });*/
             return true;
         }
     });
@@ -196,9 +212,10 @@ $(document).ready(function () {
         }else{
 
             //уведомление, если юзер не выбрал ни одной выборки
-            bootbox.alert("Необходимо выбрать хотя бы одну выборку", function() {
+            user_error("Необходимо отметитьхотя бы одну выборку");
+            /*bootbox.alert("Необходимо выбрать хотя бы одну выборку", function() {
                 return true;
-            });
+            });*/
         }
 
 
@@ -223,6 +240,8 @@ $(document).ready(function () {
 
         //определяем потенциальный трафик
         var potencial_traffic = $('#suggestform-potential_traffic option:selected').val();
+
+        $('.extra_options').prop('disabled', 'disabled');
 
         //если не пользовательский выбран, то блокируем все поля на форме
         if(potencial_traffic != 1)

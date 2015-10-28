@@ -15,9 +15,15 @@ use yii\widgets\Pjax;
 $this->title = 'Выборки: '.$base->title;
 //$this->params['breadcrumbs'][] = ['label' => 'Тикеты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-
+//Yii::$app->getSession()->setFlash('error', 'Успешно добавили выборку(и)');
 ?>
 
+
+<div id="custom-error-msg" class="alert-danger alert fade in" style="display: none">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <span class="error-text-msg"></span>
+
+</div>
 
 
 <div class="suggest_wordstat_control row">
@@ -25,9 +31,9 @@ $this->params['breadcrumbs'][] = $this->title;
 	<div class="fixed-left">
         <?php
 
-            echo UserCategoryWidget::widget();
-
             echo Html::a('Создать выборку', ['create'] ,['class'=>'btn btn-danger control margin-right']);
+
+            echo UserCategoryWidget::widget();
 
             echo Html::a('Удалить отмеченные выборки', '#' ,['class'=>'btn btn-warning control ', 'id'=>'delete_checked_selects_btn','delete'=>\yii\helpers\Url::to(['delete'])]);
 
@@ -44,10 +50,17 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
 	</div>
 <div class="suggest_wordstat_base_info " >
-    <?php echo Html::tag('div',$base->getAttributeLabel('last_update').': '.$base->getAttribute('last_update'),['class'=>'last_update']);?>
-    <?php echo Html::tag('div',$base->getAttributeLabel('next_update').': '.$base->getAttribute('next_update'),['class'=>'next_update']);?>
-    <?php echo Html::tag('div',$base->getAttributeLabel('count_keywords').': '.$base->getAttribute('count_keywords'),['class'=>'next_update']);?>
-    <?php echo Html::tag('div',$base->getAttributeLabel('add_in_update').': '.$base->getAttribute('add_in_update'),['class'=>'next_update']);?>
+    <?php
+        if(!empty($base->last_update) && !empty($base->next_update) && !empty($base->count_keywords) && !empty($base->add_in_update)){
+    ?>
+            <?php echo Html::tag('div',$base->getAttributeLabel('last_update').': '.$base->getAttribute('last_update'),['class'=>'last_update']);?>
+            <?php echo Html::tag('div',$base->getAttributeLabel('next_update').': '.$base->getAttribute('next_update'),['class'=>'next_update']);?>
+            <?php echo Html::tag('div',$base->getAttributeLabel('count_keywords').': '.$base->getAttribute('count_keywords'),['class'=>'next_update']);?>
+            <?php echo Html::tag('div',$base->getAttributeLabel('add_in_update').': '.$base->getAttribute('add_in_update'),['class'=>'next_update']);?>
+
+    <?php
+        }
+        ?>
 </div>
 </div>
 
@@ -61,16 +74,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <a class="clear ng-hide"  tabindex="0" aria-hidden="true"></a>
 
 
-
-
             <?=Html::activeInput('text',$searchModel,'search',['id'=>'search_field', 'class'=>'form-control ','placeholder'=>'Введите значение фильтра', 'style'=>'width: 100%'])?>
-<a href="#" class="clear-search" style="position: relative; vertical-align:middle" onclick="$('#search_field').val(''); window.location='<?=\yii\helpers\Url::to(['/user/suggest/index'])?>'; return false;"> <i class="fa fa-times"></i> &nbsp;&nbsp;</a>
+
+            <a href="#" class="clear-search" style="position: relative; vertical-align:middle" onclick="$('#search_field').val(''); window.location='<?=\yii\helpers\Url::to(['/user/suggest/index'])?>'; return false;"> <i class="fa fa-times"></i> &nbsp;&nbsp;</a>
             
-        <span class="input-group-btn">
-            <button class="btn btn-danger" type="submit">
-                <i class="fa fa-search"></i>
-            </button>
-        </span>
+            <span class="input-group-btn">
+                <button class="btn btn-danger" type="submit">
+                    <i class="fa fa-search"></i>
+                </button>
+            </span>
         </div>
     </form>
 </div>
@@ -136,7 +148,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Статус',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return $data->getStatusName();
+                    //ожидает
+                    if($data->status == \app\models\Selections::STATUS_WAIT){
+                        $class = ' <i class="fa fa-clock-o"></i>';
+                    }
+                    //выполняется
+                    if($data->status == \app\models\Selections::STATUS_EXECUTE){
+                        $class = '<i class="fa fa-refresh fa-spin"></i>';
+                    }//выполнено
+                    if($data->status == \app\models\Selections::STATUS_DONE){
+                        $class = '<i class="fa fa-check"></i>';
+                    }
+                    return $class.' '.$data->getStatusName();
                 },
             ],
 
@@ -156,7 +179,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format'=>'raw',
                 'value' => function ($data) {
                     //Высвечивается только для выборок в статусе «Выполнена»
-                    if($data->status==\app\models\Selections::STATUS_DONE)
+                    if($data->status==\app\models\Selections::STATUS_DONE  && $data->results_count!=0)
                     {
                         return Html::a('Просмотреть',\yii\helpers\Url::to(['/user/suggest/preview','id'=>$data->id]),[
                             'target'=>'_blank',
@@ -171,7 +194,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label'=>'Скачать',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    if($data->status==\app\models\Selections::STATUS_DONE){
+                    if($data->status==\app\models\Selections::STATUS_DONE && $data->results_count!=0){
                         return 'Скачать '. Html::a('TXT',$data->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$data->result_csv_zip,['target'=>'_blank']);//.' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank'])
                     }
                     return '';

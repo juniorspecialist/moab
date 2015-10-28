@@ -73,7 +73,7 @@ class SuggestForm extends Model
 
                 if(empty($source_phrase_word))
                 {
-                    $this->addError('source_phrase','В списке исходных ключевых фраз указано пустое значение');
+                    $this->addError('source_phrase','В списке исходных ключевых фраз есть пустая строка');
                 }
 
                 //при появлении ошибки - остановим дальнейшие проверки
@@ -227,7 +227,7 @@ class SuggestForm extends Model
                     $minus_word_len = strlen(str_replace('=','',$word));
 
                     //менее 3х слов - ошибка
-                    if($minus_word_len<3){$this->addError('stop_words',"В минус слове '$word' длина фразы не может быть менее 3х символов");}
+                    if($minus_word_len<3){$this->addError('stop_words',"В минус-слове '$word' длина фразы не может быть менее 3х символов");}
 
                     if(!empty($word))
                     {
@@ -398,7 +398,7 @@ class SuggestForm extends Model
                     }
                 }
 
-                $model->name = trim($source_phrase);
+                $model->name = str_replace('=','',trim($source_phrase));
 
                 $model->hash = $this->createHash($source_phrase);
 

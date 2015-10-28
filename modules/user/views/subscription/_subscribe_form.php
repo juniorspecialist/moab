@@ -75,7 +75,15 @@ use yii\bootstrap\Modal;
         }else{
             if($subs->isExpired()){
                 //формируем ссылку по кнопке, на основании веб-версия бд или нет
-                echo Html::a('Как подключиться' , $model->getUrlInfoBase(),
+
+                //изменим название кнопки, для кнопок по веб-выборкам, для старых РДП - оставим как было ранее
+                if(!empty($model->cabinet_link)){
+                    $label = 'Сделать выборку';
+                }else{
+                    $label = 'Как подключиться';
+                }
+
+                echo Html::a($label , $model->getUrlInfoBase(),
                     ['class'=>'btn btn-success',
                         'id'=>'modalWindowDetailBtn1',
                         'style'=>'width:167px; margin-top:5px;'
@@ -84,7 +92,6 @@ use yii\bootstrap\Modal;
             }
         }
 
-        //echo '<pre>'; print_r($subs);die();
         //подписка на базу было не акционной(куплена)+ есть возможность апгрейда до бд-вордстат
         if(!$subs->isNewRecord)
         {

@@ -44,6 +44,7 @@ $this->registerJs(
             ],
         ])/*->inline(true)*/
             ->label(false) ?>
+        <?=Html::hiddenInput('refrash_page',0,['id'=>'can_we_refrash_page'])?>
     </div>
     <div class="form-group">
         <?= Html::submitButton('Добавить', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>

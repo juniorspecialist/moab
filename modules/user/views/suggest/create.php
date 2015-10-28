@@ -19,7 +19,7 @@ $this->title = 'Добавить выборку';
 <div class="modules-user-views-create">
 
     <?php $form = ActiveForm::begin(['id'=>'metrika-form',    'fieldConfig' => [
-        'template' => "{label}\n{input}\n",
+        'template' => "{label}{input}",
 
     ],'enableClientValidation'=>false]); ?>
 
@@ -63,6 +63,9 @@ $this->title = 'Добавить выборку';
 <style>
     #selections-need_wordstat, #selections-potential_traffic, #selections-category_id{
         width: 400px;
+    }
+    input[type=number].form-inline,input[type=number].form-control {
+        width: 100%;
     }
 </style>
 

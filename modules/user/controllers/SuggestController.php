@@ -85,8 +85,18 @@ class SuggestController extends UserMainController{
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
+
+        //определяем какие параметры нам нужны
+        $fields = ['phrase','length','position'];
+
+        //если выбран параметр не выводить данные по вордстату - то и не показываем стобцы и не выбираем в запросе данные эти
+        if($selections->need_wordstat == \app\models\Selections::YES){
+            $fields = ArrayHelper::merge($fields,['wordstat_1','wordstat_3']);
+        }
+
+
         $query = Preview::find()
-            ->select(['phrase','length','position','wordstat_2','wordstat_3'])
+            ->select($fields)
             ->where([
                 'selection_id'=>$selections->id
             ]);
@@ -97,7 +107,7 @@ class SuggestController extends UserMainController{
             'sort' => false,
         ]);
 
-        return $this->render('preview', ['dataProvider'=>$provider, 'base'=>$this->base]);
+        return $this->render('preview', ['dataProvider'=>$provider, 'base'=>$this->base, 'model'=>$selections]);
     }
 
     /*

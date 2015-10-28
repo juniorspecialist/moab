@@ -65,6 +65,8 @@ echo $this->render('form',['model'=>$model]).'<br>';
                     return 'Укажите название группы';
                 }
 
+                //установим флаг, перезагрузки страницы
+                $('#can_we_refrash_page').val(1);
             }
         });
 
