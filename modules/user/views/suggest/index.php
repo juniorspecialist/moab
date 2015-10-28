@@ -9,13 +9,15 @@ use yii\helpers\Html;
 use app\components\widgets\UserCategoryWidget;
 use yii\grid\GridView;
 use app\components\widgets\ModalWinWithBtnWidget;
-
+use yii\widgets\Pjax;
 
 
 $this->title = 'Выборки: '.$base->title;
 //$this->params['breadcrumbs'][] = ['label' => 'Тикеты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
+
 
 
 <div class="suggest_wordstat_control row">
@@ -156,8 +158,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     //Высвечивается только для выборок в статусе «Выполнена»
                     if($data->status==\app\models\Selections::STATUS_DONE)
                     {
-                        return Html::a('Просмотреть',['#'],[
-                            'alt'=>\yii\helpers\Url::to(['/user/suggest/preview','id'=>$data->id]),
+                        return Html::a('Просмотреть',\yii\helpers\Url::to(['/user/suggest/preview','id'=>$data->id]),[
+                            'target'=>'_blank',
                             'class'=>'modal_preview_suggest'
                         ]);
                     }
@@ -179,20 +181,3 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 </div>
-<?php
-use yii\bootstrap\Modal;
-
-Modal::begin([
-    'header' => 'Предварительный просмотр',
-    'id'=>'modal_preview_result_suggest',
-    'size'=>Modal::SIZE_LARGE,
-    'toggleButton' => [
-        //'label' => $button_label,
-        'style'=>'display:none',
-        'tag'=>'a',
-        //'style'=>'',
-    ],
-    //'options'=>['style'=>'width:80%'],
-]);
-Modal::end();
-?>

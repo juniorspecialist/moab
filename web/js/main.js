@@ -123,17 +123,6 @@ $(document).ready(function () {
         });
     });
 
-
-    /*
-    предварительный просмотр результатов выборки по SUGGEST
-     */
-    $(document).on('click','a.modal_preview_suggest', function(e){
-        e.preventDefault();
-        $('#modal_preview_result_suggest').modal('show').find('.modal-content').load($(this).attr('alt'));//.css('height','80%').css('width', '80%')
-        //$('.mypopover').popover();
-        return false;
-
-    });
     //перемещение выборок из одной группы в другую -suggest
     $(document).on('change','#suggest_change_category_list', function(){
 

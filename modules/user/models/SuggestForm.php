@@ -86,8 +86,8 @@ class SuggestForm extends Model
 
 
                 //фраза без учета звездочки и пробелов не может быть короче 3 символов
-                $source_phrase = str_replace([' ','*'], '',$source_phrase_word);
-                if(strlen($source_phrase)<3)
+                //$source_phrase = str_replace([' '], '',$source_phrase_word);
+                if(strlen($source_phrase_word)<3)
                 {
                     $this->addError('source_phrase',"Длина фразы '$source_phrase_word' не может быть короче 3х символов");
                 }
@@ -109,11 +109,32 @@ class SuggestForm extends Model
                     }
                 }
 
-
-                //регулярка-^[a-z0-9а-яїіє\* ]+$
+                //Ключевые фразы и минус-слова нужно еще валидировать на такуювещь, как наличие знака = только в начале строки.
                 if(!$this->hasErrors())
                 {
-                    if(!preg_match('/[a-z0-9а-яїіє\* ]/i', $source_phrase_word))
+                    //разбиваем запрос на слова
+                    $words = explode(' ',$source_phrase_word);
+
+                    foreach($words as $word){
+
+                        $word  = trim($word);
+
+                        //при появлении первой ошибки - остановка цикла
+                        if($this->hasErrors()){ break;}
+
+                        if(preg_match('/=/imu', $word) && !preg_match('/^[=]*[a-z0-9а-яїіє]+$/imu', $word))
+                        {
+                            $this->addError('source_phrase', "В исходной фразе '$source_phrase_word' знак «равно» может находиться только в начале слова.");
+
+                        }
+                    }
+
+                }
+
+                //регулярка-^[a-z0-9а-яїіє ]+$
+                if(!$this->hasErrors())
+                {
+                    if(!preg_match('/^[a-z0-9а-яїіє= ]+$/imu', $source_phrase_word))
                     {
                         $this->addError('source_phrase', "Исходная фраза '$source_phrase_word' введена в неверном формате");
                     }
@@ -128,12 +149,9 @@ class SuggestForm extends Model
                     //поиск совпадения в списке хешей
                     if(in_array($hash, $this->hash_list))
                     {
-                        //echo '<pre>'; print_r($this->hash_list);
-                        //echo 'current_hash='.$hash.'<br>';
                         $this->addError('source_phrase',"Исходная фраза '$source_phrase_word' продублирована у вас в списке исходных ключевых фраз");
                     }
 
-                    //die($hash);
                     //если ранее была создана выборка с такими же параметрами то сверим с бд
                     if(!$this->hasErrors())
                     {
@@ -205,21 +223,50 @@ class SuggestForm extends Model
                 {
                     $word = trim($word);
 
+                    //проверка длины минус-слова
+                    $minus_word_len = strlen(str_replace('=','',$word));
+
+                    //менее 3х слов - ошибка
+                    if($minus_word_len<3){$this->addError('stop_words',"В минус слове '$word' длина фразы не может быть менее 3х символов");}
+
                     if(!empty($word))
                     {
-                        if(!preg_match('/[a-z0-9а-яїіє\* ]/i',$word))
+
+                        //Ключевые фразы и минус-слова нужно еще валидировать на такуювещь, как наличие знака = только в начале строки.
+                        if(!$this->hasErrors())
                         {
-                            $this->addError('stop_words',"Минус-слово:'$word' имеет недопустимый формат");
-                            break;
-                        }else{
-                            $this->stop_words_exploded[] = trim($word);
+                            //разбиваем запрос на слова
+                            $minus_words = explode(' ',$word);
+
+                            foreach($minus_words as $minus_word){
+
+                                $minus_word  = trim($minus_word);
+
+                                //при появлении первой ошибки - остановка цикла
+                                if($this->hasErrors()){ break;}
+
+                                if(preg_match('/=/imu', $minus_word) && !preg_match('/^[=]*[a-z0-9а-яїіє]+$/imu', $minus_word))
+                                {
+                                    $this->addError('stop_words', "В минус слове '$word' знак «равно» может находиться только в начале слова.");
+
+                                }
+                            }
+                        }
+
+                        //не обнаружили ошибок ранее - далее проверяем
+                        if(!$this->hasErrors()){
+                            if(!preg_match('/^[a-z0-9а-яїіє= ]+$/imu',$word))
+                            {
+                                $this->addError('stop_words',"Минус-слово: '$word' имеет недопустимый формат");
+                                break;
+                            }else{
+                                $this->stop_words_exploded[] = trim($word);
+                            }
                         }
                     }
 
                 }
             }
-
-            //$this->explodedStopWords();
         }
     }
 

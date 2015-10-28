@@ -8,8 +8,15 @@
 
 use yii\grid\GridView;
 
-echo GridView::widget([
-    'summary'=>false,
+$this->title = 'Предварительный просмотр';
+//$this->params['breadcrumbs'][] = ['label' => 'Тикеты', 'url' => ['index']];
+$this->params['breadcrumbs'][] = 'Выборки: '.$base->title;
+$this->params['breadcrumbs'][] = $this->title;
+?>
+
+
+<?=GridView::widget([
+    //'summary'=>false,
     'id' => 'suggest-wordstat-grid-preview',
     'dataProvider' => $dataProvider,
     'columns' => [
@@ -40,15 +47,6 @@ echo GridView::widget([
 
         [
             'class' => 'yii\grid\DataColumn',
-            'label'=>'слово1 слово2',
-            'format'=>'raw',
-            'value' => function ($data) {
-                return $data->wordstat_1;
-            },
-        ],
-
-        [
-            'class' => 'yii\grid\DataColumn',
             'label'=>'"слово1 слово2"',
             'format'=>'raw',
             'value' => function ($data) {
@@ -66,3 +64,4 @@ echo GridView::widget([
         ],
     ],
 ]);
+?>

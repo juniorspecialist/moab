@@ -77,50 +77,27 @@ class SuggestController extends UserMainController{
     public function actionPreview($id)
     {
 
-        Yii::$app->cache->flush();
+        //проверим свою ли выборку юзер хочет посмотреть
+        $selections = $this->loadSelect($id);
 
-        //TODO доделать вывод информации через диалоговое окно в таблице выборок
-        //if(Yii::$app->request->isAjax)
-        //{
-            $cache_id = 'preview_suggest_'.$id;
+        if($selections->status !== Selections::STATUS_DONE)
+        {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
 
-            //проверим свою ли выборку юзер хочет посмотреть
-            $selections = $this->loadSelect($id);
+        $query = Preview::find()
+            ->select(['phrase','length','position','wordstat_2','wordstat_3'])
+            ->where([
+                'selection_id'=>$selections->id
+            ]);
 
-            if($selections->status !== Selections::STATUS_DONE)
-            {
-                throw new NotFoundHttpException('The requested page does not exist.');
-            }
+        $provider = new ActiveDataProvider([
+            'query' => $query,
+            //'pagination' => false,
+            'sort' => false,
+        ]);
 
-            //если результат выборки закеширован - получаем из кеша
-            $data = Yii::$app->cache->get($cache_id);
-
-            // данные не закешированы - производим выборку
-            if ($data === false) {
-
-                $query = Preview::find()
-                    ->select(['phrase','length','position','wordstat_1','wordstat_2','wordstat_3'])
-                    ->where([
-                        'selection_id'=>$selections->id
-                    ])
-                    ->limit(1000);
-
-                $provider = new ActiveDataProvider([
-                    'query' => $query,
-                    'pagination' => false,
-                    'sort' => false,
-                ]);
-
-                $data = $this->renderAjax('preview', ['dataProvider'=>$provider]);
-
-                // store $data in cache so that it can be retrieved next time
-                Yii::$app->cache->set($cache_id, $data);
-            }
-
-            echo $data;
-        //}
-
-        //throw new NotFoundHttpException('The requested page does not exist.');
+        return $this->render('preview', ['dataProvider'=>$provider, 'base'=>$this->base]);
     }
 
     /*

@@ -18,6 +18,7 @@ Modal::begin([
         'label' => 'Управление группами',
         'style'=>'display:none',
     ],
+    'clientEvents'=>['hide.bs.modal'=>'function(){document.location.reload(true); return true;}'],
 ]);
 Modal::end();
 ?>
