@@ -15,7 +15,7 @@ use yii\helpers\Html;
 <!-- автоматическое обновление таблицы выборок для пользователя -->
 
 <?php
-    Pjax::begin()
+    Pjax::begin(['id'=>'suggest-grid-table','timeout'=>10000])
 ?>
 
 <?= Html::a("Обновить", \yii\helpers\Url::current(), ['class' => 'btn btn-lg btn-primary hide', 'id' => 'refreshButton']) ?>

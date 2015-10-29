@@ -66,7 +66,6 @@ class SuggestController extends UserMainController{
         $dataProvider = $model->search(Yii::$app->request->queryParams);
 
         if(Yii::$app->request->isAjax){
-
             return $this->renderAjax('_grid',['dataProvider' => $dataProvider]);
         }
 

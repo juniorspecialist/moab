@@ -91,7 +91,26 @@ echo $this->render('_grid',['dataProvider' => $dataProvider]);
 
 $script = <<< JS
 $(document).ready(function() {
-    setInterval(function(){ $("#refreshButton").click(); }, 5000);
+
+    function reload_grid(){
+        $.pjax.reload({container:"#suggest-grid-table"});
+    }
+
+    setInterval(
+    reload_grid
+    //function(){
+        //$.pjax.reload({container:"#suggest-grid-table"});
+        //console.log('send');
+        //    $.ajax({
+        //       url: "/user/suggest/index",
+        //       data: {test: test},
+        //       success: function(data) {
+        //            console.log('success');
+        //           $('#suggest-grid-table').html(data);
+        //       }
+        //    });
+        //}
+        , 5000);
 });
 JS;
 $this->registerJs($script);
@@ -107,6 +126,7 @@ Modal::begin([
 ]);
 Modal::end();
 ?>
+
 
 <style>
     a:hover{
