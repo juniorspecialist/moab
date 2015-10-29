@@ -20,6 +20,8 @@ use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use Yii;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 
 class SuggestController extends UserMainController{
@@ -62,6 +64,11 @@ class SuggestController extends UserMainController{
         $model = new SelectionsSearch();
 
         $dataProvider = $model->search(Yii::$app->request->queryParams);
+
+        if(Yii::$app->request->isAjax){
+
+            return $this->renderAjax('_grid',['dataProvider' => $dataProvider]);
+        }
 
         return $this->render('index',[
             'dataProvider' => $dataProvider,
@@ -144,12 +151,18 @@ class SuggestController extends UserMainController{
 
         $model = new SuggestForm();
 
+
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 
             //создаём выборки
             $model->createSelects();
 
-            Yii::$app->getSession()->setFlash('success', 'Успешно добавили выборку(и)');
+            //Yii::$app->getSession()->setFlash('success', 'Успешно добавили выборку(и)');
 
             return $this->redirect(['index']);
 

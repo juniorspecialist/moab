@@ -21,13 +21,15 @@ use app\components\widgets\Alert;
                 } ?>
             </h1>
         <?php } ?>
-
-        <?=
-        Breadcrumbs::widget(
-            [
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            ]
-        ) ?>
+        <div class="row text-right">
+            <?=
+            Breadcrumbs::widget(
+                [
+                    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                    //'options'=>['style'=>'background-color:none'],
+                ]
+            ) ?>
+        </div>
     </section>
 
     <section class="content">

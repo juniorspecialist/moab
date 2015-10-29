@@ -39,7 +39,8 @@
                 $return .= '</label>';
 
                 return $return;
-            }
+            },
+
 
 //            'item' => function ($index, $label, $name, $checked, $value) {
 //                return '<label class="btn btn-default' . ($checked ? ' active' : '') . '">' .
@@ -51,7 +52,7 @@
 ?>
 
 <span class="wordstat_selects_params" style="display: none">
-    <?=$form->field($model, 'wordstat_syntax')->dropDownList(\app\models\Selections::getWordsStatSyntax());?>
+    <?=$form->field($model, 'wordstat_syntax')->dropDownList(\app\models\Selections::getWordsStatSyntax(),['class'=>'fixed-width']);?>
     <div class="form-inline">
         <?=$form->field($model, 'wordstat_from')->textInput( [ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>100000000,'value'=>1]);?>
         <?=$form->field($model, 'wordstat_to')->textInput([ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>100000000,'value'=>100000000])->label(' до ');?>

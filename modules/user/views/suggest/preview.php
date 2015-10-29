@@ -8,7 +8,7 @@
 
 use yii\grid\GridView;
 
-$this->title = 'Предварительный просмотр: выборка '.$model->name;
+$this->title = 'Предварительный просмотр: выборка "'.$model->name.'"';
 //$this->params['breadcrumbs'][] = ['label' => 'Тикеты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = 'Выборки: '.$base->title;
 $this->params['breadcrumbs'][] = $this->title;
@@ -44,20 +44,22 @@ if($model->need_wordstat == \app\models\Selections::YES){
     $columns = \yii\helpers\ArrayHelper::merge(
         $columns,
         [
-            'class' => 'yii\grid\DataColumn',
-            'label'=>'слово1 слово2',
-            'format'=>'raw',
-            'value' => function ($data) {
-                return $data->wordstat_1;
-            },
-        ],
-        [
-            'class' => 'yii\grid\DataColumn',
-            'label'=>'"!слово1 !слово2"',
-            'format'=>'raw',
-            'value' => function ($data) {
-                return  $data->wordstat_3;
-            },
+            [
+                'class' => 'yii\grid\DataColumn',
+                'label'=>'слово1 слово2',
+                'format'=>'raw',
+                'value' => function ($data) {
+                    return $data->wordstat_1;
+                },
+            ],
+            [
+                'class' => 'yii\grid\DataColumn',
+                'label'=>'"!слово1 !слово2"',
+                'format'=>'raw',
+                'value' => function ($data) {
+                    return  $data->wordstat_3;
+                },
+            ]
         ]);
 }
 

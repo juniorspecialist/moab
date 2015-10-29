@@ -21,6 +21,7 @@ class ModalWinWithBtnWidget extends Widget{
     public $info;
     public $button_label = 'Кнопка';
     public $header='Заголовок окна';
+    public $id;
 
     public function init(){
         parent::init();
@@ -33,6 +34,7 @@ class ModalWinWithBtnWidget extends Widget{
             'info'=>$this->info,
             'button_label'=>$this->button_label,
             'header'=>$this->header,
+            'id'=>$this->id,
         ]);
     }
 }

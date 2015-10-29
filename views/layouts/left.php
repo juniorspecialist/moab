@@ -50,7 +50,7 @@ if(!Yii::$app->user->isGuest){
                                     'visible' =>!Yii::$app->user->isGuest,
                                     'active' => $checkController('default/profile')
                                 ],
-                                ['label' => '<i class="fa fa-info"></i><span>Как подключиться</span>', 'url'=>['/info'],  'active' => $checkController('default/info')],
+                                ['label' => '<i class="fa fa-info"></i><span>Как подключиться</span>', 'url'=>['/info'],  'active' => $checkController('default/info'), 'visible'=>\app\models\UserSubscription::userHaveActualSubscribe()],
 
                                 ['label' => '<i class="fa fa-edit"></i><span>Тикеты</span>', 'url' => ['/ticket/ticket/index'],  'active' => $checkController('ticket/index')],
 
@@ -60,7 +60,14 @@ if(!Yii::$app->user->isGuest){
                                 //['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">Moab.Metrika</span>', 'url'=>['/user/metrika/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']), 'active' => $checkController('metrika/index')],
 
                                 //TODO переделать под вызов ВИДЖЕТА всё меню
-                                ['label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">'.\app\models\Base::getTitleBase(Yii::$app->params['subscribe_suggest_and_wordstat']).'</span>', 'url'=>['/user/suggest/index'], 'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']), 'active' => $checkController('suggest/index')],
+                                [
+                                    'label'=>'<i class="fa fa-tasks"></i><span class="moab-menu">'.\app\models\Base::getTitleBase(Yii::$app->params['subscribe_suggest_and_wordstat']).'</span>',
+                                    'url'=>['/user/suggest/index'],
+                                    'visible'=>\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat']),
+                                    'active' => $checkController('suggest/index'),
+                                    'options'=>['class'=>'suggest-pro']
+
+                                ],
 
                             ],
                         ]

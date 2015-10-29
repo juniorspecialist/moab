@@ -18,10 +18,7 @@ $this->title = 'Добавить выборку';
 ?>
 <div class="modules-user-views-create">
 
-    <?php $form = ActiveForm::begin(['id'=>'metrika-form',    'fieldConfig' => [
-        'template' => "{label}{input}",
-
-    ],'enableClientValidation'=>false]); ?>
+    <?php $form = ActiveForm::begin(['id'=>'metrika-form',    'fieldConfig' => ['template' => "{label}{input}"],'enableAjaxValidation'=>true]); ?>
 
     <?= $form->errorSummary($model); ?>
 
@@ -64,16 +61,13 @@ $this->title = 'Добавить выборку';
     #selections-need_wordstat, #selections-potential_traffic, #selections-category_id{
         width: 400px;
     }
-    input[type=number].form-inline,input[type=number].form-control {
-        width: 100%;
-    }
 </style>
 
 <?php
 //регистрируем скрипт для выбора числовых значений в удобной форме
 $this->registerJsFile('/js/jquery.fs.stepper.js', ['depends' => [\yii\web\JqueryAsset::className()]]);
 $this->registerJs('$(document).ready(function(){
-    $("input[type=number]").stepper();
+    $("input.extra_options, input.other_extra_options, input.wordstat").stepper();
 });', \yii\web\View::POS_READY);
 //ограничение на ввод кол-ва значений в поля textarea
 

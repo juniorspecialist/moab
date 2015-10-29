@@ -19,7 +19,7 @@ yii.confirm = function (message, ok, cancel) {
 
 function user_error($msg){
 
-    $('span.error-text-msg').text($msg);
+    $('.error-text-msg-danger-alert').text($msg);
 
     $('#custom-error-msg').show();
 
@@ -78,16 +78,25 @@ $(document).ready(function () {
         $('.modal-header h4').html($(this).attr('service'));
     })
 
+    /*
+    пользователь кликает на ссылку Параметры в таблице выборок - SUGGEST
+    видит диалоговое окно с параметрами выборки
+     */
+    $(document).on('click','.suggest_params_modal_link', function(e){
+        e.preventDefault();
+        $('#suggest_modal_info_win').modal('show').find('.modal-body').html($(this).attr('modal_info'));
+    });
+
     //модальное окно списка групп-категорий
     $(document).on('click','#category_modal_btn',function(e){
         $('#modal_control_category').modal('show').find('.modal-body').css('height','450px').load($(this).attr('value'));
         //$('.mypopover').popover();
         return false;
-    })
+    });
 
     $(document).on('click','#modalWindowDetailBtn', function(e){
         $('#modalWindowDetail').modal('show');
-    })
+    });
     // valid, send form-zakaz
     $("#form-moab-pro").validationEngine('attach', {
         promptPosition : "centerRight",
@@ -178,7 +187,7 @@ $(document).ready(function () {
         }else{
 
             //уведомление, если юзер не выбрал ни одной выборки
-            user_error("Необходимо отметитьхотя бы одну выборку");
+            user_error("Необходимо отметить хотя бы одну выборку");
             /*
             bootbox.alert("Необходимо выбрать хотя бы одну выборку", function() {
                 return true;
@@ -212,7 +221,7 @@ $(document).ready(function () {
         }else{
 
             //уведомление, если юзер не выбрал ни одной выборки
-            user_error("Необходимо отметитьхотя бы одну выборку");
+            user_error("Необходимо отметить хотя бы одну выборку");
             /*bootbox.alert("Необходимо выбрать хотя бы одну выборку", function() {
                 return true;
             });*/
@@ -301,6 +310,17 @@ $(document).ready(function () {
             $('.extra_options').prop('disabled', false);
             $('.extra_options').parent('div').removeClass('disabled');
         }
+
+    });
+
+    //окно об ошибке - юзер кликает на крестик - ,чтобы закрыть это окно
+    $(document).on('click', '#close_danger_alert', function(e){
+
+        e.preventDefault();
+
+        $('error-text-msg-danger-alert').text('');
+
+        $('#custom-error-msg').hide();
 
     });
 })

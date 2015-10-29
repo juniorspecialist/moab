@@ -251,7 +251,7 @@ font-weight: 700;
 }
 
 .search-suggest-wordstat{
-    margin: 10px 0px 20px 0px;
+    margin: 0px 0px 20px 0px;
     /*border: 1px solid red;*/
 
 }
@@ -298,3 +298,14 @@ a.control{
 .margin-right {margin-right:4px;}
 
 .alert-success2 {background-color:#71E2AD;font-size:18px;margin:10px 0px; border:1px solid #008D4C;}
+
+.other_extra_options, .extra_options{
+    width: 100%;
+}
+
+.suggest-pro {background-color:#F0605B;  }
+.suggest-pro  a{color:#fff !important;  font-weight:bold;}
+
+.breadcrumb{
+    background-color:#ECF0F5;
+}

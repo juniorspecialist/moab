@@ -216,6 +216,35 @@ class UserSubscription extends \yii\db\ActiveRecord
         return false;
     }
 
+    /*
+     *по текущему юзеру проверяем если у него вообще актуальные подписки
+     * НЕ по веб-вервисям подписок баз
+     * для скрытия различных элементов внутри кабинета, которые ранее отображались юзеру, когда он получал подписку
+     *
+     */
+    static function userHaveActualSubscribe(){
+
+        //юзер-авторизирован
+        if(!Yii::$app->user->isGuest){
+
+            return Yii::$app
+                    ->db
+                    ->createCommand(
+                        'SELECT user_subscription.id
+                        FROM user_subscription
+                        LEFT JOIN base on user_subscription.base_id=base.id
+                        WHERE user_subscription.user_id=:user_id
+                          AND user_subscription.from<:time AND user_subscription.to>:time
+                          AND ISEMPTY(base.cabinet_link)
+                        LIMIT 1'
+                    )
+                    ->cache(60)
+                    ->bindValues([':user_id'=>Yii::$app->user->id,':time'=>time()])
+                    ->queryScalar();
+        }
+        return false;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
