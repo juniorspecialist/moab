@@ -137,7 +137,7 @@ $config = [
 
 //установка некоторых параметров общего назначения по умолчанию
 \Yii::$container->set('yii\data\Pagination', [
-    'pageSize' => 50,
+    'pageSize' => 20,
 ]);
 
 if (YII_ENV_DEV) {

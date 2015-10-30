@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\bootstrap\Modal;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /**
@@ -222,25 +223,6 @@ class Selections extends \yii\db\ActiveRecord
      */
     public function getTotalInfo()
     {
-
-
-/*
-        $out = "Исходная ключевая фраза: $this->source_phrase<br>";
-        $out.="В группе: ".$this->category->title.'<br>';
-        //описание к потенциальному трафику
-        $out.=$this->getPotencialTrafficTotalInfo();
-        $out.='Количество слов в подсказке: от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to.'<br>';
-        $out.='Длина подсказки (симв.): от '.$this->length_from.' до '.$this->length_to.PHP_EOL.'<br>';
-        //список минус-слов, через разделитель
-        $out.=($this->getMinusWordsTextJson())?('Минус-слова: '.$this->getMinusWordsTextJson().'.<br>'):'';
-
-        if($this->need_wordstat == 1)
-        {
-            $out.='Параметры Wordstat: синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to.'<br>';
-        }
-
-        $out.='Источник: '.$this->base->title.'<br>';*/
-
         return DetailView::widget([
                 'model' => $this,
                 'attributes' => [
@@ -286,8 +268,6 @@ class Selections extends \yii\db\ActiveRecord
                     ]
                 ],
             ]);
-
-        //return $out;
     }
 
     /**
@@ -383,13 +363,6 @@ class Selections extends \yii\db\ActiveRecord
         return $this->hasOne(Base::className(), ['id' => 'base_id']);
     }
 
-    /*
-     * формируем данные для предварительного просмотра результатов выборки
-     */
-    public function previewInfo()
-    {
-
-    }
 
     public function beforeDelete()
     {
@@ -403,5 +376,75 @@ class Selections extends \yii\db\ActiveRecord
         } else {
             return false;
         }
+    }
+
+    /*
+     * формируем статус для таблички вывода данных
+     */
+    public function getStatusGrid(){
+        //ожидает
+        if($this->status == \app\models\Selections::STATUS_WAIT){
+            $class = ' <i class="fa fa-clock-o"></i>';
+        }
+        //выполняется
+        if($this->status == \app\models\Selections::STATUS_EXECUTE){
+            $class = '<i class="fa fa-refresh fa-spin"></i>';
+        }//выполнено
+        if($this->status == \app\models\Selections::STATUS_DONE){
+            $class = '<i class="fa fa-check"></i>';
+        }
+        return $class.'&nbsp;'.$this->getStatusName();
+    }
+
+    /*
+     * формируем столбкц "СКАЧАТЬ"
+     */
+    public function getLinkGrid(){
+        if($this->status==\app\models\Selections::STATUS_DONE && $this->results_count!=0){
+            return 'Скачать '. Html::a('TXT',$this->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$this->result_csv_zip,['target'=>'_blank']);//.' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank'])
+        }
+        return '';
+
+    }
+
+    /*
+     * столбец "Просмотр" для таблички выброк
+     */
+    public function getPreviewGrid(){
+        //Высвечивается только для выборок в статусе «Выполнена»
+        if($this->status==\app\models\Selections::STATUS_DONE  && $this->results_count!=0)
+        {
+            return Html::a('Просмотреть',\yii\helpers\Url::to(['/user/suggest/preview','id'=>$this->id]),[
+                'target'=>'_blank',
+                'class'=>'modal_preview_suggest'
+            ]);
+        }
+        return '';
+    }
+
+    /*
+     * кол-во результатов для таблички - просмотра выборок
+     */
+    public function getResultCountGrid(){
+        //Высвечивается только для выборок в статусе «Выполнена». Для остальных статусов –пустая строка.
+        if($this->status==\app\models\Selections::STATUS_DONE)
+        {
+            return  \Yii::$app->formatter->asInteger($this->results_count);
+        }
+        return '';
+    }
+
+    /*
+     * формируем ссылку на Просмотр Параметров созданной выборки
+     */
+    public function getParamsInfo(){
+        //Ссылка/кнопка на всплывающее окно с параметрами выборки. В этом всплывающем окне будет выводиться информация о выборке,
+        return Html::a('Параметры',
+            ['#'],
+            [
+                'modal_info'=>''/*$this->getTotalInfo()*/,
+                'class'=>'suggest_params_modal_link'
+            ]
+        );
     }
 }

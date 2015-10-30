@@ -66,7 +66,29 @@ class SuggestController extends UserMainController{
         $dataProvider = $model->search(Yii::$app->request->queryParams);
 
         if(Yii::$app->request->isAjax){
-            return $this->renderAjax('_grid',['dataProvider' => $dataProvider]);
+
+
+//            echo '<pre>'; print_r($_REQUEST);
+//            die();
+
+            //if(Yii::$app->request->post('ids')) {
+                //echo '<pre>'; print_r(Yii::$app->request->post('ids'));
+                $answer = [];
+
+                $models = $dataProvider->getModels();
+
+                foreach ($models as $model) {
+                    $answer[] = [
+                        'id' => $model->id,
+                        'status' => $model->getStatusGrid(),
+                        'results_count' => $model->getResultCountGrid(),
+                        'preview' => $model->getPreviewGrid(),
+                        'download' => $model->getLinkGrid(),
+                        'params'=> $model->getParamsInfo(),
+                    ];
+                }
+            //}
+            return json_encode($answer);
         }
 
         return $this->render('index',[

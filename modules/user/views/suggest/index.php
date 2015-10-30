@@ -79,41 +79,57 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 
-echo $this->render('_grid',['dataProvider' => $dataProvider]);
+echo Html::tag('div', $this->render('_grid',['dataProvider' => $dataProvider]),['id'=>'suggest-grid-table']);
+
 
 //запуск периодического обновления таблицы результатов пользователя
-//$this->registerJs('function updateMessage(){
-//       $.pjax.reload({container: "#tbl_selections_suggest"});
-//    }
-//    $(document).ready(function(){
-//        setInterval(updateMessage, 5000);
-//    });', \yii\web\View::POS_READY);
+$js = <<< 'SCRIPT'
 
-$script = <<< JS
-$(document).ready(function() {
+function jqxhr(){
 
-    function reload_grid(){
-        $.pjax.reload({container:"#suggest-grid-table"});
+    //получаем список ID, по которым надо обновить статус в таблице
+    var key =  $('#suggest-wordstat-grid td:contains("Ожидает")').closest('tr').find('input[type=checkbox]');
+
+    var index;
+
+    var list = [];
+
+    for (index = key.length - 1; index >= 0; --index) {
+       //list.push($(key[index]).val());
     }
 
-    setInterval(
-    reload_grid
-    //function(){
-        //$.pjax.reload({container:"#suggest-grid-table"});
-        //console.log('send');
-        //    $.ajax({
-        //       url: "/user/suggest/index",
-        //       data: {test: test},
-        //       success: function(data) {
-        //            console.log('success');
-        //           $('#suggest-grid-table').html(data);
-        //       }
-        //    });
-        //}
-        , 5000);
-});
-JS;
-$this->registerJs($script);
+    if(list.length>0){
+        $.ajax({
+            url: "",
+            //type:"post",
+            timeout:10000,
+            data:{'SelectionsSearch':{'ids': list} },
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data, textStatus) {
+                var index;
+                for (index = data.length - 1; index >= 0; --index) {
+                   $('span.status_'+data[index].id).html(data[index].status);
+                   $('span.results_count_'+data[index].id).html(data[index].results_count);
+                   $('span.preview_'+data[index].id).html(data[index].preview);
+                   $('span.download_'+data[index].id).html(data[index].download);
+                }
+                clearTimeout(jqxhr);
+                setTimeout(jqxhr, 5000);
+            },
+            error:function(data, textStatus, errorThrown){
+                clearTimeout(jqxhr);
+                setTimeout(jqxhr, 5000);
+            }
+        });
+    }
+}
+
+setTimeout(jqxhr, 5000);
+
+SCRIPT;
+$this->registerJs($js);
+
 
 Modal::begin([
     'header' => "<h4>Параметры выборки</h4>",

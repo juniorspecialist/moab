@@ -15,7 +15,7 @@ use yii\helpers\Html;
 <!-- автоматическое обновление таблицы выборок для пользователя -->
 
 <?php
-    Pjax::begin(['id'=>'suggest-grid-table','timeout'=>10000])
+    //Pjax::begin(['id'=>'suggest-grid-table','timeout'=>30000,'enablePushState'=>true])
 ?>
 
 <?= Html::a("Обновить", \yii\helpers\Url::current(), ['class' => 'btn btn-lg btn-primary hide', 'id' => 'refreshButton']) ?>
@@ -54,13 +54,9 @@ use yii\helpers\Html;
                 'label'=>'Кол-во результатов',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    //Высвечивается только для выборок в статусе «Выполнена». Для остальных статусов –пустая строка.
-                    if($data->status==\app\models\Selections::STATUS_DONE)
-                    {
-                        return  \Yii::$app->formatter->asInteger($data->results_count);
-                    }
-                    return '';
+                    return Html::tag('span', $data->getResultCountGrid(),['class'=>'result_count_'.$data->id]);
                 },
+                'options'=>['class'=>'result_count'],
             ],
 
             [
@@ -78,46 +74,26 @@ use yii\helpers\Html;
                 'label'=>'Статус',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    //ожидает
-                    if($data->status == \app\models\Selections::STATUS_WAIT){
-                        $class = ' <i class="fa fa-clock-o"></i>';
-                    }
-                    //выполняется
-                    if($data->status == \app\models\Selections::STATUS_EXECUTE){
-                        $class = '<i class="fa fa-refresh fa-spin"></i>';
-                    }//выполнено
-                    if($data->status == \app\models\Selections::STATUS_DONE){
-                        $class = '<i class="fa fa-check"></i>';
-                    }
-                    return $class.'&nbsp;'.$data->getStatusName();
+                    return Html::tag('span', $data->getStatusGrid(),['class'=>'status_'.$data->id]);
                 },
+                'options'=>['class'=>'status'],
             ],
 
-           /* [
+           [
                 'class' => 'yii\grid\DataColumn',
                 'label'=>'Параметры',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    //Ссылка/кнопка на всплывающее окно с параметрами выборки. В этом всплывающем окне будет выводиться информация о выборке,
-                    return Html::a('Параметры', ['#'],['modal_info'=>$data->getTotalInfo(),'class'=>'suggest_params_modal_link']);
-                    //return  ModalWinWithBtnWidget::widget(['info'=>$data->getTotalInfo(),'button_label'=>'Параметры','header'=>'Параметры выборки', 'id'=>'suggest_info_'.$data->id]);
+                    return Html::tag(['span', $data->getParamsInfo(),'params_'.$data->id]);
                 },
-            ],*/
+            ],
 
             [
                 'class' => 'yii\grid\DataColumn',
                 'label'=>'Просмотр',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    //Высвечивается только для выборок в статусе «Выполнена»
-//                    if($data->status==\app\models\Selections::STATUS_DONE  && $data->results_count!=0)
-//                    {
-                        return Html::a('Просмотреть',\yii\helpers\Url::to(['/user/suggest/preview','id'=>$data->id]),[
-                            'target'=>'_blank',
-                            'class'=>'modal_preview_suggest'
-                        ]);
-//                    }
-                    return '';
+                    return Html::tag('span', $data->getPreviewGrid(), ['class'=>'preview_'.$data->id]);
                 },
             ],
             [
@@ -125,10 +101,7 @@ use yii\helpers\Html;
                 'label'=>'Скачать',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    if($data->status==\app\models\Selections::STATUS_DONE && $data->results_count!=0){
-                        return 'Скачать '. Html::a('TXT',$data->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$data->result_csv_zip,['target'=>'_blank']);//.' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank'])
-                    }
-                    return '';
+                    return Html::tag('span', $data->getLinkGrid(), ['class'=>'download_'.$data->id]);
                 },
             ],
         ],
@@ -138,4 +111,4 @@ use yii\helpers\Html;
 
 <?php
 
-Pjax::end();
+//Pjax::end();

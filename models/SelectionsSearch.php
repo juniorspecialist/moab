@@ -15,6 +15,7 @@ use yii\data\ActiveDataProvider;
 class SelectionsSearch extends Selections{
 
     public $search;
+    public $ids;
 
     /**
      * @inheritdoc
@@ -25,6 +26,13 @@ class SelectionsSearch extends Selections{
             [['search'], function ($attribute) {
                 $this->$attribute = \yii\helpers\HtmlPurifier::process($this->$attribute);
             }],
+            ['ids', function($attribute){
+                if(!is_array($this->$attribute)){
+                    $this->addError($attribute, 'Список параметров должен быть массивом');
+                }
+            }],
+            // checks if every ID is an integer
+            ['ids', 'each', 'rule' => ['integer']],
         ];
     }
 
@@ -78,6 +86,9 @@ class SelectionsSearch extends Selections{
             // $query->where('0=1');
             return $dataProvider;
         }
+
+        $query->andFilterWhere(['in',self::tableName().'.id', $this->ids]);
+
 
         //объединили поля и поиск совпадений по разным полям
         $query->andFilterWhere(['like','CONCAT(category.title,selections.name,selections.source_phrase,selections.results_count)', $this->search]);
