@@ -67,27 +67,20 @@ class SuggestController extends UserMainController{
 
         if(Yii::$app->request->isAjax){
 
+            $answer = [];
 
-//            echo '<pre>'; print_r($_REQUEST);
-//            die();
+            $models = $dataProvider->getModels();
 
-            //if(Yii::$app->request->post('ids')) {
-                //echo '<pre>'; print_r(Yii::$app->request->post('ids'));
-                $answer = [];
-
-                $models = $dataProvider->getModels();
-
-                foreach ($models as $model) {
-                    $answer[] = [
-                        'id' => $model->id,
-                        'status' => $model->getStatusGrid(),
-                        'results_count' => $model->getResultCountGrid(),
-                        'preview' => $model->getPreviewGrid(),
-                        'download' => $model->getLinkGrid(),
-                        'params'=> $model->getParamsInfo(),
-                    ];
-                }
-            //}
+            foreach ($models as $model) {
+                $answer[] = [
+                    'id' => $model->id,
+                    'status' => $model->getStatusGrid(),
+                    'results_count' => $model->getResultCountGrid(),
+                    'preview' => $model->getPreviewGrid(),
+                    'download' => $model->getLinkGrid(),
+                    'params'=> $model->getParamsInfo(),
+                ];
+            }
             return json_encode($answer);
         }
 
@@ -112,7 +105,6 @@ class SuggestController extends UserMainController{
         {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-
 
         //определяем какие параметры нам нужны
         $fields = ['phrase','length','position'];
@@ -149,7 +141,10 @@ class SuggestController extends UserMainController{
         {
 
             //убедимся, что юзер выбрал существующую категорию
-            $category = Yii::$app->db->createCommand('SELECT id FROM category WHERE user_id=:user_id AND id=:id')->bindValues([':id'=>Yii::$app->request->post('category_id'), ':user_id'=>Yii::$app->user->id])->queryScalar();
+            $category = Yii::$app->db
+                ->createCommand('SELECT id FROM category WHERE user_id=:user_id AND id=:id')
+                ->bindValues([':id'=>Yii::$app->request->post('category_id'), ':user_id'=>Yii::$app->user->id])
+                ->queryScalar();
 
             if($category){
                 //обновим подвязку к новой категории

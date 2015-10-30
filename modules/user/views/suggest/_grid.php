@@ -84,7 +84,7 @@ use yii\helpers\Html;
                 'label'=>'Параметры',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return Html::tag(['span', $data->getParamsInfo(),'params_'.$data->id]);
+                    return Html::tag('span', $data->getParamsInfo(),['class'=>'params_'.$data->id]);
                 },
             ],
 

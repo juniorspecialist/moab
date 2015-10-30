@@ -389,14 +389,25 @@ class SuggestForm extends Model
                 //обрабатываем список ключевых слов и каждый сохраняем отдельно
                 $model = new Selections();
 
+                //к каждой выборке идёт подвязка доп. параметры котор. присущи именно этой выборке(в зависимости от типа)
+                $suggest = new SelectionsSuggest();
+
                 //заполняем значениями из модели-проверки - поля задания на выборку
+                //форма добавления содержит поля как из одной модели так и с другой, поэтому раскидываем данные по моделям
                 foreach($this->attributes() as $attribute)
                 {
                     if($model->hasAttribute($attribute))
                     {
                         $model->setAttribute($attribute, $this->$attribute);
                     }
+                    if($suggest->hasAttribute($attribute))
+                    {
+                        $suggest->setAttribute($attribute, $this->$attribute);
+                    }
                 }
+
+                //формируем
+                $model->additional_info = $suggest->createTotalInfo();
 
                 $model->name = str_replace('=','',trim($source_phrase));
 
@@ -405,23 +416,32 @@ class SuggestForm extends Model
                 $model->source_phrase = trim($source_phrase);
 
                 //денормализация данных
-                if($this->stop_words_exploded){
+                /*if($this->stop_words_exploded){
                     $model->minus_words = json_encode($this->stop_words_exploded);
+                }*/
+                if(!$model->validate()){
+                    echo '<pre>'; print_r($model->errors);
                 }
 
+                if(!$suggest->validate()){
+                    echo '<pre>'; print_r($suggest->errors);
+                }
+
+                echo '<pre>'; print_r($model->attributes);
+                echo '<pre>'; print_r($suggest->attributes);
+
+                die();
+
                 //если параметры указаны верно, сохраним задание на выборку
-                if($model->validate())
+                if($model->save())
                 {
 
-                    if($model->save())
+                    if($this->stop_words_exploded)
                     {
-                        if($this->stop_words_exploded)
+                        //запишим подвязанные к выборке список минус-слов(стоп-слов)
+                        foreach($this->stop_words_exploded as $stop_word_relation)
                         {
-                            //запишим подвязанные к выборке список минус-слов(стоп-слов)
-                            foreach($this->stop_words_exploded as $stop_word_relation)
-                            {
-                                Yii::$app->db->createCommand()->insert('minus_words',['selection_id'=>$model->id,'minus_word'=>$stop_word_relation])->execute();
-                            }
+                            Yii::$app->db->createCommand()->insert('minus_words',['selection_id'=>$model->id,'minus_word'=>$stop_word_relation])->execute();
                         }
                     }
                 }else{

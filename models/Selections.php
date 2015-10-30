@@ -2,11 +2,10 @@
 
 namespace app\models;
 
+use app\modules\user\models\SelectionsSuggest;
 use Yii;
-use yii\bootstrap\Modal;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+
 
 /**
  * This is the model class for table "selections".
@@ -19,19 +18,6 @@ use yii\widgets\DetailView;
  * @property integer $results_count
  * @property integer $date_created
  * @property integer $status
- * @property integer $potential_traffic
- * @property integer $source_words_count_from
- * @property integer $source_words_count_to
- * @property integer $position_from
- * @property integer $position_to
- * @property integer $suggest_words_count_from
- * @property integer $suggestwords_count_to
- * @property integer $length_from
- * @property integer $length_to
- * @property integer $need_wordstat
- * @property integer $wordstat_syntax
- * @property integer $wordstat_from
- * @property integer $wordstat_to
  * @property string $hash
  * @property string $result_txt_zip
  * @property string $result_csv_zip
@@ -105,16 +91,6 @@ class Selections extends \yii\db\ActiveRecord
     }
 
     /*
-     * по выбранному типу совпадений-сравнений в ключевике - выводим пример/описание
-     */
-    private function getWordStatSyntaxName()
-    {
-        $list = self::getWordsStatSyntax();
-
-        return $list[$this->wordstat_syntax];
-    }
-
-    /*
      * список значений потенциального траффика
      */
 
@@ -128,38 +104,6 @@ class Selections extends \yii\db\ActiveRecord
             self::POTENCIAL_TRAFFIC_USER => 'Пользовательский',
         ];
     }
-
-    /*
-     * текстовое обозначение потенциального трафика
-     */
-    private function getPotentialTrafficName()
-    {
-        $list = self::getPotencialTraffic();
-
-        return $list[$this->potential_traffic];
-    }
-
-    /*
-     * формируем текстовое описание для выбранного потенциального траффика
-     * параметр используем при формировании общего описания задания по выборке(юзера)
-     *  на основании выбранного траффика - формируем структуру нужной инфы
-     *
-     * Если значение –4 (пользовательский), то в окно параметровпосле «Потенциальный траффик: Пользовательский»
-     * добавятся еще 2 строки –Количествослов в исходной фразе: от source_words_count_fromдо source_words_count_toиПозицияподсказки:отposition_fromдоposition_to
-     */
-    private function getPotencialTrafficTotalInfo()
-    {
-        $out = 'Потенциальный траффик: '.$this->getPotentialTrafficName().'<br>';
-
-        if($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)
-        {
-            $out.='Количество слов в исходной фразе: от '.$this->source_words_count_from.' до '.$this->source_words_count_to.'<br>';
-            $out.='Позиция подсказки: от '.$this->position_from.' до '.$this->position_to.'<br>';
-        }
-
-        return $out;
-    }
-
 
     //список статусов
     static function getStatusList()
@@ -194,15 +138,11 @@ class Selections extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
-                'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
-                'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to', 'hash', 'name'], 'required'],
+            [['category_id','source_phrase',  'hash', 'name'], 'required'],
 
-            [['user_id', 'type', 'results_count', 'date_created', 'status', 'potential_traffic', 'source_words_count_from', 'source_words_count_to', 'position_from', 'position_to',
-                'suggest_words_count_from', 'suggest_words_count_to', 'length_from', 'length_to', 'need_wordstat', 'wordstat_syntax', 'wordstat_from', 'wordstat_to'], 'integer'],
+            [['user_id', 'type', 'results_count', 'date_created', 'status'], 'integer'],
 
             [['name'], 'string', 'max' => 255],
-
 
             [['hash'], 'string', 'max' => 50],
 
@@ -213,7 +153,7 @@ class Selections extends \yii\db\ActiveRecord
             ['type','default','value'=>self::TYPE_SELECT_TIPS_YA],
 
 
-            [['result_txt_zip', 'result_csv_zip', 'result_xlsx_zip'], 'string', 'max' => 128]
+            [['result_txt_zip', 'result_csv_zip', 'result_xlsx_zip'], 'string', 'max' => 256]
         ];
     }
 
@@ -223,51 +163,7 @@ class Selections extends \yii\db\ActiveRecord
      */
     public function getTotalInfo()
     {
-        return DetailView::widget([
-                'model' => $this,
-                'attributes' => [
-                    [
-                        'label'=>'Исходная ключевая фраза:',
-                        'value'=>$this->source_phrase,
-                    ],
-                    [
-                        'label'=>'В группе:',
-                        'value'=>$this->category->title,
-                    ],
-                    [
-                        'label'=>'Потенциальный траффик:',
-                        'value'=>$this->getPotentialTrafficName(),
-                    ],
-                    [
-                        'label'=>'Количество слов в исходной фразе:',
-                        'value'=>'от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to,
-                        'visible'=>($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)?true:false,
-                    ],
-                    [
-                        'label'=>'Позиция подсказки:',
-                        'value'=>'от '.$this->position_from.' до '.$this->position_to,
-                        'visible'=>($this->potential_traffic == self::POTENCIAL_TRAFFIC_USER)?true:false,
-                    ],
-                    [
-                        'label'=>'Количество слов в подсказке:',
-                        'value'=>'от '.$this->suggest_words_count_from.' до '.$this->suggest_words_count_to,
-                    ],
-                    [
-                        'label'=>'Длина подсказки (симв.):',
-                        'value'=>'от '.$this->length_from.' до '.$this->length_to,
-                    ],
-                    [
-                        'label'=>'Минус-слова:',
-                        'value'=>$this->getMinusWordsTextJson(),
-                        'visible'=>($this->getMinusWordsTextJson())?true:false,
-                    ],
-                    [
-                        'label'=>'Параметры Wordstat:',
-                        'value'=>'синтаксис - '.$this->getWordStatSyntaxName().', частота от '.$this->wordstat_from.' до '.$this->wordstat_to,
-                        'visible'=>($this->need_wordstat == 1)?true:false,
-                    ]
-                ],
-            ]);
+        return $this->additional_info;
     }
 
     /**
@@ -284,25 +180,13 @@ class Selections extends \yii\db\ActiveRecord
             'results_count' => 'кол-во результатов',
             'date_created' => 'дата создания',
             'status' => 'Статус выборки',
-            'potential_traffic' => 'Потенциальный траффик',
-            'source_words_count_from' => 'Количество слов в исходной фразе От',
-            'source_words_count_to' => 'Количество слов в исходной фразе До',
-            'position_from' => 'Позиция подсказки От',
-            'position_to' => 'Позиция подсказки До',
-            'suggest_words_count_from' => 'Количество слов в подсказке От',
-            'suggest_words_count_to' => 'Количество слов в подсказке До',
-            'length_from' => 'Длина подсказки от',
-            'length_to' => 'Длина подсказки до',
-            'need_wordstat' => 'Нужны фразы с частотностью Wordstat',//'0 –ненужна частота по Wordstat1 –нужна частота по Wordstat',
-            'wordstat_syntax' => 'Вид частотности',
-            'wordstat_from' => 'Частотность Wordstat от',
-            'wordstat_to' => 'Частотность Wordstat до',
             'hash' => 'MD5 от конкатенации значений',
             'result_txt_zip' => 'ссылка на файл txt',
             'result_csv_zip' => 'ссылка на файл csv',
             'result_xlsx_zip' => 'ссылка на файл xlsx',
             'category_id'=>'Группа',
             'stop_words'=>'Список минус-слов',
+            'additional_info'=>'Параметры выборки(общая информация)',
         ];
     }
 
@@ -312,31 +196,6 @@ class Selections extends \yii\db\ActiveRecord
     public function getMinusWords()
     {
         return $this->hasMany(MinusWords::className(), ['selection_id' => 'id']);
-    }
-
-    /*
-     *выводим текстовое представление списка минус-слов, для отображению юзеру
-     */
-    public function getMinusWordsText()
-    {
-        if($this->minusWords)
-        {
-            return implode(', ', ArrayHelper::map($this->minusWords, 'minus_word', 'minus_word'));
-        }
-
-        //нет минус-слов, значит пустое значение выводим
-        return '';
-    }
-
-    /*
-     * чтобы не делать доп. запросы к таблице минус-слов - храним массив минус-слов к json формате в самой таблице выборок
-     */
-    public function getMinusWordsTextJson(){
-        if($this->minus_words){
-            return str_replace(' ,',',',implode(', ', json_decode($this->minus_words, true)));
-        }
-        //нет минус-слов, значит пустое значение выводим
-        return '';
     }
 
     /**
@@ -368,8 +227,13 @@ class Selections extends \yii\db\ActiveRecord
     {
         if (parent::beforeDelete()) {
 
+            //доп. данные выборки по подсказкам
+            SelectionsSuggest::deleteAll(['selections_id'=>$this->id]);
+
+            //таблица минус-слов, подвязанных к выборке
             MinusWords::deleteAll(['selection_id'=>$this->id]);
 
+            //предварительный просмотр выборок
             Preview::deleteAll(['selection_id'=>$this->id]);
 
             return true;
@@ -401,7 +265,8 @@ class Selections extends \yii\db\ActiveRecord
      */
     public function getLinkGrid(){
         if($this->status==\app\models\Selections::STATUS_DONE && $this->results_count!=0){
-            return 'Скачать '. Html::a('TXT',$this->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$this->result_csv_zip,['target'=>'_blank']);//.' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank'])
+            //.' | '.Html::a('XLSX', $data->result_xlsx_zip,['target'=>'_blank'])
+            return 'Скачать '. Html::a('TXT',$this->result_txt_zip,['target'=>'_blank']).' | '.Html::a('CSV',$this->result_csv_zip,['target'=>'_blank']);
         }
         return '';
 
@@ -442,7 +307,7 @@ class Selections extends \yii\db\ActiveRecord
         return Html::a('Параметры',
             ['#'],
             [
-                'modal_info'=>''/*$this->getTotalInfo()*/,
+                'modal_info'=>$this->additional_info,
                 'class'=>'suggest_params_modal_link'
             ]
         );

@@ -75,12 +75,9 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
-
-
 <?php
-
+//оборачиваем ДИВ с таблицей, для обновления только этого блока с данными, по необходимости
 echo Html::tag('div', $this->render('_grid',['dataProvider' => $dataProvider]),['id'=>'suggest-grid-table']);
-
 
 //запуск периодического обновления таблицы результатов пользователя
 $js = <<< 'SCRIPT'
@@ -95,7 +92,7 @@ function jqxhr(){
     var list = [];
 
     for (index = key.length - 1; index >= 0; --index) {
-       //list.push($(key[index]).val());
+       list.push($(key[index]).val());
     }
 
     if(list.length>0){
