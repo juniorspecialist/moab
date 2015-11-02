@@ -85,7 +85,7 @@ $js = <<< 'SCRIPT'
 function jqxhr(){
 
     //получаем список ID, по которым надо обновить статус в таблице
-    var key =  $('#suggest-wordstat-grid td:contains("Ожидает")').closest('tr').find('input[type=checkbox]');
+    var key =  $('#suggest-wordstat-grid td').find(".wait,.execute").closest('tr').find('input[type=checkbox]');
 
     var index;
 

@@ -115,6 +115,20 @@ class Selections extends \yii\db\ActiveRecord
         ];
     }
 
+    //получаем англ. название статуса
+    static function getEngNameStatus($status){
+        if($status == self::STATUS_DONE){
+            return 'done';
+        }
+        if($status == self::STATUS_EXECUTE){
+            return 'execute';
+        }
+        if($status == self::STATUS_WAIT){
+            return 'wait';
+        }
+
+    }
+
     /*
      * текстовое определение статуса выборки
      */
@@ -248,14 +262,14 @@ class Selections extends \yii\db\ActiveRecord
     public function getStatusGrid(){
         //ожидает
         if($this->status == \app\models\Selections::STATUS_WAIT){
-            $class = ' <i class="fa fa-clock-o"></i>';
+            $class = ' <i class="'.\app\models\Selections::getEngNameStatus($this->status).' fa fa-clock-o"></i>';
         }
         //выполняется
         if($this->status == \app\models\Selections::STATUS_EXECUTE){
-            $class = '<i class="fa fa-refresh fa-spin"></i>';
+            $class = '<i class="'.\app\models\Selections::getEngNameStatus($this->status).' fa fa-refresh fa-spin"></i>';
         }//выполнено
         if($this->status == \app\models\Selections::STATUS_DONE){
-            $class = '<i class="fa fa-check"></i>';
+            $class = '<i class="'.\app\models\Selections::getEngNameStatus($this->status).' fa fa-check"></i>';
         }
         return $class.'&nbsp;'.$this->getStatusName();
     }

@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=moab',
+    'dsn' => 'mysql:host=localhost;dbname=moab_old',
     'username' => 'root',
     'password' => 'root',
     'charset' => 'utf8',

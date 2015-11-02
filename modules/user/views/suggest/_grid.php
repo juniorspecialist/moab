@@ -6,20 +6,10 @@
  * Time: 14:42
  */
 use yii\grid\GridView;
-use app\components\widgets\ModalWinWithBtnWidget;
-use yii\widgets\Pjax;
-
 use yii\helpers\Html;
 ?>
 
 <!-- автоматическое обновление таблицы выборок для пользователя -->
-
-<?php
-    //Pjax::begin(['id'=>'suggest-grid-table','timeout'=>30000,'enablePushState'=>true])
-?>
-
-<?= Html::a("Обновить", \yii\helpers\Url::current(), ['class' => 'btn btn-lg btn-primary hide', 'id' => 'refreshButton']) ?>
-
 <div class="selects-index">
 
     <?= GridView::widget([
@@ -74,7 +64,7 @@ use yii\helpers\Html;
                 'label'=>'Статус',
                 'format'=>'raw',
                 'value' => function ($data) {
-                    return Html::tag('span', $data->getStatusGrid(),['class'=>'status_'.$data->id]);
+                    return Html::tag('span', $data->getStatusGrid(),['class'=>' status_'.$data->id]);
                 },
                 'options'=>['class'=>'status'],
             ],
@@ -108,7 +98,3 @@ use yii\helpers\Html;
     ]); ?>
 
 </div>
-
-<?php
-
-//Pjax::end();
