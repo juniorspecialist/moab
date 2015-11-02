@@ -13,7 +13,7 @@ use app\models\Base;
 use app\models\MinusWords;
 use app\models\Preview;
 use app\models\Selections;
-use app\models\SelectionsSearch;
+use app\models\SelectionsSuggestSearch;
 use app\modules\user\models\SuggestForm;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -60,8 +60,8 @@ class SuggestController extends UserMainController{
         //проверка доступа к выборкам для тек. юзера
         $this->access();
 
-        //выбираем данные по выборкам пользователя
-        $model = new SelectionsSearch();
+        //выбираем данные по выборкам пользователя(по базе SUGGEST)
+        $model = new SelectionsSuggestSearch();
 
         $dataProvider = $model->search(Yii::$app->request->queryParams);
 

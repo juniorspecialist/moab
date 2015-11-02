@@ -100,7 +100,7 @@ function jqxhr(){
             url: "",
             //type:"post",
             timeout:10000,
-            data:{'SelectionsSearch':{'ids': list} },
+            data:{'SelectionsSuggestSearch':{'ids': list} },
             dataType: "json",
             contentType: "application/json",
             success: function (data, textStatus) {

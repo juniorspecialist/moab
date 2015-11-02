@@ -11,6 +11,7 @@ namespace app\modules\user\models;
 
 use app\models\Selections;
 use Yii;
+use yii\base\Exception;
 use yii\base\Model;
 
 /*
@@ -383,70 +384,76 @@ class SuggestForm extends Model
         //обработаем список ключевых слов для создания выборок
         if($this->source_phrase_list)
         {
-            //цикл по списку ключевых слов
-            foreach($this->source_phrase_list as $source_phrase)
-            {
-                //обрабатываем список ключевых слов и каждый сохраняем отдельно
-                $model = new Selections();
 
-                //к каждой выборке идёт подвязка доп. параметры котор. присущи именно этой выборке(в зависимости от типа)
-                $suggest = new SelectionsSuggest();
+            //обернём в транзакции создание выборок по данным из формы
+            $transaction = Yii::$app->getDb()->beginTransaction();
 
-                //заполняем значениями из модели-проверки - поля задания на выборку
-                //форма добавления содержит поля как из одной модели так и с другой, поэтому раскидываем данные по моделям
-                foreach($this->attributes() as $attribute)
+            try {
+
+                //цикл по списку ключевых слов
+                foreach($this->source_phrase_list as $source_phrase)
                 {
-                    if($model->hasAttribute($attribute))
+                    //обрабатываем список ключевых слов и каждый сохраняем отдельно
+                    $model = new Selections();
+
+                    //к каждой выборке идёт подвязка доп. параметры котор. присущи именно этой выборке(в зависимости от типа)
+                    $suggest = new SelectionsSuggest();
+
+                    //заполняем значениями из модели-проверки - поля задания на выборку
+                    //форма добавления содержит поля как из одной модели так и с другой, поэтому раскидываем данные по моделям
+                    foreach($this->attributes() as $attribute)
                     {
-                        $model->setAttribute($attribute, $this->$attribute);
-                    }
-                    if($suggest->hasAttribute($attribute))
-                    {
-                        $suggest->setAttribute($attribute, $this->$attribute);
-                    }
-                }
-
-                //формируем
-                $model->additional_info = $suggest->createTotalInfo();
-
-                $model->name = str_replace('=','',trim($source_phrase));
-
-                $model->hash = $this->createHash($source_phrase);
-
-                $model->source_phrase = trim($source_phrase);
-
-                //денормализация данных
-                /*if($this->stop_words_exploded){
-                    $model->minus_words = json_encode($this->stop_words_exploded);
-                }*/
-                if(!$model->validate()){
-                    echo '<pre>'; print_r($model->errors);
-                }
-
-                if(!$suggest->validate()){
-                    echo '<pre>'; print_r($suggest->errors);
-                }
-
-                echo '<pre>'; print_r($model->attributes);
-                echo '<pre>'; print_r($suggest->attributes);
-
-                die();
-
-                //если параметры указаны верно, сохраним задание на выборку
-                if($model->save())
-                {
-
-                    if($this->stop_words_exploded)
-                    {
-                        //запишим подвязанные к выборке список минус-слов(стоп-слов)
-                        foreach($this->stop_words_exploded as $stop_word_relation)
-                        {
-                            Yii::$app->db->createCommand()->insert('minus_words',['selection_id'=>$model->id,'minus_word'=>$stop_word_relation])->execute();
+                        if($model->hasAttribute($attribute)){
+                            $model->setAttribute($attribute, $this->$attribute);
+                        }
+                        if($suggest->hasAttribute($attribute)){
+                            $suggest->setAttribute($attribute, $this->$attribute);
                         }
                     }
-                }else{
-                    echo '<pre>'; print_r($model->errors); die();
+
+
+                    //подвязываем временно модель, для формирования внутри класса необходимых данных
+                    $suggest->selection = $model;
+
+                    //формируем
+                    $model->source_phrase = trim($source_phrase);
+                    $suggest->minus_words = $this->stop_words_exploded;
+                    $model->additional_info = $suggest->createTotalInfo();
+                    $model->name = str_replace('=','',trim($source_phrase));
+                    $model->hash = $this->createHash($source_phrase);
+
+
+                    //если параметры указаны верно, сохраним задание на выборку
+                    if($model->save()){
+
+                        //привяжем таблицу общую выборок - к доп. данным именно по SUGGEST
+                        $suggest->link('selections', $model);
+
+                        //не удалось сохранить доп. данные по SUGGEST
+                        if(!$suggest->save()){
+                            $transaction->rollBack();
+                        }
+
+                        //сохраним список минус-слов для каждой выборки
+                        if($this->stop_words_exploded)
+                        {
+                            //запишим подвязанные к выборке список минус-слов(стоп-слов)
+                            foreach($this->stop_words_exploded as $stop_word_relation)
+                            {
+                                Yii::$app->db->createCommand()->insert('minus_words',['selection_id'=>$model->id,'minus_word'=>$stop_word_relation])->execute();
+                            }
+                        }
+
+                    }else{
+                        $transaction->rollBack();
+                    }
                 }
+
+                // ... executing other SQL statements ...
+                $transaction->commit();
+            } catch (Exception $e) {
+                echo 'we have any errors<br>';
+                $transaction->rollBack();
             }
         }
 

@@ -12,7 +12,7 @@ use yii\base\Model;
 use Yii;
 use yii\data\ActiveDataProvider;
 
-class SelectionsSearch extends Selections{
+class SelectionsSuggestSearch extends Selections{
 
     public $search;
     public $ids;
@@ -77,6 +77,12 @@ class SelectionsSearch extends Selections{
                 self::tableName().'.user_id' => Yii::$app->user->id,
             ]);
         }
+
+        //используем обязательно фильтр по ID-base(в данном случае по SUGGEST базе)
+        $query->andFilterWhere([
+            self::tableName().'.base_id' => Yii::$app->params['subscribe_suggest_and_wordstat'],
+        ]);
+
 
         $query->orderBy('date_created DESC, id DESC');
 

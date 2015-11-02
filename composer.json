@@ -21,7 +21,8 @@
         "omnilight/yii2-sypexgeo": "*",
         "dmstr/yii2-adminlte-asset": "2.*",
         "yiisoft/yii2-redis": "*",
-        "zhuravljov/yii2-datetime-widgets" : "^1.0"
+        "zhuravljov/yii2-datetime-widgets" : "^1.0",
+        "brussens/yii2-maintenance-mode": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
