@@ -20,5 +20,21 @@ echo $form->field($model, 'category_id')
 
 //Label для поля «Исходная ключевая фраза»
 echo $form->field($model, 'source_phrase')
-    ->textarea(['cols'=>5,'rows'=>15])
+    ->textarea(['cols'=>5,'rows'=>15,'onKeyUp'=>'countLines(this)'])
     ->label("Добавьте одну или несколько ключевых фраз, по которым будет осуществляться выборка (не более ".Yii::$app->user->identity->suggest_limit_words." фраз):");
+
+?>
+<script>
+    function countLines()
+    {
+        var area = document.getElementById("suggestform-source_phrase")
+        // trim trailing return char if exists
+        var text = area.value.replace(/\s+$/g,"")
+        var split = text.split("\n")
+        //return split.length
+        $('#source_phrase_count').text(split.length);
+        return true;
+    }
+</script>
+<br>
+Строк: <span id="source_phrase_count">0</span>

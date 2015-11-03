@@ -14,6 +14,7 @@ use app\models\MinusWords;
 use app\models\Preview;
 use app\models\Selections;
 use app\models\SelectionsSuggestSearch;
+use app\modules\user\models\SelectionsSuggest;
 use app\modules\user\models\SuggestForm;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -75,7 +76,7 @@ class SuggestController extends UserMainController{
                 $answer[] = [
                     'id' => $model->id,
                     'status' => $model->getStatusGrid(),
-                    'results_count' => $model->getResultCountGrid(),
+                    'result_count' => $model->getResultCountGrid(),
                     'preview' => $model->getPreviewGrid(),
                     'download' => $model->getLinkGrid(),
                     'params'=> $model->getParamsInfo(),
@@ -101,7 +102,7 @@ class SuggestController extends UserMainController{
         //проверим свою ли выборку юзер хочет посмотреть
         $selections = $this->loadSelect($id);
 
-        if($selections->status !== Selections::STATUS_DONE)
+        if($selections->selections->status !== Selections::STATUS_DONE)
         {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
@@ -114,11 +115,11 @@ class SuggestController extends UserMainController{
             $fields = ArrayHelper::merge($fields,['wordstat_1','wordstat_3']);
         }
 
-
+        //формируем запрос на выборку ТОЛЬКО необходимых данных
         $query = Preview::find()
             ->select($fields)
             ->where([
-                'selection_id'=>$selections->id
+                'selection_id'=>$selections->selections->id
             ]);
 
         $provider = new ActiveDataProvider([
@@ -167,6 +168,11 @@ class SuggestController extends UserMainController{
 
         $model = new SuggestForm();
 
+        $model->source_words_count_from = 1;
+        $model->source_words_count_to = 32;
+        $model->position_from = 1;
+        $model->position_to = 10;
+
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -177,8 +183,6 @@ class SuggestController extends UserMainController{
 
             //создаём выборки
             $model->createSelects();
-
-            //Yii::$app->getSession()->setFlash('success', 'Успешно добавили выборку(и)');
 
             return $this->redirect(['index']);
 
@@ -207,9 +211,8 @@ class SuggestController extends UserMainController{
 
             if($rows){
 
-                foreach($rows as $id){
-                    Selections::findOne(['id'=>$id['id']])->delete();
-                }
+                //сами выборки помечаем как удалённые
+                Selections::updateAll(['is_del'=>1],['in','id',$rows]);
 
                 return true;
             }
@@ -238,7 +241,14 @@ class SuggestController extends UserMainController{
     }
 
     protected function loadSelect($id){
-        if (($model = Selections::findOne(['id'=>$id, 'user_id'=>Yii::$app->user->id])) !== null) {
+
+        //связываем таблицу выборок - SUGGEST с общей таблицей выборок
+        $model = SelectionsSuggest::find()
+            ->joinWith('selections')
+            ->where(['selections.id'=>$id, 'selections.user_id'=>Yii::$app->user->id])
+            ->one();
+
+        if ($model!== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

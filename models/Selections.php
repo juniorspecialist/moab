@@ -236,6 +236,13 @@ class Selections extends \yii\db\ActiveRecord
         return $this->hasOne(Base::className(), ['id' => 'base_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSuggest()
+    {
+        return $this->hasOne(SelectionsSuggest::className(), ['id' => 'base_id']);
+    }
 
     public function beforeDelete()
     {

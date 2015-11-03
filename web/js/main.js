@@ -73,6 +73,7 @@ $(document).ready(function () {
         return false;
     })
 
+    //пользователь кликает на подписку - вызывает диалоговое окно
     $(document).on('click','.modalWin', function(e){
         $('#modalWondow').modal('show').find('.modal-body').load($(this).attr('value'));
         $('.modal-header h4').html($(this).attr('service'));
@@ -250,14 +251,13 @@ $(document).ready(function () {
         //определяем потенциальный трафик
         var potencial_traffic = $('#suggestform-potential_traffic option:selected').val();
 
-        $('.extra_options').prop('disabled', 'disabled');
+        $('.extra_options').prop('readonly', 'readonly');
+        $('.extra_options').attr('readonly', '');
+        $('.extra_options').removeAttr('readonly');
 
         //если не пользовательский выбран, то блокируем все поля на форме
         if(potencial_traffic != 1)
         {
-
-            $('.extra_options').parent('div').addClass('disabled');
-
             //потенциальный траффик - любой(5)
             if(potencial_traffic == 5)
             {
@@ -274,12 +274,12 @@ $(document).ready(function () {
             if(potencial_traffic == 4)
             {
                 //кол-во слов в исходной фразе (1-32)
-                $('#suggestform-source_words_count_from').val(1);
-                $('#suggestform-source_words_count_to').val(1);
+                $('#suggestform-source_words_count_from').val("1");
+                $('#suggestform-source_words_count_to').val("1");
 
                 //позиция подсказки (1-10)
-                $('#suggestform-position_from').val(1);
-                $('#suggestform-position_to').val(8);
+                $('#suggestform-position_from').val("1");
+                $('#suggestform-position_to').val("8");
             }
 
             //потенциальный траффик - средний(3)
@@ -306,9 +306,14 @@ $(document).ready(function () {
                 $('#suggestform-position_to').val(3);
             }
 
+            $('.extra_options').attr('readonly', 'readonly');
+            $('.extra_options').prop('readonly', 'readonly');
+
         }else{
-            $('.extra_options').prop('disabled', false);
-            $('.extra_options').parent('div').removeClass('disabled');
+
+            $('.extra_options').prop('readonly', 'readonly');
+            $('.extra_options').attr('readonly', '');
+            $('.extra_options').removeAttr('readonly');
         }
 
     });

@@ -175,24 +175,7 @@ $this->title = 'Подписки';
     </div>
 
 <?php
-
-
-            \yii\bootstrap\Modal::begin([
-                'header' => '<h4 class="modal-title">Подписаться</h4>',
-                'toggleButton' => [
-                    //'label' => !$subs->isNewRecord ? 'Продлить' : 'Подписаться',
-                    //'tag'=>'button',
-                    //'class'=>'btn btn-primary',
-                    'style'=>'display:none',
-                ],
-                'id'=>'modalWondow',
-                'clientEvents'=>[
-                    'shown.bs.modal'=>'function(){$("input:checkbox",".extension-subscribe-form").removeAttr("checked");}',
-                ]
-
-            ]);
-            \yii\bootstrap\Modal::end();
-
+            //модальное окно - доступы юзера и инструкции по подключению
             \yii\bootstrap\Modal::begin([
                 'header' => false,
                 'size'=>\yii\bootstrap\Modal::SIZE_LARGE,
@@ -219,3 +202,19 @@ $this->title = 'Подписки';
             \yii\bootstrap\Modal::end();
         }
 
+//форма заказа/продления подписки на базу юзером
+\yii\bootstrap\Modal::begin([
+    'header' => '<h4 class="modal-title">Подписаться</h4>',
+    'toggleButton' => [
+        //'label' => !$subs->isNewRecord ? 'Продлить' : 'Подписаться',
+        //'tag'=>'button',
+        //'class'=>'btn btn-primary',
+        'style'=>'display:none',
+    ],
+    'id'=>'modalWondow',
+    'clientEvents'=>[
+        'shown.bs.modal'=>'function(){$("input:checkbox",".extension-subscribe-form").removeAttr("checked");}',
+    ]
+
+]);
+\yii\bootstrap\Modal::end();

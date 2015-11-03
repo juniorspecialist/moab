@@ -98,7 +98,7 @@ function jqxhr(){
     if(list.length>0){
         $.ajax({
             url: "",
-            //type:"post",
+            type:"post",
             timeout:10000,
             data:{'SelectionsSuggestSearch':{'ids': list} },
             dataType: "json",
@@ -107,7 +107,7 @@ function jqxhr(){
                 var index;
                 for (index = data.length - 1; index >= 0; --index) {
                    $('span.status_'+data[index].id).html(data[index].status);
-                   $('span.results_count_'+data[index].id).html(data[index].results_count);
+                   $('span.result_count_'+data[index].id).html(data[index].result_count);
                    $('span.preview_'+data[index].id).html(data[index].preview);
                    $('span.download_'+data[index].id).html(data[index].download);
                 }

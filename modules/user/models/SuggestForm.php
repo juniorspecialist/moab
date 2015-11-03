@@ -24,10 +24,10 @@ class SuggestForm extends Model
     public $category_id;
     public $source_phrase;
     public $potential_traffic;
-    public $source_words_count_from = 1;
-    public $source_words_count_to = 32;
-    public $position_from = 1;
-    public $position_to = 10;
+    public $source_words_count_from;
+    public $source_words_count_to ;
+    public $position_from;
+    public $position_to;
     public $suggest_words_count_from = 1;
     public $suggest_words_count_to = 32;
     public $length_from = 1;
@@ -123,7 +123,7 @@ class SuggestForm extends Model
                         //при появлении первой ошибки - остановка цикла
                         if($this->hasErrors()){ break;}
 
-                        if(preg_match('/=/imu', $word) && !preg_match('/^[=]*[a-z0-9а-яїіє]+$/imu', $word))
+                        if(preg_match('/=/mu', $word) && !preg_match('/^[=]*[a-z0-9а-яїіє]+$/mu', $word))
                         {
                             $this->addError('source_phrase', "В исходной фразе '$source_phrase_word' знак «равно» может находиться только в начале слова.");
 
@@ -135,7 +135,7 @@ class SuggestForm extends Model
                 //регулярка-^[a-z0-9а-яїіє ]+$
                 if(!$this->hasErrors())
                 {
-                    if(!preg_match('/^[a-z0-9а-яїіє= ]+$/imu', $source_phrase_word))
+                    if(!preg_match('/^[a-z0-9а-яїіє= ]+$/mu', $source_phrase_word))
                     {
                         $this->addError('source_phrase', "Исходная фраза '$source_phrase_word' введена в неверном формате");
                     }
@@ -246,7 +246,7 @@ class SuggestForm extends Model
                                 //при появлении первой ошибки - остановка цикла
                                 if($this->hasErrors()){ break;}
 
-                                if(preg_match('/=/imu', $minus_word) && !preg_match('/^[=]*[a-z0-9а-яїіє]+$/imu', $minus_word))
+                                if(preg_match('/=/imu', $minus_word) && !preg_match('/^[=]*[a-z0-9а-яїіє]+$/mu', $minus_word))
                                 {
                                     $this->addError('stop_words', "В минус слове '$word' знак «равно» может находиться только в начале слова.");
 
@@ -256,7 +256,7 @@ class SuggestForm extends Model
 
                         //не обнаружили ошибок ранее - далее проверяем
                         if(!$this->hasErrors()){
-                            if(!preg_match('/^[a-z0-9а-яїіє= ]+$/imu',$word))
+                            if(!preg_match('/^[a-z0-9а-яїіє= ]+$/mu',$word))
                             {
                                 $this->addError('stop_words',"Минус-слово: '$word' имеет недопустимый формат");
                                 break;
@@ -267,6 +267,9 @@ class SuggestForm extends Model
                     }
 
                 }
+
+                //если указан список минус-слов - отсортируем их по алфавиту
+                if($this->stop_words_exploded){ sort($this->stop_words_exploded, SORT_STRING); }
             }
         }
     }
@@ -320,12 +323,14 @@ class SuggestForm extends Model
 
             [['potential_traffic', 'wordstat_syntax', 'base_id'], 'integer'],
 
+            [['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'integer','min'=>1, 'max'=>32],
+
             //индивидуальные лимиты по цифровым параметрам
             [['wordstat_from', 'wordstat_to'], 'integer', 'min'=>1, 'max'=>100000000],
             [['position_from', 'position_to'], 'integer', 'min'=>1, 'max'=>10],
             ['need_wordstat', 'integer', 'min'=>0, 'max'=>1],
             [['length_from', 'length_to'], 'integer', 'min'=>1, 'max'=>256],
-            [['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'integer','min'=>1, 'max'=>32],
+
 
             //проверка всех текстовых полей, в которых указывается интервал чисел (От и До)
             ['wordstat_from','validateParamsFromTo'],
@@ -335,6 +340,9 @@ class SuggestForm extends Model
 
             //валидируем список ключевых слов(важна последовательность валидации,сперва валидируем минус-слова, а потом уже ключевики)
             ['source_phrase','validateSourcePhrase'],
+
+
+            //[['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'safe'],
         ];
     }
 
@@ -422,6 +430,13 @@ class SuggestForm extends Model
                     $model->name = str_replace('=','',trim($source_phrase));
                     $model->hash = $this->createHash($source_phrase);
 
+//                    echo '<pre>'; print_r($_POST);
+//
+//                    echo '<pre>'; print_r($this->attributes);
+//                    echo '<pre>'; print_r($model->attributes);
+//                    echo '<pre>'; print_r($suggest->attributes);
+//
+//                    die();
 
                     //если параметры указаны верно, сохраним задание на выборку
                     if($model->save()){

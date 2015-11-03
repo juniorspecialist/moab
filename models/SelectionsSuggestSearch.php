@@ -78,6 +78,11 @@ class SelectionsSuggestSearch extends Selections{
             ]);
         }
 
+        //фильтруем помеченные на удаление выборки
+        $query->andFilterWhere([
+            Selections::tableName().'.is_del' => 0,
+        ]);
+
         //используем обязательно фильтр по ID-base(в данном случае по SUGGEST базе)
         $query->andFilterWhere([
             self::tableName().'.base_id' => Yii::$app->params['subscribe_suggest_and_wordstat'],

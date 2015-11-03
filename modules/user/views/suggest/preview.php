@@ -8,7 +8,7 @@
 
 use yii\grid\GridView;
 
-$this->title = 'Предварительный просмотр: выборка "'.$model->name.'"';
+$this->title = 'Предварительный просмотр: выборка "'.$model->selections->name.'"';
 //$this->params['breadcrumbs'][] = ['label' => 'Тикеты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = 'Выборки: '.$base->title;
 $this->params['breadcrumbs'][] = $this->title;
