@@ -13,6 +13,7 @@ use app\models\Selections;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
+use yii\helpers\BaseStringHelper;
 
 /*
  * модель для валидации формы добавления задания на выборку-для яндекс-подсказок
@@ -70,6 +71,9 @@ class SuggestForm extends Model
             foreach($source_phrase_list as $source_phrase_word)
             {
 
+                mb_strlen($source_phrase_word, '8bit');
+
+
                 $source_phrase_word = trim($source_phrase_word);
 
                 if(empty($source_phrase_word))
@@ -88,7 +92,7 @@ class SuggestForm extends Model
 
                 //фраза без учета звездочки и пробелов не может быть короче 3 символов
                 //$source_phrase = str_replace([' '], '',$source_phrase_word);
-                if(strlen($source_phrase_word)<3)
+                if(mb_strlen($source_phrase_word, 'UTF-8')<3)
                 {
                     $this->addError('source_phrase',"Длина фразы '$source_phrase_word' не может быть короче 3х символов");
                 }
@@ -419,7 +423,6 @@ class SuggestForm extends Model
                         }
                     }
 
-
                     //подвязываем временно модель, для формирования внутри класса необходимых данных
                     $suggest->selection = $model;
 
@@ -429,14 +432,6 @@ class SuggestForm extends Model
                     $model->additional_info = $suggest->createTotalInfo();
                     $model->name = str_replace('=','',trim($source_phrase));
                     $model->hash = $this->createHash($source_phrase);
-
-//                    echo '<pre>'; print_r($_POST);
-//
-//                    echo '<pre>'; print_r($this->attributes);
-//                    echo '<pre>'; print_r($model->attributes);
-//                    echo '<pre>'; print_r($suggest->attributes);
-//
-//                    die();
 
                     //если параметры указаны верно, сохраним задание на выборку
                     if($model->save()){

@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row">
     <div class="suggest_wordstat_control">
         <div class="suggest_wordstat_buttons">
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="fixed-left">
                     <?php
                         echo Html::a('Создать выборку', ['create'] ,['class'=>'btn btn-danger control margin-right']);
@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php }?>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <?php
                 echo Html::dropDownList('change_category',
                     null,

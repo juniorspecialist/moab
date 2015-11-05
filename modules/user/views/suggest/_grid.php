@@ -66,7 +66,7 @@ use yii\helpers\Html;
                 'value' => function ($data) {
                     return Html::tag('span', $data->getStatusGrid(),['class'=>' status_'.$data->id]);
                 },
-                'options'=>['class'=>'status'],
+                'options'=>['class'=>'status', 'style'=>'width:200px'],
             ],
 
            [

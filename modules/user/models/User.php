@@ -567,7 +567,6 @@ class User extends ActiveRecord implements IdentityInterface
                         ':base_moab'=>$is_moab_base,
                         ':user_id'=>Yii::$app->user->id,
                     ])
-                    ->cache(10)
                     ->queryScalar();
             }else{
                 return Yii::$app
