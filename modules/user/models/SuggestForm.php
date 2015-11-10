@@ -160,8 +160,9 @@ class SuggestForm extends Model
                     //если ранее была создана выборка с такими же параметрами то сверим с бд
                     if(!$this->hasErrors())
                     {
+                        //поиск в ранее созданных выборках, исключая удалённые
                         $db_hash = Yii::$app->db
-                            ->createCommand("SELECT id FROM selections WHERE user_id=:user_id AND hash=:hash")
+                            ->createCommand("SELECT id FROM selections WHERE user_id=:user_id AND hash=:hash AND is_del = 0")
                             ->bindValues([":hash"=>$hash, ":user_id"=>Yii::$app->user->id])
                             ->queryScalar();
 
