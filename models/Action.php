@@ -34,13 +34,14 @@ class Action extends \yii\db\ActiveRecord
     {
         return [
             [['period_from', 'period_to', 'promo', 'base_id', 'subscribe_period'], 'required'],
-            [['base_id'], 'integer'],
+            [['base_id','disposable','used'], 'integer'],
             ['promo', 'unique'],
             [['promo','subscribe_period'], 'string', 'max' => 50],
             // normalize "date" input
             [['period_from','period_to'], 'filter', 'filter' => function ($value) {
                 return strtotime($value);
             }],
+
         ];
     }
 
@@ -68,6 +69,8 @@ class Action extends \yii\db\ActiveRecord
             'promo' => 'Промо код',
             'base_id' => 'База',
             'subscribe_period' => 'Подписка на срок',
+            'disposable'=>'Одноразовая',
+            'used'=>'Использована'
         ];
     }
 

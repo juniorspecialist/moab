@@ -7,7 +7,7 @@
  */
 use yii\helpers\Html;
 
-$link = Html::a('http://cabinet.moab.pro/', \yii\helpers\Url::base());
+$link = Html::a('http://cabinet.moab.pro/', 'http://cabinet.moab.pro/');
 
 ?>
 Здравствуйте!<br><br>

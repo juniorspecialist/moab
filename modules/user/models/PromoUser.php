@@ -64,18 +64,24 @@ class PromoUser extends Model{
 
             if($this->action)
             {
+                //Если промо-код одноразовый, проверим не использован ли он был ранее
+                if($this->action->disposable == 1 && $this->action->used == 1){
+                    $this->addError('promo','Извините, эта одноразовая подписка по промо-коду уже использована');
+                }
 
-                //сравним период действия акции
-                if(strtotime($this->action->period_from)<time() && strtotime($this->action->period_to)>time())
-                {
-                    //проверим нет ли у юзера вообще любой подписки по тек. бд
-                    $sunbscribe = UserSubscription::find()->where(['user_id'=>\Yii::$app->user->id, 'base_id'=>$this->action->base_id])->one();
+                if(!$this->hasErrors()){
+                    //сравним период действия акции
+                    if(strtotime($this->action->period_from)<time() && strtotime($this->action->period_to)>time())
+                    {
+                        //проверим нет ли у юзера вообще любой подписки по тек. бд
+                        $sunbscribe = UserSubscription::find()->where(['user_id'=>\Yii::$app->user->id, 'base_id'=>$this->action->base_id])->one();
 
-                    if($sunbscribe){
-                        $this->addError('promo','Извините, но у вас уже есть подписка на базу '.$this->action->base->title);
+                        if($sunbscribe){
+                            $this->addError('promo','Извините, но у вас уже есть подписка на базу '.$this->action->base->title);
+                        }
+                    }else{
+                        $this->addError('promo','Извините, промо код по вашей акции не активен');
                     }
-                }else{
-                    $this->addError('promo','Извините, промо код по вашей акции не активен');
                 }
             }else{
                 $this->addError('promo','Извините, по вашему промо коду не найдена акция');
@@ -132,6 +138,13 @@ class PromoUser extends Model{
             $promo_user->action_id = $this->action->id;
             $promo_user->user_id = \Yii::$app->user->id;
             $promo_user->save();
+
+
+            //если подписка была одноразовая обновим флаг, чтобы дальнейшем не использовать этот промо-код
+            if($this->action->disposable == 1){
+                $this->action->used = 1;
+                $this->action->update();
+            }
         }
 
     }

@@ -17,6 +17,38 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
+<div class="row" style="padding-bottom:30px;">
+    <div class="col-md-6">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-4 control-label">Быстрая выборка</label>
+                <div class="col-sm-8">
+                    <input class="form-control"  placeholder="Быстрая выборка: введите запрос">
+                </div>
+            </div>
+            <div class="form-group form-inline">
+                <label class="col-sm-4 control-label">Частотность Wordstat</label>
+                <div class="col-sm-8">
+                    <input  class="form-control"  placeholder="от...">
+
+                    <input  class="form-control"  placeholder="до...">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-search"></i> Поиск</button>
+                </div>
+            </div>
+        </form>
+        <div class="text-right">
+            <?=Html::a('<i class="fa fa-folder-open-o"></i> Пакетные выборки & расширенный поиск',\yii\helpers\Url::to(['/user/suggest/create']), ['class'=>'btn btn-success'])?>
+            <a class="btn btn-warning"><i class="fa fa-wrench"></i> Управление выборками</a>
+            <a class="btn btn-danger "><i class="fa fa-trash-o"></i> Удалить выборки</a>
+        </div>
+    </div>
+</div>
+
+
 <div id="custom-error-msg" class="alert-danger alert" style="display: none">
     <button type="button" id="close_danger_alert" class="close"  aria-hidden="true">×</button>
     <span class="error-text-msg-danger-alert"></span>

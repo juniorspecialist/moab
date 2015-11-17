@@ -25,7 +25,6 @@ $fieldOptions2 = [
 <?= $form->field($model, 'password')->passwordInput() ?>
 <?= $form->field($model, 'password_repeat')->passwordInput() ?>
 
-<?= $form->field($model, 'promo') ?>
 
 <?= Html::checkbox('accept_subscribe', true,['label'=>'Подписаться на рассылку от moab.pro']) ?>
 

@@ -43,6 +43,10 @@ use zhuravljov\widgets\DateTimePicker;
 
     <?= $form->field($model, 'subscribe_period')->dropDownList(\app\models\UserSubscription::getPeriodList()) ?>
 
+    <?= $form->field($model, 'disposable')->checkbox(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'used')->checkbox(['maxlength' => true]) ?>
+
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Добавить' : 'Сохранить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
