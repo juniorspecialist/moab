@@ -34,6 +34,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <input  class="form-control"  placeholder="до...">
                 </div>
             </div>
+
+
             <div class="form-group">
                 <div class="col-sm-offset-4 col-sm-8">
                     <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-search"></i> Поиск</button>
