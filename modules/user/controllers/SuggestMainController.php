@@ -2,18 +2,18 @@
 /**
  * Created by PhpStorm.
  * User: root
- * Date: 14.08.15
- * Time: 14:36
+ * Date: 18.11.15
+ * Time: 19:26
  */
 
 namespace app\modules\user\controllers;
-
 
 use app\models\Base;
 use app\models\Category;
 use app\models\MinusWords;
 use app\models\Preview;
 use app\models\Selections;
+use app\models\SelectionsSuggestMainSearch;
 use app\models\SelectionsSuggestSearch;
 use app\modules\user\models\SelectionsSuggest;
 use app\modules\user\models\SuggestForm;
@@ -25,9 +25,7 @@ use Yii;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 
-
-class SuggestController extends UserMainController{
-
+class SuggestMainController  extends UserMainController{
     private $_base;
 
     public function behaviors()
@@ -48,7 +46,7 @@ class SuggestController extends UserMainController{
 
     public function getBase(){
         if($this->_base == null){
-            $this->_base = $this->findBase(Yii::$app->params['subscribe_suggest_and_wordstat']);
+            $this->_base = $this->findBase(Yii::$app->params['subsribe_moab_suggest']);
         }
         return $this->_base;
     }
@@ -65,8 +63,10 @@ class SuggestController extends UserMainController{
         //форма добавления быстрой выборки
         $formModel = new SuggestForm();
 
-        $formModel->setScenario('suggest-pro');
+        $formModel->setScenario('suggest');
 
+        $formModel->wordstat_from = 0;
+        $formModel->wordstat_to = 1000000000;
         $formModel->source_words_count_from = 1;
         $formModel->source_words_count_to = 32;
         $formModel->position_from = 1;
@@ -77,7 +77,8 @@ class SuggestController extends UserMainController{
         $formModel->length_from = 1;
         $formModel->length_to = 256;
         $formModel->category_id = Category::getWithOutGroup();
-        $formModel->need_wordstat = 1;
+        $formModel->need_wordstat = 0;
+        $formModel->base_id = Yii::$app->params['subsribe_moab_suggest'];
 
         if ($formModel->load(Yii::$app->request->post()) && $formModel->validate()) {
 
@@ -88,7 +89,7 @@ class SuggestController extends UserMainController{
         }
 
         //выбираем данные по выборкам пользователя(по базе SUGGEST)
-        $model = new SelectionsSuggestSearch();
+        $model = new SelectionsSuggestMainSearch();
 
         $dataProvider = $model->search(Yii::$app->request->queryParams);
 
@@ -195,7 +196,7 @@ class SuggestController extends UserMainController{
 
         $model = new SuggestForm();
 
-        $model->setScenario('suggest-pro');
+        $model->setScenario('suggest');
 
         $model->source_words_count_from = 1;
         $model->source_words_count_to = 32;
@@ -256,7 +257,7 @@ class SuggestController extends UserMainController{
      */
     protected function access()
     {
-        if(!\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subscribe_suggest_and_wordstat'])){
+        if(!\app\modules\user\models\User::isSubscribeMoab(Yii::$app->params['subsribe_moab_suggest'])){
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }

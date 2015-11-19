@@ -43,8 +43,6 @@ class RobokassaController extends Controller{
 //        ];
 //    }
 
-
-
     public function readParams(){
 
         $shp = [];
@@ -76,6 +74,18 @@ class RobokassaController extends Controller{
 
             if($financy->status!==Financy::STATUS_PAID)
             {
+
+                $financy->status = Financy::STATUS_PAID;
+
+                //пополним баланс пользователя
+                $user = $financy->user;
+
+                $financy->balance_after = $user->balance + (int)$_REQUEST['OutSum'];
+
+                $financy->update();
+
+                $user->updateCounters(['balance' => (int)$_REQUEST['OutSum']]);
+
                 return 'OK'.$financy->id;
             }else{
                 throw new BadRequestHttpException;
@@ -88,8 +98,7 @@ class RobokassaController extends Controller{
 
     public function actionSuccess(){
 
-        if (!isset($_REQUEST['OutSum'], $_REQUEST['InvId'], $_REQUEST['SignatureValue']))
-        {
+        if (!isset($_REQUEST['OutSum'], $_REQUEST['InvId'], $_REQUEST['SignatureValue'])){
             throw new BadRequestHttpException;
         }
 
@@ -97,23 +106,13 @@ class RobokassaController extends Controller{
 
         $shp  = $this->readParams();
 
-        if ($merchant->checkSignature($_REQUEST['SignatureValue'], $_REQUEST['OutSum'], $_REQUEST['InvId'], $merchant->sMerchantPass1, $shp))
-        {
+        if ($merchant->checkSignature($_REQUEST['SignatureValue'], $_REQUEST['OutSum'], $_REQUEST['InvId'], $merchant->sMerchantPass1, $shp)){
+
             //заявка на пополнение баланса
             $financy = $this->loadModel($_REQUEST['InvId']);
 
-            if($financy->status !== Financy::STATUS_PAID)
+            if($financy->status == Financy::STATUS_PAID)
             {
-                $financy->status = Financy::STATUS_PAID;
-
-                //пополним баланс пользователя
-                $user = $financy->user;
-
-                $financy->balance_after = $user->balance + (int)$_REQUEST['OutSum'];
-
-                $financy->update();
-
-                $user->updateCounters(['balance' => (int)$_REQUEST['OutSum']]);
 
                 Yii::$app->getSession()->setFlash('success', 'Спасибо, ваш баланс успешно пополнен.');
             }else{

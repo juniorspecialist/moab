@@ -160,6 +160,10 @@ class Selections extends \yii\db\ActiveRecord
 
             [['hash'], 'string', 'max' => 50],
 
+            [['source_phrase', 'name'],'filter', 'filter'=>function($value){
+                return mb_strtolower($value, 'UTF-8');
+            }],
+
             //параметры по-умолчанию
             ['user_id', 'default', 'value'=>Yii::$app->user->id],
             ['date_created', 'default', 'value'=>time()],

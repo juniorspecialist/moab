@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use yii\bootstrap\Modal;
 
 
-echo Html::a('Управление группами', '#',['class'=>'btn btn-success control' ,'id'=>'category_modal_btn','value'=>'/user/category/index']);
+echo Html::a('<i class="fa fa-wrench"></i> Управление группами', '#',['class'=>'btn btn-warning control' ,'id'=>'category_modal_btn','value'=>'/user/category/index']);
 
 Modal::begin([
     'header' => '<h4>Группы</h4>',

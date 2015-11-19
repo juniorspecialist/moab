@@ -57,7 +57,15 @@ class BuyController extends Controller {
 
             if($row['status']!==Financy::STATUS_PAID)
             {
-                Yii::info(Json::encode($row), 'suggest_result_'.$row['id']);
+
+                //обновим статус заявки
+                \Yii::$app->db2->createCommand('UPDATE financy_moab SET status=:status WHERE id=:id')->bindValues([':id'=>$_POST['InvId'], ':status'=>Financy::STATUS_PAID])->execute();
+
+                //генерируем случайный пароль для пользователя, который будет использован для регистрации юзера автоматом
+                $pass_new = $this->randomPass();
+
+                //если пользователь у нас зареган по почте проверяем - пополняем ему баланс и оформляем подписку
+                $this->createUser($row['email'], $pass_new, $row['amount']);
 
                 return 'OK'.$row['id'];
 
@@ -69,7 +77,6 @@ class BuyController extends Controller {
         }else{
             //throw new BadRequestHttpException('Проблема в контрольной сумме');
             Yii::info('Проблема в контрольной сумме', 'suggest_result');
-            die('Проблема в контрольной сумме');
         }
     }
 
@@ -100,29 +107,12 @@ class BuyController extends Controller {
         $row = \Yii::$app->db2->createCommand('SELECT * FROM financy_moab WHERE id=:id')->bindValues([':id'=>$_POST['InvId']])->queryOne();
 
         //проверим статус заявки
-        if($row['status']!==Financy::STATUS_PAID){
 
-            Yii::info(Json::encode($row), 'suggest_success_'.$row['id']);
-
-            //обновим статус заявки
-            \Yii::$app->db2->createCommand('UPDATE financy_moab SET status=:status WHERE id=:id')->bindValues([':id'=>$_POST['InvId'], ':status'=>Financy::STATUS_PAID])->execute();
-
-            //генерируем случайный пароль для пользователя, который будет использован для регистрации юзера автоматом
-            $pass_new = $this->randomPass();
-
-            //если пользователь у нас зареган по почте проверяем - пополняем ему баланс и оформляем подписку
-            $user = $this->createUser($row['email'], $pass_new, $row['amount']);
-
-            Yii::info(Json::encode($row), 'suggest_success_create_user'.$row['id']);
-
-            //оформелеине подписки
-            //$this->subscribeUser($user);
-
-
+        if($row['status']==Financy::STATUS_PAID){
+            //перенаправим на страницу где видим, что всё успешно
+            $this->redirect(Url::to('http://moab.pro/success'));
         }
 
-        //перенаправим на страницу где видим, что всё успешно
-        $this->redirect(Url::to('http://moab.pro/success'));
     }
 
     /*
@@ -145,23 +135,6 @@ class BuyController extends Controller {
 
         return $merchant;
     }
-
-    /*
-     * оформляем подписку юзеру на указанную базу
-     * $user - Active Record
-     */
-//    protected function subscribeUser($user){
-//
-//        if($user!==null){
-//            $financy = new Financy();
-//            $financy->amount = (int)$_REQUEST['OutSum'];
-//            $financy->create_ad = time();
-//            $financy->status = Financy::STATUS_PAID;
-//            $financy->balance_after = $user->balance - (int)$_POST['OutSum'];
-//            $financy->type_operation = Financy::TYPE_OPERATION_MINUS;
-//            $financy->save();
-//        }
-//    }
 
     /*
      * создаём пользователя, если пользователь не существует
@@ -206,6 +179,14 @@ class BuyController extends Controller {
 
             //обновим баланс пользователя
             $user->updateCounters(['balance' => (int)$_POST['OutSum']]);
+
+            //
+            //отрпавка письма пользователю для подтверждения факта пополнения баланса
+            Yii::$app->mailer->compose(['html'=>'user_buy_suggest_user_exist.php'], ['email' => $user->email])
+                ->setFrom(['we@moab.pro' => 'MOAB.Pro'])
+                ->setTo($user->email)
+                ->setSubject('Ваш баланс в сервисе MOAB пополнен!')
+                ->send();
         }
 
         //подвязываем операцию к пользователю

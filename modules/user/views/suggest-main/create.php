@@ -42,12 +42,6 @@ $this->title = 'Добавить выборку';
                 'content' => $this->render('extra_options',['model'=>$model, 'form'=>$form]),
                 'headerOptions' => ['id' => 'extra_options'],
             ],
-            [
-                'label' => 'Параметры Wordstat',
-                'content' => $this->render('wordstat_options',['model'=>$model, 'form'=>$form]),
-                'headerOptions' => ['id' => 'wordstat_options'],
-            ],
-
         ],
     ]);
 
