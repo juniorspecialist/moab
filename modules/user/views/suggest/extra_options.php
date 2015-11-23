@@ -19,13 +19,7 @@ if($model->potential_traffic !== \app\models\Selections::POTENCIAL_TRAFFIC_USER)
 
 
 
-        <?=$form->field($model,'source_words_count_from')
-            ->textInput(
-                \yii\helpers\ArrayHelper::merge(
-                    $extra_options,
-                    ['type'=>'number','min'=>1,'class'=>'extra_options  form-control', 'style'=>'width:100%']
-                )
-            )->label('Количество слов в исходной фразе От<br>');?>
+        <?=$form->field($model,'source_words_count_from')->textInput(\yii\helpers\ArrayHelper::merge($extra_options,['type'=>'number','min'=>1,'class'=>'extra_options  form-control', 'style'=>'width:100%']))->label('Количество слов в исходной фразе От<br>');?>
 
 
         <?=$form->field($model,'source_words_count_to')->textInput(\yii\helpers\ArrayHelper::merge($extra_options,['type'=>'number','min'=>1,'class'=>'extra_options  form-control', 'style'=>'width:100%']))->label(' до ');?>

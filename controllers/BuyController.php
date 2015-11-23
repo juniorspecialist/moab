@@ -9,6 +9,7 @@
 namespace app\controllers;
 
 
+use app\models\Category;
 use app\models\Financy;
 use app\models\UserSubscription;
 use app\modules\user\models\User;
@@ -161,6 +162,13 @@ class BuyController extends Controller {
             $user->status = User::STATUS_ACTIVE;
             $user->generateAuthKey();
             $user->save();
+
+
+            //добавим группу пользователю по-умолчанию
+            $category = new Category();
+            $category->user_id = $user->id;
+            $category->title = 'Без группы';
+            $category->save();
 
             //отрпавка почты пользователю для подтверждения регистрации
             Yii::$app->mailer->compose(['html'=>'delay_registration_user.php'], ['email' => $user->email, 'pass'=>$pass])

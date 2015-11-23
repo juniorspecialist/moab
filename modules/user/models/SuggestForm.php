@@ -9,6 +9,7 @@
 namespace app\modules\user\models;
 
 
+use app\models\Category;
 use app\models\Selections;
 use Yii;
 use yii\base\Exception;
@@ -335,21 +336,52 @@ class SuggestForm extends Model
     public function rules()
     {
         return [
-            [['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
+            /*[['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
                 'length_from', 'length_to', 'need_wordstat',  'wordstat_from', 'wordstat_to'], 'required','on'=>['suggest-pro','suggest']],
+            */
+            [['source_phrase'], 'required','on'=>['suggest-pro','suggest']],
 
+            //параметры по умолчанию при создании быстрых выборок в различных сценариях
+            ['source_words_count_from', 'default', 'value'=>1,'on'=>'suggest-pro'],
+            ['source_words_count_to', 'default', 'value'=>32,'on'=>'suggest-pro'],
+            ['position_from', 'default', 'value'=>1,'on'=>'suggest-pro'],
+            ['position_from', 'default', 'value'=>10,'on'=>'suggest-pro'],
+            ['potential_traffic', 'default', 'value'=>Selections::POTENCIAL_TRAFFIC_ANYONE,'on'=>'suggest-pro'],
+            ['suggest_words_count_from', 'default', 'value'=>1,'on'=>'suggest-pro'],
+            ['suggest_words_count_to', 'default', 'value'=>32,'on'=>'suggest-pro'],
+            ['length_from', 'default', 'value'=>1,'on'=>'suggest-pro'],
+            ['length_to', 'default', 'value'=>256,'on'=>'suggest-pro'],
+            ['category_id', 'default', 'value'=>Category::getWithOutGroup(),'on'=>['suggest-pro','suggest']],
+            ['need_wordstat', 'default', 'value'=>1,'on'=>'suggest-pro'],
             ['base_id', 'default', 'value'=>Yii::$app->params['subscribe_suggest_and_wordstat'],'on'=>['suggest-pro']],
+
+
             ['base_id', 'default', 'value'=>Yii::$app->params['subsribe_moab_suggest'],'on'=>['suggest']],
+            ['wordstat_from', 'default', 'value'=>1,'on'=>['suggest','suggest-pro']],
+            ['wordstat_syntax', 'default', 'value'=>Selections::WORD_STAT_SYNTAX_ZERO,'on'=>['suggest-pro','suggest']],
+            ['wordstat_to', 'default', 'value'=>100000000,'on'=>['suggest-pro','suggest']],
+            ['source_words_count_from', 'default', 'value'=>1,'on'=>['suggest-pro','suggest']],
+            ['source_words_count_to', 'default', 'value'=>32,'on'=>['suggest-pro','suggest']],
+            ['position_from', 'default', 'value'=>1,'on'=>['suggest-pro','suggest']],
+            ['position_to', 'default', 'value'=>10,'on'=>['suggest-pro','suggest']],
+            ['potential_traffic', 'default', 'value'=>Selections::POTENCIAL_TRAFFIC_ANYONE,'on'=>['suggest-pro','suggest']],
+            ['suggest_words_count_from', 'default', 'value'=>1,'on'=>['suggest-pro','suggest']],
+            ['suggest_words_count_to', 'default', 'value'=>32,'on'=>['suggest-pro','suggest']],
+            ['length_from', 'default', 'value'=>1,'on'=>['suggest-pro','suggest']],
+            ['length_to', 'default', 'value'=>256,'on'=>['suggest-pro','suggest']],
+            ['need_wordstat', 'default', 'value'=>0,'on'=>['suggest-pro','suggest']],
+
 
             [['potential_traffic', 'wordstat_syntax', 'base_id'], 'integer','on'=>['suggest-pro','suggest']],
 
             [['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'integer','min'=>1, 'max'=>32,'on'=>['suggest-pro','suggest']],
 
+
             //индивидуальные лимиты по цифровым параметрам
-            [['wordstat_from', 'wordstat_to'], 'integer', 'min'=>1, 'max'=>100000000,'on'=>['suggest-pro']],
-            [['position_from', 'position_to'], 'integer', 'min'=>1, 'max'=>10,'on'=>['suggest-pro','suggest']],
-            ['need_wordstat', 'default', 'value'=>0,'on'=>['suggest']],
+            [['wordstat_from', 'wordstat_to'], 'integer', 'min'=>1, 'max'=>100000000,'on'=>['suggest','suggest-pro']],
+            [['position_from', 'position_to'], 'integer', 'min'=>1, 'max'=>10,'on'=>['suggest','suggest-pro','suggest']],
+            //['need_wordstat', 'default', 'value'=>0,'on'=>['suggest']],
             ['need_wordstat', 'integer', 'min'=>0, 'max'=>1,'on'=>['suggest-pro']],
             [['length_from', 'length_to'], 'integer', 'min'=>1, 'max'=>256,'on'=>['suggest-pro','suggest']],
 
@@ -465,17 +497,15 @@ class SuggestForm extends Model
                         }
 
                         //сохраним список минус-слов для каждой выборки
-                        if($this->stop_words_exploded)
-                        {
+                        if($this->stop_words_exploded){
+
                             //запишим подвязанные к выборке список минус-слов(стоп-слов)
-                            foreach($this->stop_words_exploded as $stop_word_relation)
-                            {
+                            foreach($this->stop_words_exploded as $stop_word_relation){
                                 Yii::$app->db->createCommand()->insert('minus_words',['selection_id'=>$model->id,'minus_word'=>$stop_word_relation])->execute();
                             }
                         }
 
                     }else{
-                        //print_r($model->errors); die('sdfsdfffff');
                         $transaction->rollBack();
                     }
                 }
@@ -483,10 +513,7 @@ class SuggestForm extends Model
                 // ... executing other SQL statements ...
                 $transaction->commit();
             } catch (Exception $e) {
-                print_r($suggest->errors);
-                echo 'we have any errors<br>';
                 $transaction->rollBack();
-                die('sdfsdf');
             }
         }
 

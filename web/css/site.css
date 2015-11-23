@@ -294,7 +294,7 @@ font-weight: 700;
 #suggestform-need_wordstat .modal-radio span{padding-left:7px;}
 
 .fixed-width {max-width:570px !important;}
-.fixed-left {max-width:700px; float:left;margin-right:40px;}
+.fixed-left {max-width:740px; float:left;margin-right:40px;}
 .margin-right {margin-right:4px;}
 
 .alert-success2 {background-color:#71E2AD;font-size:18px;margin:10px 0px; border:1px solid #008D4C;}

@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?=Html::label('Быстрая выборка','inputEmail3',['class'=>'col-sm-4 control-label'])?>
                 <div class="col-sm-8">
                     <?=$form->field($model,'source_phrase')
-                        ->textInput(['placeholder'=>'Введите запрос', 'class'=>'form-control'])
+                        ->textInput(['placeholder'=>'Введите исходную ключевую фразу', 'class'=>'form-control'])
                         ->label('Быстрая выборка',['for'=>'inputEmail3','class'=>'col-sm-4 control-label']);
                     ?>
                 </div>

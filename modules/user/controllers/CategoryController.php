@@ -24,7 +24,7 @@ class CategoryController extends UserMainController{
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index','delete'],
+                        'actions' => ['index','delete','rename'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -61,7 +61,7 @@ class CategoryController extends UserMainController{
                     $model->save();
                     $model = new Category();
                     //\Yii::$app->getSession()->setFlash('success', 'Успешно обновили запись.');
-                }
+                }else{}
             }
 
             /*
@@ -83,6 +83,26 @@ class CategoryController extends UserMainController{
         //}
 
         //throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /*
+     * пользователь переименовываем название категории
+     */
+    public function actionRename(){
+
+        if(\Yii::$app->request->isPost && \Yii::$app->request->post('pk')){
+
+            //поиска раздела
+            $category = $this->loadCategory(\Yii::$app->request->post('pk'));
+
+            //пользователь хочет переименовать свой же раздел
+            if($category){
+
+                return Category::find()->where(['title'=>\Yii::$app->request->post('value'), 'user_id'=>\Yii::$app->user->id])->andWhere(['not', 'id', \Yii::$app->request->post('pk')])->exists();
+            }
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 
 

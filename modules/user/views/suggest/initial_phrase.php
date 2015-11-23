@@ -5,8 +5,9 @@
  * Date: 20.10.15
  * Time: 14:41
  */
-
-echo $form->field($model, 'category_id')
+?>
+<div class="form-group form-inline">
+<?=$form->field($model, 'category_id',['inline' => true])
     ->dropDownList(
         \yii\helpers\ArrayHelper::map(
             \app\models\Category::find()
@@ -16,7 +17,9 @@ echo $form->field($model, 'category_id')
                 ->all()
             ,'id','title'
         )
-    );
+    );?>
+</div>
+    <?php
 
 //Label для поля «Исходная ключевая фраза»
 echo $form->field($model, 'source_phrase')
@@ -24,6 +27,15 @@ echo $form->field($model, 'source_phrase')
     ->label("Добавьте одну или несколько ключевых фраз, по которым будет осуществляться выборка (не более ".Yii::$app->user->identity->suggest_limit_words." фраз):");
 
 ?>
+
+<div class="text-right">
+    <button type="text" class="btn btn-info">
+        <i class="fa fa-file-o"></i> Импорт из .txt
+    </button>
+    <button type="text" class="btn btn-success">
+        <i class="fa fa-table"></i> Импорт из .csv
+    </button>
+</div>
 <script>
     function countLines()
     {

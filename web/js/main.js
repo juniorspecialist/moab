@@ -37,6 +37,7 @@ $(document).ready(function () {
             type: 'post',
             data: form.serialize(),
             success: function (data) {
+                console.log(data);
                 /*if (data && data.result == 1) {
                  $.pjax.reload({container:'#solutionItems'});
                  }*/

@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?=Html::label('Быстрая выборка','inputEmail3',['class'=>'col-sm-3 control-label'])?>
                 <div class="col-sm-6">
                     <?=$form->field($model,'source_phrase')
-                        ->textInput(['placeholder'=>'Введите запрос', 'class'=>'form-control'])
+                        ->textInput(['placeholder'=>'Введите исходную ключевую фразу', 'class'=>'form-control'])
                         ->label('Быстрая выборка',['for'=>'inputEmail3','class'=>'col-sm-4 control-label']);
                     ?>
                 </div>
@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row" >
     <div class="suggest_wordstat_control">
         <div class="suggest_wordstat_buttons">
-            <div class="col-md-12" style="margin-bottom:20px;">
+            <div class="col-md-12" style="margin-bottom:-40px;">
                 <div class="fixed-left">
                     <?=Html::a('<i class="fa fa-folder-open-o"></i> Пакетные выборки & расширенный поиск',\yii\helpers\Url::to(['/user/suggest/create']), ['class'=>'btn btn-success'])?>
                     <?=UserCategoryWidget::widget();?>

@@ -65,21 +65,6 @@ class SuggestMainController  extends UserMainController{
 
         $formModel->setScenario('suggest');
 
-        $formModel->wordstat_from = 0;
-        $formModel->wordstat_to = 1000000000;
-        $formModel->source_words_count_from = 1;
-        $formModel->source_words_count_to = 32;
-        $formModel->position_from = 1;
-        $formModel->position_to = 10;
-        $formModel->potential_traffic = Selections::POTENCIAL_TRAFFIC_ANYONE;
-        $formModel->suggest_words_count_from = 1;
-        $formModel->suggest_words_count_to = 32;
-        $formModel->length_from = 1;
-        $formModel->length_to = 256;
-        $formModel->category_id = Category::getWithOutGroup();
-        $formModel->need_wordstat = 0;
-        $formModel->base_id = Yii::$app->params['subsribe_moab_suggest'];
-
         if ($formModel->load(Yii::$app->request->post()) && $formModel->validate()) {
 
             //создаём выборки
@@ -198,10 +183,15 @@ class SuggestMainController  extends UserMainController{
 
         $model->setScenario('suggest');
 
-        $model->source_words_count_from = 1;
-        $model->source_words_count_to = 32;
-        $model->position_from = 1;
-        $model->position_to = 10;
+//        $model->source_words_count_from = 1;
+//        $model->source_words_count_to = 32;
+//        $model->position_from = 1;
+//        $model->position_to = 10;
+//        $model->need_wordstat = 0;
+//        $model->wordstat_from = 0;
+//        $model->wordstat_to = 1000000000;
+//        $model->wordstat_syntax = Selections::WORD_STAT_SYNTAX_ZERO;
+
 
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
