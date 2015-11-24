@@ -7,9 +7,8 @@
  */
 
 use yii\helpers\Html;
-//use yii\widgets\ActiveForm;
 use yii\bootstrap\ActiveForm;
-use yii\bootstrap\Tabs;
+
 
 $this->title = 'Добавить выборку';
 
@@ -17,6 +16,11 @@ $this->title = 'Добавить выборку';
 /* @var $model app\models\Selections */
 /* @var $form ActiveForm */
 ?>
+
+<div id="custom-error-msg" class="alert-danger alert" style="display: none">
+    <button type="button" id="close_danger_alert" class="close"  aria-hidden="true">×</button>
+    <span class="error-text-msg-danger-alert"></span>
+</div>
 
 
 <div class="row" style="padding-bottom:30px;">
@@ -51,12 +55,18 @@ $this->title = 'Добавить выборку';
             ?>
 
             <div class="text-right">
-                <button type="text" class="btn btn-info">
+                <button type="text" class="btn btn-info" id="import_txt">
                     <i class="fa fa-file-o"></i> Импорт из .txt
                 </button>
-                <button type="text" class="btn btn-success">
+
+                <?=$this->render('_upload_file', ['type'=>'txt', 'id'=>'import_txt_model'])?>
+
+                <button type="text" class="btn btn-success" id="import_csv">
                     <i class="fa fa-table"></i> Импорт из .csv
                 </button>
+
+                <?=$this->render('_upload_file', ['type'=>'csv', 'id'=>'import_csv_model'])?>
+
             </div>
 
             <div class="form-group form-inline">
@@ -195,6 +205,16 @@ $(document).ready(function(){
         $('#suggest-submite').hide();
       }
     });
+    //клик по полям выбора файлов
+    $(document).on('click','#import_txt',function(e){
+        e.preventDefault();
+        $('#import_txt_model').click();
+    });
+    $(document).on('click','#import_csv',function(e){
+        e.preventDefault();
+        $('#import_csv_model').click();
+    });
+
 });", \yii\web\View::POS_READY);
 
 //$this->registerCssFile('/css/jquery.fs.stepper.css');

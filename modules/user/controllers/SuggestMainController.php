@@ -183,17 +183,6 @@ class SuggestMainController  extends UserMainController{
 
         $model->setScenario('suggest');
 
-//        $model->source_words_count_from = 1;
-//        $model->source_words_count_to = 32;
-//        $model->position_from = 1;
-//        $model->position_to = 10;
-//        $model->need_wordstat = 0;
-//        $model->wordstat_from = 0;
-//        $model->wordstat_to = 1000000000;
-//        $model->wordstat_syntax = Selections::WORD_STAT_SYNTAX_ZERO;
-
-
-
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);

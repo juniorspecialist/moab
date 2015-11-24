@@ -67,19 +67,6 @@ class SuggestController extends UserMainController{
 
         $formModel->setScenario('suggest-pro');
 
-//        $formModel->source_words_count_from = 1;
-//        $formModel->source_words_count_to = 32;
-//        $formModel->position_from = 1;
-//        $formModel->position_to = 10;
-//        $formModel->potential_traffic = Selections::POTENCIAL_TRAFFIC_ANYONE;
-//        $formModel->suggest_words_count_from = 1;
-//        $formModel->suggest_words_count_to = 32;
-//        $formModel->length_from = 1;
-//        $formModel->length_to = 256;
-//        $formModel->category_id = Category::getWithOutGroup();
-//        $formModel->need_wordstat = 1;
-
-
         if ($formModel->load(Yii::$app->request->post()) && $formModel->validate()) {
 
             //создаём выборки
