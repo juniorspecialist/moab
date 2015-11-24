@@ -36,5 +36,4 @@ echo $form->field($model, 'source_phrase')
         return true;
     }
 </script>
-<br>
 Строк: <span id="source_phrase_count">0</span>

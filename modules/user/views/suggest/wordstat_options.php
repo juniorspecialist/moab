@@ -54,8 +54,8 @@
 <span class="wordstat_selects_params" style="display: none">
     <?=$form->field($model, 'wordstat_syntax')->dropDownList(\app\models\Selections::getWordsStatSyntax(),['class'=>'fixed-width']);?>
     <div class="form-inline">
-        <?=$form->field($model, 'wordstat_from')->textInput( [ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>100000000,'value'=>1]);?>
-        <?=$form->field($model, 'wordstat_to')->textInput([ 'class'=>'wordstat', 'type'=>'number','min'=>1,'max'=>100000000,'value'=>100000000])->label(' до ');?>
+        <?=$form->field($model, 'wordstat_from')->textInput( [ 'class'=>'wordstat form-control', 'type'=>'number','min'=>1,'max'=>100000000,'value'=>1, 'style'=>'width:100%']);?>
+        <?=$form->field($model, 'wordstat_to')->textInput([ 'class'=>'wordstat form-control', 'type'=>'number','min'=>1,'max'=>100000000,'value'=>100000000, 'style'=>'width:100%'])->label(' до ');?>
     </div>
 </span>
 

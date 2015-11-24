@@ -10,6 +10,7 @@ namespace app\modules\user\controllers;
 
 
 use app\models\Base;
+use app\models\Category;
 use app\models\MinusWords;
 use app\models\Preview;
 use app\models\Selections;
@@ -61,6 +62,31 @@ class SuggestController extends UserMainController{
         //проверка доступа к выборкам для тек. юзера
         $this->access();
 
+        //форма добавления быстрой выборки
+        $formModel = new SuggestForm();
+
+        $formModel->setScenario('suggest-pro');
+
+        $formModel->source_words_count_from = 1;
+        $formModel->source_words_count_to = 32;
+        $formModel->position_from = 1;
+        $formModel->position_to = 10;
+        $formModel->potential_traffic = Selections::POTENCIAL_TRAFFIC_ANYONE;
+        $formModel->suggest_words_count_from = 1;
+        $formModel->suggest_words_count_to = 32;
+        $formModel->length_from = 1;
+        $formModel->length_to = 256;
+        $formModel->category_id = Category::getWithOutGroup();
+        $formModel->need_wordstat = 1;
+
+        if ($formModel->load(Yii::$app->request->post()) && $formModel->validate()) {
+
+            //создаём выборки
+            $formModel->createSelects();
+
+            return $this->refresh();
+        }
+
         //выбираем данные по выборкам пользователя(по базе SUGGEST)
         $model = new SelectionsSuggestSearch();
 
@@ -90,6 +116,7 @@ class SuggestController extends UserMainController{
             'searchModel' => $model,
             //находим базу на тек. страницы и выводим общие данные по базе
             'base'=>$this->base,
+            'model'=>$formModel,
         ]);
     }
 
@@ -167,6 +194,8 @@ class SuggestController extends UserMainController{
     {
 
         $model = new SuggestForm();
+
+        $model->setScenario('suggest-pro');
 
         $model->source_words_count_from = 1;
         $model->source_words_count_to = 32;

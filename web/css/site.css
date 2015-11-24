@@ -271,10 +271,10 @@ font-weight: 700;
 
 
 }
-a.control{
-  
-    margin-bottom: 10px;
-}
+/*a.control{*/
+  /**/
+    /*margin-bottom: 10px;*/
+/*}*/
 .suggest_wordstat_base_info{
     /*width:350px;
     margin-left: 150px;*/
@@ -294,7 +294,7 @@ a.control{
 #suggestform-need_wordstat .modal-radio span{padding-left:7px;}
 
 .fixed-width {max-width:570px !important;}
-.fixed-left {max-width:600px; float:left;margin-right:40px;}
+.fixed-left {max-width:720px; float:left;margin-right:40px;}
 .margin-right {margin-right:4px;}
 
 .alert-success2 {background-color:#71E2AD;font-size:18px;margin:10px 0px; border:1px solid #008D4C;}
@@ -309,3 +309,6 @@ a.control{
 .breadcrumb{
     background-color:#ECF0F5;
 }
+
+.collapse {padding-bottom:30px;}
+

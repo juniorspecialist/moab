@@ -235,7 +235,7 @@ class UserSubscription extends \yii\db\ActiveRecord
                         LEFT JOIN base on user_subscription.base_id=base.id
                         WHERE user_subscription.user_id=:user_id
                           AND user_subscription.from<:time AND user_subscription.to>:time
-                          AND ISEMPTY(base.cabinet_link)
+                          AND LENGTH(base.cabinet_link)<2
                         LIMIT 1'
                     )
                     ->cache(60)

@@ -8,6 +8,7 @@
 use yii\helpers\Html;
 use app\components\widgets\UserCategoryWidget;
 use yii\bootstrap\Modal;
+use yii\widgets\ActiveForm;
 
 
 $this->title = 'Выборки: '.$base->title;
@@ -16,22 +17,55 @@ $this->params['breadcrumbs'][] = $this->title;
 //Yii::$app->getSession()->setFlash('error', 'Успешно добавили выборку(и)');
 ?>
 
-
 <div id="custom-error-msg" class="alert-danger alert" style="display: none">
     <button type="button" id="close_danger_alert" class="close"  aria-hidden="true">×</button>
     <span class="error-text-msg-danger-alert"></span>
 </div>
 
+
+<div class="row" style="padding-bottom:30px;">
+    <div class="col-md-6">
+        <?php $form = ActiveForm::begin(['id'=>'suggest-pro-form', 'fieldConfig' => ['template' => "{input}"], 'options'=>['class'=>'form-horizontal']] ); ?>
+        <?= $form->errorSummary($model); ?>
+            <div class="form-group">
+                <?=Html::label('Быстрая выборка','inputEmail3',['class'=>'col-sm-4 control-label'])?>
+                <div class="col-sm-8">
+                    <?=$form->field($model,'source_phrase')
+                        ->textInput(['placeholder'=>'Введите запрос', 'class'=>'form-control'])
+                        ->label('Быстрая выборка',['for'=>'inputEmail3','class'=>'col-sm-4 control-label']);
+                    ?>
+                </div>
+            </div>
+            <div class="form-group form-inline">
+                <?=Html::label('Частотность Wordstat',null, ['class'=>'col-sm-4 control-label'])?>
+                <div class="col-sm-8">
+                    <?=$form->field($model,'wordstat_from')->textInput(['placeholder'=>'от...','type'=>'number','min'=>1, 'value'=>1,'max'=>100000000,'class'=>'form-control'])->label(false);?>
+                    <?=$form->field($model,'wordstat_to')->textInput(['placeholder'=>'до...','type'=>'number','min'=>1, 'value'=>100000000,'max'=>100000000,'class'=>'form-control','style'=>'margin-left:30px'])->label(false);?>
+                    <?= Html::submitButton('<i class="fa fa-search"></i> Создать выборку', ['class' => 'btn btn-primary btn-block form-control', 'style'=>'margin-left:30px']) ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                </div>
+            </div>
+        <?php ActiveForm::end(); ?>
+        <div class="text-right">
+
+        </div>
+    </div>
+</div>
+
+
+
+
 <div class="row">
     <div class="suggest_wordstat_control">
         <div class="suggest_wordstat_buttons">
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="fixed-left">
-                    <?php
-                        echo Html::a('Создать выборку', ['create'] ,['class'=>'btn btn-danger control margin-right']);
-                        echo UserCategoryWidget::widget();
-                        echo Html::a('Удалить отмеченные выборки', '#' ,['class'=>'btn btn-warning control ', 'id'=>'delete_checked_selects_btn','delete'=>\yii\helpers\Url::to(['delete'])]);
-                    ?>
+                    <?=Html::a('<i class="fa fa-folder-open-o"></i> Пакетные выборки & расширенный поиск',\yii\helpers\Url::to(['/user/suggest/create']), ['class'=>'btn btn-success'])?>
+                    <?=UserCategoryWidget::widget();?>
+                    <?=Html::a('<i class="fa fa-trash-o"></i> Удалить выборки', '#' ,['class'=>'btn btn-danger  control ', 'id'=>'delete_checked_selects_btn','delete'=>\yii\helpers\Url::to(['delete'])]);?>
                 </div>
                 <div class="suggest_wordstat_base_info " >
                     <?php  if(!empty($base->last_update) && !empty($base->next_update) && !empty($base->count_keywords) && !empty($base->add_in_update)){?>
@@ -42,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php }?>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <?php
                 echo Html::dropDownList('change_category',
                     null,

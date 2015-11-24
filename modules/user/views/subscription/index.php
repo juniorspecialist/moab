@@ -37,6 +37,7 @@ $this->title = 'Подписки';
                 'id'=>'user_subscription',
                 'dataProvider' => $dataProvider,
                 'itemView' => '_subscribe',
+                'summary'=>false,
 
     //            'itemView' => function ($model, $key, $index, $widget) {
     //                return $this->render('_list', ['model' => $model]);

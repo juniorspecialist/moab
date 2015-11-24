@@ -29,20 +29,23 @@ $this->title = 'Добавить выборку';
             [
                 'label' => 'Исходные фразы',
                 'content' => $this->render('initial_phrase',['model'=>$model, 'form'=>$form]),
-                'active' => true
+                'active' => true,
+                'linkOptions' => ['id' => 'initial_phrase'],
             ],
             [
                 'label' => 'Минус-слова',
                 'content' => $this->render('stop_words',['model'=>$model, 'form'=>$form]),
+                'linkOptions' => ['id' => 'stop_words'],
             ],
             [
                 'label' => 'Дополнительные параметры',
                 'content' => $this->render('extra_options',['model'=>$model, 'form'=>$form]),
-                'options' => ['id' => 'extra_options'],
+                'headerOptions' => ['id' => 'extra_options'],
             ],
             [
                 'label' => 'Параметры Wordstat',
                 'content' => $this->render('wordstat_options',['model'=>$model, 'form'=>$form]),
+                'headerOptions' => ['id' => 'wordstat_options'],
             ],
 
         ],
@@ -51,7 +54,7 @@ $this->title = 'Добавить выборку';
     ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Добавить', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton('Добавить выборку', ['class' => 'btn btn-primary', 'id'=>'suggest-submite']) ?>
     </div>
     <?php ActiveForm::end(); ?>
 
@@ -72,10 +75,23 @@ $this->title = 'Добавить выборку';
 //});', \yii\web\View::POS_READY);
 //ограничение на ввод кол-ва значений в поля textarea
 
+
+$this->registerJs("
+$(document).ready(function(){
+    $('a[data-toggle=tab]').on('shown.bs.tab', function (e) {
+      //прячем кнопку, если активна не первая вкладка
+      if($(e.target).attr('id')=='initial_phrase'){
+        $('#suggest-submite').show();
+      }else{
+        $('#suggest-submite').hide();
+      }
+    });
+});", \yii\web\View::POS_READY);
+
 //$this->registerCssFile('/css/jquery.fs.stepper.css');
 ?>
 <style>
-    input[type="text"] {
+    input[type="text"], input[type="number"] {
         position: relative;
         /*margin: 0 0 1rem;*/
         border: 1px solid #BBB;
@@ -86,7 +102,9 @@ $this->title = 'Добавить выборку';
 
     /* Spin Buttons modified */
     input[type="text"].mod::-webkit-outer-spin-button,
-    input[type="text"].mod::-webkit-inner-spin-button {
+    input[type="number"].mod::-webkit-outer-spin-button,
+    input[type="text"].mod::-webkit-inner-spin-button,
+    input[type="number"].mod::-webkit-inner-spin-button{
         -webkit-appearance: none;
         background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=) no-repeat center center;
         width: 1em;
@@ -98,7 +116,9 @@ $this->title = 'Добавить выборку';
         bottom: 0;
     }
     input[type="text"].mod::-webkit-inner-spin-button:hover,
-    input[type="text"].mod::-webkit-inner-spin-button:active{
+    input[type="text"].mod::-webkit-inner-spin-button:active,
+    input[type="number"].mod::-webkit-inner-spin-button:hover,
+    input[type="number"].mod::-webkit-inner-spin-button:active{
         box-shadow: 0 0 2px #0CF;
         opacity: .8;
     }

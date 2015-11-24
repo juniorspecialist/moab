@@ -21,5 +21,4 @@ echo $form->field($model, 'stop_words')
         return true;
     }
 </script>
-<br>
 Строк: <span id="source_phrase_count_minus">0</span>

@@ -5,11 +5,12 @@ $params = require(__DIR__ . '/params.php');
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log','debug', 'maintenanceMode'],
+    'bootstrap' => ['log','debug'/*, 'maintenanceMode'*/],
     'name'=>' Личный кабинет',//личный кабинет для проекта MOAB
     'timeZone'=>'Europe/Moscow',
     'language' => 'ru-RU',
     'sourceLanguage' => 'ru',
+    //'catchAll' => ['site/maintanance'],
     'defaultRoute' => 'user/default/profile',
     'modules' => [
 
@@ -39,51 +40,51 @@ $config = [
     'components' => [
 
         //
-        'maintenanceMode'=>[
-            'class' => '\brussens\maintenance\MaintenanceMode',
-            // Mode status
-            'enabled'=>false,
-
-            // Route to action
-            'route'=>'maintenance/index',
-
-            // Show message
-            'message'=>'Извините, выполняются технические работы.',
-
-            // Allowed user names
-            'users'=>[
-                'we@moab.pro',
-            ],
-
-            // Allowed roles
-                /*
-            'roles'=>[
-                'administrator',
-            ],*/
-
-            // Allowed IP addresses
-             /*
-            'ips'=>[
-                '127.0.0.1',
-            ],*/
-
-            // Allowed URLs
-            /*'urls'=>[
-                'site/login'
-            ],*/
-
-            // Layout path
-            //'layoutPath'=>'@vendor/brussens/yii2-maintenance-mode/layout',
-
-            // View path
-            'viewPath'=>'@app/views/maintenance/index',
-
-            // User name attribute name
-            'usernameAttribute'=>'email',
-
-            // HTTP Status Code
-            'statusCode'=>503,
-        ],
+//        'maintenanceMode'=>[
+//            'class' => '\brussens\maintenance\MaintenanceMode',
+//            // Mode status
+//            'enabled'=>false,
+//
+//            // Route to action
+//            'route'=>'maintenance/index',
+//
+//            // Show message
+//            'message'=>'Извините, выполняются технические работы.',
+//
+//            // Allowed user names
+//            'users'=>[
+//                'we@moab.pro',
+//            ],
+//
+//            // Allowed roles
+//                /*
+//            'roles'=>[
+//                'administrator',
+//            ],*/
+//
+//            // Allowed IP addresses
+//             /*
+//            'ips'=>[
+//                '127.0.0.1',
+//            ],*/
+//
+//            // Allowed URLs
+//            /*'urls'=>[
+//                'site/login'
+//            ],*/
+//
+//            // Layout path
+//            //'layoutPath'=>'@vendor/brussens/yii2-maintenance-mode/layout',
+//
+//            // View path
+//            'viewPath'=>'@app/views/maintenance/index',
+//
+//            // User name attribute name
+//            'usernameAttribute'=>'email',
+//
+//            // HTTP Status Code
+//            'statusCode'=>503,
+//        ],
 
         'formatter' => [
             //'dateFormat' => 'dd.MM.yyyy',
@@ -135,10 +136,10 @@ $config = [
             ],
         ],
         
-	    'robokassa' =>  require(__DIR__ . '/robokassa_config.php'),
+	    //'robokassa' =>  require(__DIR__ . '/robokassa_config.php'),
 
         //подключим настройки доступов и паролей для робокассы
-        'webmoney' =>  require(__DIR__ . '/webmoney_config.php'),
+        //'webmoney' =>  require(__DIR__ . '/webmoney_config.php'),
         
         
         'user' => [

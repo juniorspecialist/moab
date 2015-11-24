@@ -51,6 +51,7 @@ $(document).ready(function () {
         return false;
     })
 
+    //пользователь продливает/оформляет подписку на выбранную базу
     $(document).on('submit', '.extension-subscribe-form', function (e) {
         e.preventDefault();
         var form = $(this);

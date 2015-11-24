@@ -186,6 +186,7 @@ class User extends ActiveRecord implements IdentityInterface
                 ->bindValues([':user_id'=>Yii::$app->user->id, ':last_vizit_time'=>$info->create_at, ':last_vizit_ip'=>$info->ip])
                 ->execute();
         }else{
+            /*
             if(EmailSubscribe::findOne(['email'=>$user->email])!==null){
                 //первая авторизация юзера
                 \Yii::$app->session->set('user.beta','Поздравляем!  Вы  стали  участником  закрытого  бета-тестирования  веб-сервиса  MOAB. Мы пополнили Ваш баланс на 5 000 руб и уже активировали для Вас вечную подписку на базу ключевых слов из Яндекс.Подсказок. Для начала работы перейдите в меню «Подписки»');
@@ -193,7 +194,7 @@ class User extends ActiveRecord implements IdentityInterface
             if(Links::findOne(['email'=>$user->email])!==null){
                 //первая авторизация юзера
                 \Yii::$app->session->set('user.beta','Вас приветствует Бизнес Молодость! Поздравляем с присоединением к команде профессионалов MOAB! Мы пополнили Ваш баланс на 2 000 руб и уже активировали для Вас подписку на базу ключевых слов из Яндекс.Подсказок. Для начала работы перейдите в меню «Подписки». Желаем приятной работы!');
-            }
+            }*/
         }
 
         //запишим данные по тек. входу пользователя
@@ -567,7 +568,6 @@ class User extends ActiveRecord implements IdentityInterface
                         ':base_moab'=>$is_moab_base,
                         ':user_id'=>Yii::$app->user->id,
                     ])
-                    ->cache(10)
                     ->queryScalar();
             }else{
                 return Yii::$app
@@ -608,9 +608,9 @@ class User extends ActiveRecord implements IdentityInterface
             'list_ids' => $user_lists,
             'fields[email]' => $user_email,
             'fields[Name]' => $user_name,
-            'request_ip' => '94.178.134.173'/*Yii::$app->request->userIP*/,
+            'request_ip' => Yii::$app->request->userIP,
             'request_time'=>date('Y-m-d'),
-            'confirm_ip'=>'94.178.134.173'/*Yii::$app->request->userIP*/,
+            'confirm_ip'=>Yii::$app->request->userIP,
             'confirm_time'=>date('Y-m-d'),
             'tags' => $user_tag,
             'double_optin'=>3

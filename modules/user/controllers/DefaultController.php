@@ -5,6 +5,7 @@ namespace app\modules\user\controllers;
 
 
 use app\models\Access;
+use app\models\Action;
 use app\models\Links;
 
 use app\modules\user\models\PasswordChangeForm;
@@ -40,6 +41,7 @@ class DefaultController extends UserMainController
 
     public function actionIndex(){
 
+
         if (!Yii::$app->user->isGuest) {
             if(Yii::$app->user->identity->isAdmin()){
                 return \Yii::$app->response->redirect('/admin/default/users');
@@ -51,11 +53,6 @@ class DefaultController extends UserMainController
         $login = new LoginForm();
 
         $signup = new SignupForm();
-
-        if(in_array(mb_strtolower(Yii::$app->request->get('promo'),'UTF-8'),['searchengines','seonews','nadobolshe']))
-        {
-            $signup->promo = mb_strtolower(Yii::$app->request->get('promo'),'UTF-8');//Yii::$app->request->get('promo');
-        }
 
         return $this->render('index', ['login'=>$login,'signup'=>$signup]);
     }

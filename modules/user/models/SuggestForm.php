@@ -13,6 +13,7 @@ use app\models\Selections;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
+use yii\helpers\BaseStringHelper;
 
 /*
  * модель для валидации формы добавления задания на выборку-для яндекс-подсказок
@@ -44,6 +45,8 @@ class SuggestForm extends Model
     public $type = Selections::TYPE_SELECT_TIPS_YA;
     public $base_id;//
 
+
+    public $suggest_scenario;//сценарий проверок для suggest и suggest-pro
     //public $source_phrase_list_limit = 10;//сколько фраз в рамках одного поля выборки, юзер может добавить фраз для выборок
 
     private $hash_list = [];//список хеш-сумм, которые формируем по каждой выборке(каждому ключевому слову)
@@ -56,6 +59,7 @@ class SuggestForm extends Model
      */
     public function validateSourcePhrase()
     {
+
         if(!$this->hasErrors())
         {
 
@@ -70,17 +74,22 @@ class SuggestForm extends Model
             foreach($source_phrase_list as $source_phrase_word)
             {
 
+                mb_strlen($source_phrase_word, '8bit');
+
+
                 $source_phrase_word = trim($source_phrase_word);
 
+                if(empty($source_phrase_word)){continue;}
+                /*
                 if(empty($source_phrase_word))
                 {
                     $this->addError('source_phrase','В списке исходных ключевых фраз есть пустая строка');
-                }
+                }*/
 
                 //при появлении ошибки - остановим дальнейшие проверки
                 if($this->hasErrors()){ break; }
 
-                if(strlen($source_phrase_word)>255)
+                if(mb_strlen($source_phrase_word, 'UTF-8')>255)
                 {
                     $this->addError('source_phrase','Длина фразы не может быть длинее 255 символов');
                 }
@@ -88,7 +97,7 @@ class SuggestForm extends Model
 
                 //фраза без учета звездочки и пробелов не может быть короче 3 символов
                 //$source_phrase = str_replace([' '], '',$source_phrase_word);
-                if(strlen($source_phrase_word)<3)
+                if(mb_strlen($source_phrase_word, 'UTF-8')<3)
                 {
                     $this->addError('source_phrase',"Длина фразы '$source_phrase_word' не может быть короче 3х символов");
                 }
@@ -111,35 +120,46 @@ class SuggestForm extends Model
                 }
 
                 //Ключевые фразы и минус-слова нужно еще валидировать на такуювещь, как наличие знака = только в начале строки.
-                if(!$this->hasErrors())
+                if(!$this->hasErrors() && preg_match('/=/mu', $source_phrase_word))
                 {
                     //разбиваем запрос на слова
                     $words = explode(' ',$source_phrase_word);
+
+                    $final_words = [];
 
                     foreach($words as $word){
 
                         $word  = trim($word);
 
                         //при появлении первой ошибки - остановка цикла
-                        if($this->hasErrors()){ break;}
+                        //if($this->hasErrors()){ break;}
 
-                        if(preg_match('/=/mu', $word) && !preg_match('/^[=]*[a-z0-9а-яїіє]+$/mu', $word))
+                        if(preg_match('/=/mu', $word) )
                         {
-                            $this->addError('source_phrase', "В исходной фразе '$source_phrase_word' знак «равно» может находиться только в начале слова.");
-
+                            //&& !preg_match('/^[=]*[a-z0-9а-яїіє]+$/mu', $word)
+                            $word = str_replace('=','',$word);
+                            $word = '='.$word;
                         }
+                        $final_words[] = $word;
                     }
-
+                    //переформатировали строку с удалением символа "=" в любом словеи установили его в начале слова
+                    $source_phrase_word = implode(' ', $final_words);
                 }
 
                 //регулярка-^[a-z0-9а-яїіє ]+$
                 if(!$this->hasErrors())
                 {
-                    if(!preg_match('/^[a-z0-9а-яїіє= ]+$/mu', $source_phrase_word))
+                    //вырезаем спец. символы из строки
+                    //$source_phrase_word = preg_replace('![^\w\d\s]*!','',$source_phrase_word);
+                    //$source_phrase_word = preg_replace('/![^\w\d\s]*!/i','',$source_phrase_word);
+                    $source_phrase_word = preg_replace('/[^=a-zA-Zа-яА-ЯЁё0-9 ]/u','',$source_phrase_word);
+                    //$source_phrase_word = filter_var($source_phrase_word, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+                    /*if(!preg_match('/^[a-z0-9а-яїіє= ]+$/mu', $source_phrase_word))
                     {
                         $this->addError('source_phrase', "Исходная фраза '$source_phrase_word' введена в неверном формате");
-                    }
+                    }*/
                 }
+
 
                 //формируем hash-сумму по параметрам выборки и проверяем на дубли
                 if(!$this->hasErrors())
@@ -156,8 +176,9 @@ class SuggestForm extends Model
                     //если ранее была создана выборка с такими же параметрами то сверим с бд
                     if(!$this->hasErrors())
                     {
+                        //поиск в ранее созданных выборках, исключая удалённые
                         $db_hash = Yii::$app->db
-                            ->createCommand("SELECT id FROM selections WHERE user_id=:user_id AND hash=:hash")
+                            ->createCommand("SELECT id FROM selections WHERE user_id=:user_id AND hash=:hash AND is_del = 0")
                             ->bindValues([":hash"=>$hash, ":user_id"=>Yii::$app->user->id])
                             ->queryScalar();
 
@@ -171,7 +192,6 @@ class SuggestForm extends Model
 
                     if(!$this->hasErrors()) { $this->hash_list[] = $hash; }
                 }
-
 
                 // добавим в общий список ключевых слов - провалидированное ключ. слово
                 if(!$this->hasErrors())
@@ -317,29 +337,31 @@ class SuggestForm extends Model
         return [
             [['category_id','source_phrase',  'potential_traffic', 'source_words_count_from', 'source_words_count_to',
                 'position_from', 'position_to', 'suggest_words_count_from', 'suggest_words_count_to',
-                'length_from', 'length_to', 'need_wordstat',  'wordstat_from', 'wordstat_to'], 'required'],
+                'length_from', 'length_to', 'need_wordstat',  'wordstat_from', 'wordstat_to'], 'required','on'=>['suggest-pro','suggest']],
 
-            ['base_id', 'default', 'value'=>Yii::$app->params['subscribe_suggest_and_wordstat']],
+            ['base_id', 'default', 'value'=>Yii::$app->params['subscribe_suggest_and_wordstat'],'on'=>['suggest-pro']],
+            ['base_id', 'default', 'value'=>Yii::$app->params['subsribe_moab_suggest'],'on'=>['suggest']],
 
-            [['potential_traffic', 'wordstat_syntax', 'base_id'], 'integer'],
+            [['potential_traffic', 'wordstat_syntax', 'base_id'], 'integer','on'=>['suggest-pro','suggest']],
 
-            [['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'integer','min'=>1, 'max'=>32],
+            [['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'integer','min'=>1, 'max'=>32,'on'=>['suggest-pro','suggest']],
 
             //индивидуальные лимиты по цифровым параметрам
-            [['wordstat_from', 'wordstat_to'], 'integer', 'min'=>1, 'max'=>100000000],
-            [['position_from', 'position_to'], 'integer', 'min'=>1, 'max'=>10],
-            ['need_wordstat', 'integer', 'min'=>0, 'max'=>1],
-            [['length_from', 'length_to'], 'integer', 'min'=>1, 'max'=>256],
+            [['wordstat_from', 'wordstat_to'], 'integer', 'min'=>1, 'max'=>100000000,'on'=>['suggest-pro']],
+            [['position_from', 'position_to'], 'integer', 'min'=>1, 'max'=>10,'on'=>['suggest-pro','suggest']],
+            ['need_wordstat', 'default', 'value'=>0,'on'=>['suggest']],
+            ['need_wordstat', 'integer', 'min'=>0, 'max'=>1,'on'=>['suggest-pro']],
+            [['length_from', 'length_to'], 'integer', 'min'=>1, 'max'=>256,'on'=>['suggest-pro','suggest']],
 
 
             //проверка всех текстовых полей, в которых указывается интервал чисел (От и До)
-            ['wordstat_from','validateParamsFromTo'],
+            ['wordstat_from','validateParamsFromTo','on'=>['suggest-pro','suggest']],
 
             //проверка списка минус-слов
-            ['stop_words', 'validateStopWords'],
+            ['stop_words', 'validateStopWords','on'=>['suggest-pro','suggest']],
 
             //валидируем список ключевых слов(важна последовательность валидации,сперва валидируем минус-слова, а потом уже ключевики)
-            ['source_phrase','validateSourcePhrase'],
+            ['source_phrase','validateSourcePhrase','on'=>['suggest-pro','suggest']],
 
 
             //[['source_words_count_from', 'source_words_count_to','suggest_words_count_from', 'suggest_words_count_to'], 'safe'],
@@ -419,7 +441,6 @@ class SuggestForm extends Model
                         }
                     }
 
-
                     //подвязываем временно модель, для формирования внутри класса необходимых данных
                     $suggest->selection = $model;
 
@@ -430,16 +451,10 @@ class SuggestForm extends Model
                     $model->name = str_replace('=','',trim($source_phrase));
                     $model->hash = $this->createHash($source_phrase);
 
-//                    echo '<pre>'; print_r($_POST);
-//
-//                    echo '<pre>'; print_r($this->attributes);
-//                    echo '<pre>'; print_r($model->attributes);
-//                    echo '<pre>'; print_r($suggest->attributes);
-//
-//                    die();
-
                     //если параметры указаны верно, сохраним задание на выборку
-                    if($model->save()){
+                    if($model->validate()){
+
+                        $model->save();
 
                         //привяжем таблицу общую выборок - к доп. данным именно по SUGGEST
                         $suggest->link('selections', $model);
@@ -460,6 +475,7 @@ class SuggestForm extends Model
                         }
 
                     }else{
+                        //print_r($model->errors); die('sdfsdfffff');
                         $transaction->rollBack();
                     }
                 }
@@ -467,8 +483,10 @@ class SuggestForm extends Model
                 // ... executing other SQL statements ...
                 $transaction->commit();
             } catch (Exception $e) {
+                print_r($suggest->errors);
                 echo 'we have any errors<br>';
                 $transaction->rollBack();
+                die('sdfsdf');
             }
         }
 
