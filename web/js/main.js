@@ -37,6 +37,7 @@ $(document).ready(function () {
             type: 'post',
             data: form.serialize(),
             success: function (data) {
+                console.log(data);
                 /*if (data && data.result == 1) {
                  $.pjax.reload({container:'#solutionItems'});
                  }*/
@@ -91,7 +92,8 @@ $(document).ready(function () {
 
     //модальное окно списка групп-категорий
     $(document).on('click','#category_modal_btn',function(e){
-        $('#modal_control_category').modal('show').find('.modal-body').css('height','450px').load($(this).attr('value'));
+        //<i class=" fa fa-refresh fa-spin">Идёт загрузка данных..</i>
+        $('#modal_control_category').modal('show').find('.modal-body').css('height','450px').html('<i class=" fa fa-refresh fa-spin"></i><strong>Идёт загрузка данных..</strong>').load($(this).attr('value'));
         //$('.mypopover').popover();
         return false;
     });

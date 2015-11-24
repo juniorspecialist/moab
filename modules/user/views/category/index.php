@@ -53,13 +53,14 @@ echo $this->render('form',['model'=>$model]).'<br>';
             validate: function(value) {
 
                 var error = false;
+
                 $("a.mypopover" ).each(function( index ) {
                     if($.trim(value) == $.trim($( this ).text())) {
                         error = true;
                     }
-                })
+                });
 
-                if(error==true){return 'Имя группы уже указано в списке';}
+                //if(error==true){return 'Имя группы уже указано в списке';}
 
                 if($.trim(value) == '') {
                     return 'Укажите название группы';
@@ -67,6 +68,11 @@ echo $this->render('form',['model'=>$model]).'<br>';
 
                 //установим флаг, перезагрузки страницы
                 $('#can_we_refrash_page').val(1);
+            },
+            success: function(response, newValue) {
+                //console.log('username'+newValue);
+                //userModel.set('username', newValue); //update backbone model
+                $('.modal-body').html(response);
             }
         });
 

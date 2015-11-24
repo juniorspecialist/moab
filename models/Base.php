@@ -133,7 +133,7 @@ class Base extends \yii\db\ActiveRecord
      */
     static function getTitleBase($id){
         if($id){
-            return Yii::$app->db->createCommand('SELECT title FROM base WHERE id=:id')->bindValues([':id'=>$id])->queryScalar();
+            return Yii::$app->db->createCommand('SELECT title FROM base WHERE id=:id')->bindValues([':id'=>$id])->cache(120)->queryScalar();
         }
         return '';
     }

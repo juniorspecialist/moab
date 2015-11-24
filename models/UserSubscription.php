@@ -245,6 +245,27 @@ class UserSubscription extends \yii\db\ActiveRecord
         return false;
     }
 
+    /*
+     * получаем список актуальных подписок по пользователю
+     * $user_id - ID пользователя
+     */
+    static function activeUserSubscribe($user_id){
+        return Yii::$app
+            ->db
+            ->createCommand(
+                'SELECT user_subscription.id, base.cabinet_link, base.title, base.id AS base_id
+                        FROM user_subscription
+                        LEFT JOIN base on user_subscription.base_id=base.id
+                        WHERE user_subscription.user_id=:user_id
+                          AND user_subscription.from<:time AND user_subscription.to>:time
+                          AND LENGTH(base.cabinet_link)>2
+                        '
+            )
+            ->cache(60)
+            ->bindValues([':user_id'=>$user_id,':time'=>time()])
+            ->queryAll();
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

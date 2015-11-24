@@ -24,29 +24,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <div class="row" style="padding-bottom:30px;">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <?php $form = ActiveForm::begin(['id'=>'suggest-pro-form', 'fieldConfig' => ['template' => "{input}"], 'options'=>['class'=>'form-horizontal']] ); ?>
         <?= $form->errorSummary($model); ?>
             <div class="form-group">
-                <?=Html::label('Быстрая выборка','inputEmail3',['class'=>'col-sm-3 control-label'])?>
-                <div class="col-sm-6">
+                <?=Html::label('Быстрая выборка','inputEmail3',['class'=>'col-sm-4 control-label'])?>
+                <div class="col-sm-8">
                     <?=$form->field($model,'source_phrase')
                         ->textInput(['placeholder'=>'Введите исходную ключевую фразу', 'class'=>'form-control'])
                         ->label('Быстрая выборка',['for'=>'inputEmail3','class'=>'col-sm-4 control-label']);
                     ?>
                 </div>
             </div>
-            <div class="form-group form-inline">
-                <?=Html::label('Частотность Wordstat',null, ['class'=>'col-sm-3 control-label'])?>
-                <div class="col-sm-8">
-                    <?=$form->field($model,'wordstat_from')->textInput(['placeholder'=>'от...','type'=>'number','min'=>1, 'value'=>1,'max'=>100000000,'class'=>'form-control'])->label(false);?>
-                    <?=$form->field($model,'wordstat_to')->textInput(['placeholder'=>'до...','type'=>'number','min'=>1, 'value'=>100000000,'max'=>100000000,'class'=>'form-control','style'=>'margin-left:30px'])->label(false);?>
 
-                </div>
-            </div>
             <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-2">
-                    <?= Html::submitButton('<i class="fa fa-search"></i> Создать выборку', ['class' => 'btn btn-primary form-control'/*, 'style'=>'margin-left:30px'*/]) ?>
+                <div class="col-sm-offset-4 col-sm-4">
+                    <?= Html::submitButton('<i class="fa fa-search"></i> Создать выборку', ['class' => 'btn btn-primary btn-block']) ?>
                 </div>
             </div>
         <?php ActiveForm::end(); ?>
@@ -59,12 +52,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-<div class="row" >
+<div class="row">
     <div class="suggest_wordstat_control">
         <div class="suggest_wordstat_buttons">
-            <div class="col-md-12" style="margin-bottom:-40px;">
+            <div class="col-md-7">
                 <div class="fixed-left">
-                    <?=Html::a('<i class="fa fa-folder-open-o"></i> Пакетные выборки & расширенный поиск',\yii\helpers\Url::to(['/user/suggest/create']), ['class'=>'btn btn-success'])?>
+                    <?=Html::a('<i class="fa fa-folder-open-o"></i> Пакетные выборки & расширенный поиск',\yii\helpers\Url::to(['/user/suggest-main/create']), ['class'=>'btn btn-success'])?>
                     <?=UserCategoryWidget::widget();?>
                     <?=Html::a('<i class="fa fa-trash-o"></i> Удалить выборки', '#' ,['class'=>'btn btn-danger  control ', 'id'=>'delete_checked_selects_btn','delete'=>\yii\helpers\Url::to(['delete'])]);?>
                 </div>
@@ -77,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php }?>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-offset-6">
+            <div class="col-md-3">
                 <?php
                 echo Html::dropDownList('change_category',
                     null,
@@ -91,13 +84,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 );
                 ?>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="search-suggest-wordstat">
                     <form method="get"  action="" >
                         <div class="input-group fixed-width">
                             <a class="clear ng-hide"  tabindex="0" aria-hidden="true"></a>
                             <?=Html::activeInput('text',$searchModel,'search',['id'=>'search_field', 'class'=>'form-control ','placeholder'=>'Поиск', 'style'=>'width: 100%'])?>
-                            <a href="#" class="clear-search" style="position: relative; vertical-align:middle" onclick="$('#search_field').val(''); window.location='<?=\yii\helpers\Url::to(['/user/suggest/index'])?>'; return false;"> <i class="fa fa-times"></i> &nbsp;&nbsp;
+                            <a href="#" class="clear-search" style="position: relative; vertical-align:middle" onclick="$('#search_field').val(''); window.location='<?=\yii\helpers\Url::to(['/user/suggest-main/index'])?>'; return false;"> <i class="fa fa-times"></i> &nbsp;&nbsp;
                             </a>
                             <span class="input-group-btn">
                                 <button class="btn btn-danger" type="submit"><i class="fa fa-search"></i></button>

@@ -105,12 +105,6 @@ class DefaultController extends UserMainController
 
         //валидация параметров формы и авторизация
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            /*
-            if(Yii::$app->user->identity->isAdmin()){
-                return \Yii::$app->response->redirect('/admin/default/users');
-            }else{
-                return \Yii::$app->response->redirect('/profile');
-            }*/
 
 	        return 'ok'; Yii::$app->end();
 
