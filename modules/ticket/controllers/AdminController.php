@@ -18,20 +18,8 @@ class AdminController extends BaseAdminController
     public function actionIndex()
     {
 
-
-        //$query = Tickets::find()->joinWith(['author','authorLastMsg'])->orderBy('date_last_msg DESC, ');
-
         $searchModel = new TicketsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->get());
-
-//
-//        $dataProvider = new ActiveDataProvider([
-//            'query' => $query,
-//            'sort' => false,
-//            'pagination' => [
-//                'pageSize' => 50,
-//            ],
-//        ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,

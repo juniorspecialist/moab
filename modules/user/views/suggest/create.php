@@ -28,6 +28,9 @@ $this->title = 'Добавить выборку';
     <div class="col-md-12">
 
         <?php $form = ActiveForm::begin(['id'=>'metrika-form',    'fieldConfig' => ['template' => "{label}\n{input}"]/*,'enableAjaxValidation'=>true, 'enableClientValidation'=>true*/]); ?>
+
+            <?=$form->errorSummary($model);?>
+
             <h3 style="margin-bottom:20px;"> <span class="label label-danger">Исходные фразы</span></h3>
 
             <div class="form-group form-inline">
@@ -37,11 +40,7 @@ $this->title = 'Добавить выборку';
                <?=$form->field($model, 'category_id',['inline' => true])
                 ->dropDownList(
                     \yii\helpers\ArrayHelper::map(
-                        \app\models\Category::find()
-                            ->select(['id','title'])
-                            ->where(['user_id'=>Yii::$app->user->id])
-                            ->orderBy('id DESC')
-                            ->all()
+                       \app\models\Category::getCategoryArrayByUser()
                         ,'id','title'
                     )
                 )->label(false);?>
@@ -54,20 +53,19 @@ $this->title = 'Добавить выборку';
                 ->label("Добавьте одну или несколько ключевых фраз, по которым будет осуществляться выборка (не более ".Yii::$app->user->identity->suggest_limit_words." фраз):");
             ?>
 
-            <div class="text-right">
-                <button type="text" class="btn btn-info" id="import_txt">
-                    <i class="fa fa-file-o"></i> Импорт из .txt
-                </button>
+            <br>Строк: <span id="source_phrase_count">0</span>
 
-                <?=$this->render('_upload_file', ['type'=>'txt', 'id'=>'import_txt_model'])?>
+<!--            <div class="text-right">-->
+<!---->
+<!--                <button type="button" class="btn btn-info" id="import_txt_btn"><i class="fa fa-file-o"></i> Импорт из .txt</button>-->
 
-                <button type="text" class="btn btn-success" id="import_csv">
-                    <i class="fa fa-table"></i> Импорт из .csv
-                </button>
+                <?php //echo $this->render('_upload_file', ['type'=>'txt', 'id'=>'import_txt_model','target_upload_id'=>'suggestform-source_phrase'])?>
 
-                <?=$this->render('_upload_file', ['type'=>'csv', 'id'=>'import_csv_model'])?>
+<!--                <button type="button" class="btn btn-success" id="import_csv_btn"><i class="fa fa-table"></i> Импорт из .csv</button>-->
 
-            </div>
+                <?php //echo $this->render('_upload_file', ['type'=>'csv', 'id'=>'import_csv_model','target_upload_id'=>'suggestform-source_phrase'])?>
+
+<!--            </div>-->
 
             <div class="form-group form-inline">
                 <?=$form->field($model, 'wordstat_syntax')->dropDownList(\app\models\Selections::getWordsStatSyntax(),[]);?>
@@ -99,6 +97,18 @@ $this->title = 'Добавить выборку';
                 ?>
                 <br>
                 Строк: <span id="source_phrase_count_minus">0</span>
+
+<!--                <div class="text-right">-->
+<!---->
+<!--                    <button type="button" class="btn btn-info" id="import_txt_minus_words_btn"><i class="fa fa-file-o"></i> Импорт из .txt</button>-->
+<!---->
+<!--                    --><?//=$this->render('_upload_file', ['type'=>'txt', 'id'=>'import_txt_model_minus_words','target_upload_id'=>'suggestform-stop_words'])?>
+<!---->
+<!--                    <button type="button" class="btn btn-success" id="import_csv_munis_words_btn"><i class="fa fa-table"></i> Импорт из .csv</button>-->
+<!---->
+<!--                    --><?//=$this->render('_upload_file', ['type'=>'csv', 'id'=>'import_csv_model_munis_words','target_upload_id'=>'suggestform-stop_words'])?>
+<!---->
+<!--                </div>-->
             </div>
 
             <p class="text-left">
@@ -106,13 +116,8 @@ $this->title = 'Добавить выборку';
                     <i class="fa fa-plus"></i> Позиция подсказки и длина фразы
                 </a>
             </p>
-        <?php
-        if($model->potential_traffic !== \app\models\Selections::POTENCIAL_TRAFFIC_USER){$extra_options = ['readonly'=>'readonly'];}
-        ?>
 
-
-
-
+            <?php if($model->potential_traffic !== \app\models\Selections::POTENCIAL_TRAFFIC_USER){$extra_options = ['readonly'=>'readonly'];}?>
 
             <div class="collapse" id="collapse2" id="extra_options">
                 <div class="form-group form-inline field-suggestform-potential_traffic required">
@@ -170,98 +175,15 @@ $this->title = 'Добавить выборку';
             </div>
 
             <div class="form-group">
-                <?= Html::submitButton('<i class="fa fa-search"></i> Поиск', ['class' => 'btn btn-primary btn-lg', 'id'=>'suggest-submite']) ?>
+                <?= Html::submitButton('<i class="fa fa-search"></i> Добавить выборку', ['class' => 'btn btn-primary btn-lg', 'id'=>'suggest-submite']) ?>
             </div>
         <?php ActiveForm::end(); ?>
 
-
-    </div></div>
-
-<!-- modules-user-views-create -->
-
-<style>
-    #selections-need_wordstat, #selections-potential_traffic, #selections-category_id{
-        width: 400px;
-    }
-</style>
+    </div>
+</div>
 
 <?php
-//регистрируем скрипт для выбора числовых значений в удобной форме
-//$this->registerJsFile('/js/jquery.fs.stepper.js', ['depends' => [\yii\web\JqueryAsset::className()]]);
-//$this->registerJs('$(document).ready(function(){
-//    $("input.extra_options, input.other_extra_options, input.wordstat").stepper();
-//    //$(".extra_options").parent("div.stepper").addClass("disabled");
-//});', \yii\web\View::POS_READY);
-//ограничение на ввод кол-ва значений в поля textarea
-
-
-$this->registerJs("
-$(document).ready(function(){
-    $('a[data-toggle=tab]').on('shown.bs.tab', function (e) {
-      //прячем кнопку, если активна не первая вкладка
-      if($(e.target).attr('id')=='initial_phrase'){
-        $('#suggest-submite').show();
-      }else{
-        $('#suggest-submite').hide();
-      }
-    });
-    //клик по полям выбора файлов
-    $(document).on('click','#import_txt',function(e){
-        e.preventDefault();
-        $('#import_txt_model').click();
-    });
-    $(document).on('click','#import_csv',function(e){
-        e.preventDefault();
-        $('#import_csv_model').click();
-    });
-
-});", \yii\web\View::POS_READY);
-
-//$this->registerCssFile('/css/jquery.fs.stepper.css');
+    //подключаем стили и обработчики для текущей формы
+    $this->registerJsFile('/js/suggest.js', ['depends' => [\yii\web\JqueryAsset::className()]]);
+    $this->registerCssFile('/css/suggest.css');
 ?>
-<style>
-    input[type="text"], input[type="number"] {
-        position: relative;
-        /*margin: 0 0 1rem;*/
-        border: 1px solid #BBB;
-        border-color: #BBB #ECECEC #ECECEC #BBB;
-        padding: .2rem;
-        width: 300px;
-    }
-
-    /* Spin Buttons modified */
-    input[type="text"].mod::-webkit-outer-spin-button,
-    input[type="number"].mod::-webkit-outer-spin-button,
-    input[type="text"].mod::-webkit-inner-spin-button,
-    input[type="number"].mod::-webkit-inner-spin-button{
-        -webkit-appearance: none;
-        background: #FFF url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAKUlEQVQYlWNgwAT/sYhhKPiPT+F/LJgEsHv37v+EMGkmkuImoh2NoQAANlcun/q4OoYAAAAASUVORK5CYII=) no-repeat center center;
-        width: 1em;
-        border-left: 1px solid #BBB;
-        opacity: .5; /* shows Spin Buttons per default (Chrome >= 39) */
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-    }
-    input[type="text"].mod::-webkit-inner-spin-button:hover,
-    input[type="text"].mod::-webkit-inner-spin-button:active,
-    input[type="number"].mod::-webkit-inner-spin-button:hover,
-    input[type="number"].mod::-webkit-inner-spin-button:active{
-        box-shadow: 0 0 2px #0CF;
-        opacity: .8;
-    }
-
-    /* Override browser form filling */
-    input:-webkit-autofill {
-        background: black;
-        color: red;
-    }
-    .form-group{
-        width: auto;
-        margin-top: 10px;
-    }
-    .form-inline .form-group {
-        width: 300px;
-    }
-</style>

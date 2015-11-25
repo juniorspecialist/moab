@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="suggest_wordstat_buttons">
             <div class="col-md-12" style="margin-bottom:-40px;">
                 <div class="fixed-left">
-                    <?=Html::a('<i class="fa fa-folder-open-o"></i> Пакетные выборки & расширенный поиск',\yii\helpers\Url::to(['/user/suggest/create']), ['class'=>'btn btn-success'])?>
+                    <?=Html::a('<i class="fa fa-folder-open-o"></i> Пакетные выборки',\yii\helpers\Url::to(['/user/suggest/create']), ['class'=>'btn btn-success'])?>
                     <?=UserCategoryWidget::widget();?>
                     <?=Html::a('<i class="fa fa-trash-o"></i> Удалить выборки', '#' ,['class'=>'btn btn-danger  control ', 'id'=>'delete_checked_selects_btn','delete'=>\yii\helpers\Url::to(['delete'])]);?>
                 </div>

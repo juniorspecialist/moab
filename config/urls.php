@@ -16,13 +16,24 @@ return [
     'doc/<_a>' => 'user/doc/<_a>',
 
     'ticket' => 'ticket/ticket/index',
-    //'ticket'=>'ticket/index',
     'ticket/<_a:(create)>' => 'ticket/ticket/<_a>',
     [
         'pattern' => 'ticket/view/<id:\d+>',
         'route' => 'ticket/ticket/view',
         'suffix' => ''
     ],
+
+
+    'suggest' => 'user/suggest/index',
+    'suggest/<_a:(create)>' => 'user/suggest/<_a>',
+    'suggest-main' => 'user/suggest-main/index',
+    'suggest-main/<_a:(create)>' => 'user/suggest-main/<_a>',
+
+//    [
+//        'pattern' => 'ticket/view/<id:\d+>',
+//        'route' => 'ticket/ticket/view',
+//        'suffix' => ''
+//    ],
 
 
 

@@ -22,9 +22,21 @@ use app\modules\user\models\UploadFele;
     ],
     // ...
     'clientEvents' => [
+        'fileuploadadd'=>'function(e, data) {
+             if (data.files[0].size>100000) {
+                $(".error-text-msg-danger-alert").text("При загрузке файла произошла ошибка. Размер файла не более 1MB ");
+                $("#custom-error-msg").show();
+                return false;
+            }
+            /*
+            if(data.files[0].type!="application/'.$type.'"){
+                $(".error-text-msg-danger-alert").text("При загрузке файла произошла ошибка. Тип файла должен быть '.$type.'");
+                $("#custom-error-msg").show();
+                return false;
+            }*/
+        }',
         'fileuploaddone' => 'function(e, data) {
-            console.log("done");
-            $("#suggestform-source_phrase").val(data.result);
+            $("#'.$target_upload_id.'").val(data.result);
         }',
         'fileuploadfail' => 'function(e, data) {
             $(".error-text-msg-danger-alert").text("При загрузке файла произошла ошибка. Тип файла должен быть .'.$type.' и размер не более 1MB ");

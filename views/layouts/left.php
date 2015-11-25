@@ -22,6 +22,7 @@ if(!Yii::$app->user->isGuest){
         <?php
         echo UserMenuWidget::widget([]);
         ?>
+        <?=\yii\helpers\Html::img('/img/moab_lk.gif')?>
     </section>
 </aside>
 <?php

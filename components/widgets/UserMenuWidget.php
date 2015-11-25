@@ -64,14 +64,17 @@ class UserMenuWidget extends Widget{
                 $links = [
                     ['label' => '<i class="fa fa-file-code-o"></i><span>Базы</span>', 'url' => ['/admin/base/']],
                     ['label' => '<i class="fa fa-user"></i><span>Пользователи</span>', 'url' => ['/admin/default/users/']],
+                    ['label' => '<i class="fa fa-plus"></i><span>Финансы</span>', 'url' => ['/admin/financy/']],
                     ['label' => '<i class="fa fa-dashboard"></i><span>Аккаунты</span>', 'url' => ['/admin/account/']],
                     ['label' => '<i class="fa fa-dollar"></i><span>Счета</span>', 'url' => ['/admin/chek/']],
                     ['label' => '<i class="fa fa-dollar"></i><span>Тикеты</span> <span class="badge" >'.\app\models\Tickets::countIsNew().'</span>', 'url' => ['/ticket/admin/index']],
                     ['label' => '<i class="fa fa-briefcase"></i><span>Документы</span>', 'url' => ['/admin/doc/index']],
-                    ['label' => '<i class="fa fa-plus"></i><span>Акции</span>', 'url' => ['/action/index']],
+                    ['label' => '<i class="fa fa-plus"></i><span>Акции(промо-коды)</span>', 'url' => ['/action/index']],
                 ];
             }
         }
+
+        //$links[] = ['label'=>, 'url'=>'#'];
 
         return $this->render('user_menu', [
             'links'=>$links,

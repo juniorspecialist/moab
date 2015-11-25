@@ -26,7 +26,10 @@ use yii\web\Response;
 use yii\widgets\ActiveForm;
 
 class SuggestMainController  extends UserMainController{
+
     private $_base;
+
+    public $defaultAction = 'index';
 
     public function behaviors()
     {
@@ -182,6 +185,11 @@ class SuggestMainController  extends UserMainController{
         $model = new SuggestForm();
 
         $model->setScenario('suggest');
+
+        $model->source_words_count_from = 1;
+        $model->source_words_count_to = 32;
+        $model->position_from = 1;
+        $model->position_to = 10;
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;

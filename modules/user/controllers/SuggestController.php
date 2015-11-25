@@ -30,6 +30,9 @@ class SuggestController extends UserMainController{
 
     private $_base;
 
+    public $defaultAction = 'index';
+
+
     public function behaviors()
     {
         return  [
